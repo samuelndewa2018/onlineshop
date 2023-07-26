@@ -44,7 +44,9 @@ router.post(
 
       const activationToken = createActivationToken(seller);
 
-      const activationUrl = `http://localhost:3000/seller/activation/${activationToken}`;
+      const activationUrl = `${req.protocol}://${req.get(
+        "host"
+      )}/seller/activation/${activationToken}`;
 
       try {
         await sendMail({
