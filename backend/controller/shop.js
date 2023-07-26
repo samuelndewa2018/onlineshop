@@ -539,7 +539,7 @@ router.post(
           attachments: [
             {
               filename: "logo.png",
-              path: "logo.png",
+              path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
               cid: "logo",
             },
           ],
