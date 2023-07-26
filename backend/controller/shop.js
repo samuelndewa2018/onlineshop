@@ -44,9 +44,7 @@ router.post(
 
       const activationToken = createActivationToken(seller);
 
-      const activationUrl = `${req.protocol}://${req.get(
-        "host"
-      )}/seller/activation/${activationToken}`;
+      const activationUrl = `https://onlineshop-2xjp.vercel.app//seller/activation/${activationToken}`;
 
       try {
         await sendMail({
