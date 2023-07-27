@@ -7,7 +7,6 @@ const {
   stkCallback,
   withdrawal,
 } = require("../controller/mpesa");
-const cors = require("cors");
 
 const callback_route = process.env.CALLBACK_ROUTE;
 
