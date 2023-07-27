@@ -44,56 +44,60 @@ exports.token = async (req, res, next) => {
 };
 
 //stk push
-exports.stkPush = catchAsyncErrors(async (req, res, next) => {
-  const phone = req.body.phone.substring(1); //formated to 72190........
-  const amount = req.body.amount;
-  const date = new Date();
-  const callbackurl = process.env.CALL_BACK_URL;
-  const callbackroute = process.env.CALL_BACK_ROUTE;
-  const timestamp =
-    date.getFullYear() +
-    ("0" + (date.getMonth() + 1)).slice(-2) +
-    ("0" + date.getDate()).slice(-2) +
-    ("0" + date.getHours()).slice(-2) +
-    ("0" + date.getMinutes()).slice(-2) +
-    ("0" + date.getSeconds()).slice(-2);
+router.post(
+  "/stk",
+  token,
+  catchAsyncErrors(async (req, res, next) => {
+    const phone = req.body.phone.substring(1); //formated to 72190........
+    const amount = req.body.amount;
+    const date = new Date();
+    const callbackurl = process.env.CALL_BACK_URL;
+    const callbackroute = process.env.CALL_BACK_ROUTE;
+    const timestamp =
+      date.getFullYear() +
+      ("0" + (date.getMonth() + 1)).slice(-2) +
+      ("0" + date.getDate()).slice(-2) +
+      ("0" + date.getHours()).slice(-2) +
+      ("0" + date.getMinutes()).slice(-2) +
+      ("0" + date.getSeconds()).slice(-2);
 
-  const base64Encoded = Buffer.from(short_code + pass_key + timestamp).toString(
-    "base64"
-  );
+    const base64Encoded = Buffer.from(
+      short_code + pass_key + timestamp
+    ).toString("base64");
 
-  const password = base64Encoded;
-  const headers = {
-    Authorization: `Bearer ${token}`,
-  };
-  const stkUrl =
-    "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
-  let data = {
-    BusinessShortCode: "174379",
-    Password: password,
-    Timestamp: timestamp,
-    TransactionType: "CustomerPayBillOnline",
-    Amount: amount,
-    PartyA: `254${phone}`,
-    PartyB: "174379",
-    PhoneNumber: `254${phone}`,
-    CallBackURL: `${callbackurl}/${callbackroute}`,
-    AccountReference: "eShop",
-    TransactionDesc: "Lipa na M-PESA",
-  };
-  try {
-    await axios
-      .post(stkUrl, data, {
-        headers: headers,
-      })
-      .then((response) => {
-        res.send(response.data);
-      });
-  } catch (error) {
-    console.log(error);
-    return next(new ErrorHandler("Error occurred. Please try again", 500));
-  }
-});
+    const password = base64Encoded;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+    const stkUrl =
+      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
+    let data = {
+      BusinessShortCode: "174379",
+      Password: password,
+      Timestamp: timestamp,
+      TransactionType: "CustomerPayBillOnline",
+      Amount: amount,
+      PartyA: `254${phone}`,
+      PartyB: "174379",
+      PhoneNumber: `254${phone}`,
+      CallBackURL: `${callbackurl}/${callbackroute}`,
+      AccountReference: "eShop",
+      TransactionDesc: "Lipa na M-PESA",
+    };
+    try {
+      await axios
+        .post(stkUrl, data, {
+          headers: headers,
+        })
+        .then((response) => {
+          res.send(response.data);
+        });
+    } catch (error) {
+      console.log(error);
+      return next(new ErrorHandler("Error occurred. Please try again", 500));
+    }
+  })
+);
 
 const callback_route = process.env.CALLBACK_ROUTE;
 const callback_root = process.env.CALL_BACK_ROOT;

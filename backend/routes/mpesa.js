@@ -11,7 +11,7 @@ const cors = require("cors");
 
 const callback_route = process.env.CALLBACK_ROUTE;
 
-router.post("/stk", token, stkPush);
+// router.post("/stk", token, stkPush);
 router.post("/stkpushquery", token, stkpushquery);
 router.post("/callback", stkCallback);
 router.get("/withdral", withdrawal);
