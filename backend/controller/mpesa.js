@@ -27,7 +27,7 @@ exports.token = async (req, res, next) => {
 
   await axios
     .get(
-      "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
+      "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
       {
         headers: {
           authorization: `Basic ${auth}`,
@@ -66,7 +66,8 @@ exports.stkPush = catchAsyncErrors(async (req, res, next) => {
   const headers = {
     Authorization: `Bearer ${token}`,
   };
-  const stkUrl = "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
+  const stkUrl =
+    "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
   let data = {
     BusinessShortCode: "174379",
     Password: password,
@@ -150,7 +151,7 @@ exports.stkpushquery = catchAsyncErrors(async (req, res) => {
   await axios
 
     .post(
-      "https://api.safaricom.co.ke/mpesa/stkpushquery/v1/query",
+      "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query",
       {
         BusinessShortCode: "174379",
         Password: password,
