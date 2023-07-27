@@ -705,7 +705,7 @@ const Header = ({ activeHeading }) => {
               </div>
             ) : (
               <Link to="/login">
-                <CgProfile size={44} color="rgb(0 0 0 / 83%)" />
+                <CgProfile size={34} color="rgb(0 0 0 / 83%)" />
               </Link>
             )}
           </div>
