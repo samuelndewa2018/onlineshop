@@ -13,7 +13,7 @@ const ENDPOINT = "https://socket-server-uv0e.onrender.com/"; ///end point.. to b
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
 const DashboardMessages = () => {
-  const { seller } = useSelector((state) => state.seller);
+  const { seller, isLoading } = useSelector((state) => state.seller);
   const [conversations, setConversations] = useState([]);
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [currentChat, setCurrentChat] = useState();
@@ -225,6 +225,7 @@ const DashboardMessages = () => {
                 userData={userData}
                 online={onlineCheck(item)}
                 setActiveStatus={setActiveStatus}
+                isLoading={isLoading}
               />
             ))}
         </>
@@ -258,6 +259,7 @@ const MessageList = ({
   setUserData,
   online,
   setActiveStatus,
+  isLoading,
 }) => {
   console.log(data);
   const [user, setUser] = useState([]);
@@ -310,7 +312,7 @@ const MessageList = ({
       <div className="pl-3">
         <h1 className="text-[18px]">{user?.name}</h1>
         <p className="text-[16px] text-[#000c]">
-          {data?.lastMessageId !== user?._id
+          {!isLoading && data?.lastMessageId !== user?._id
             ? "You:"
             : user?.name?.split(" ")[0] + ": "}{" "}
           {data?.lastMessage}
