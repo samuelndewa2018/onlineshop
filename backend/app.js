@@ -5,23 +5,38 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-//to handle cors authorizations
-app.use((req, res, next) => {
-  // res.header("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.setHeader("Access-Control-Allow-Credentials", "true"); // Allow sending cookies from the client
-  next();
-});
+// //to handle cors authorizations
+// app.use((req, res, next) => {
+//   res.setHeader(
+//     "Access-Control-Allow-Origin",
+//     "https://onlineshop-2xjp.vercel.app",
+//     "https://onlineshop-delta.vercel.app"
+//   );
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//   res.setHeader("Access-Control-Allow-Credentials", "true"); // Allow sending cookies from the client
+//   next();
+// });
 
 app.use(
   cors({
-    origin: ["https://onlineshop-delta.vercel.app/"],
-    // origin: ['https://eshop-tutorial-cefl.vercel.app','http://localhost:3000'],
+    origin: [
+      "https://onlineshop-2xjp.vercel.app",
+      "https://onlineshop-delta.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
 );
+
+// app.use(
+//   cors({
+//     origin: ["https://onlineshop-delta.vercel.app/"],
+//     // origin: ['https://eshop-tutorial-cefl.vercel.app','http://localhost:3000'],
+//     credentials: true,
+//   })
+// );
 
 app.use(
   express.json({
