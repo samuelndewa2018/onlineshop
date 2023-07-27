@@ -9,18 +9,6 @@ const {
 } = require("../controller/mpesa");
 const cors = require("cors");
 
-app.use(
-  cors({
-    origin: [
-      "https://onlineshop-2xjp.vercel.app",
-      "https://onlineshop-delta.vercel.app",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-
 const callback_route = process.env.CALLBACK_ROUTE;
 
 router.post("/stk", token, stkPush);
