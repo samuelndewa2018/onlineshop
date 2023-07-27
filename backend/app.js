@@ -5,19 +5,6 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-// //to handle cors authorizations
-// app.use((req, res, next) => {
-//   res.setHeader(
-//     "Access-Control-Allow-Origin",
-//     "https://onlineshop-2xjp.vercel.app",
-//     "https://onlineshop-delta.vercel.app"
-//   );
-//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-//   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-//   res.setHeader("Access-Control-Allow-Credentials", "true"); // Allow sending cookies from the client
-//   next();
-// });
-
 app.use(
   cors({
     origin: [
@@ -29,14 +16,6 @@ app.use(
     credentials: true,
   })
 );
-
-// app.use(
-//   cors({
-//     origin: ["https://onlineshop-delta.vercel.app/"],
-//     // origin: ['https://eshop-tutorial-cefl.vercel.app','http://localhost:3000'],
-//     credentials: true,
-//   })
-// );
 
 app.use(
   express.json({
