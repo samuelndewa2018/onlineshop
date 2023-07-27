@@ -18,7 +18,7 @@ app.use((req, res, next) => {
 
 app.use(
   cors({
-    origin: ["https://onlineshop-delta.vercel.app/"],
+    origin: "https://onlineshop-delta.vercel.app/",
     // origin: ['https://eshop-tutorial-cefl.vercel.app','http://localhost:3000'],
     credentials: true,
   })
