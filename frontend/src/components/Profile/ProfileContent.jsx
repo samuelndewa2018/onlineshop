@@ -1032,7 +1032,7 @@ const Address = () => {
         {user &&
           user.addresses.map((item, index) => (
             <div
-              className="w-full bg-white 800px:h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10 mb-5"
+              className="w-full bg-white h-[70px] rounded-[4px] flex items-center px-3 shadow justify-between pr-10 mb-5"
               key={index}
             >
               {modalOpen && (
