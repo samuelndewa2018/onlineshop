@@ -165,7 +165,7 @@ const ProductCard = ({ data, isEvent }) => {
 
             <div className="absolute top-2 left-2">
               <span
-                className="bg-blue-500 text-white py-1 px-2 text-xs rounded-full"
+                className="bg-blue-500 text-white py-1 px-2 text-[10px] lg:text-xs rounded-full"
                 style={{ transform: "rotate(45deg)" }}
               >
                 {data.condition}
