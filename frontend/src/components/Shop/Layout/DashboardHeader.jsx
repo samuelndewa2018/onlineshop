@@ -13,7 +13,7 @@ const DashboardHeader = () => {
       <div>
         <Link to="/">
           <img
-            src="https://res.cloudinary.com/bramuels/image/upload/v1689346467/logo_transparent_mrwg4g.png"
+            src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
             alt=""
             className="w-28 h-28"
           />
