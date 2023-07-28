@@ -1001,7 +1001,7 @@ router.post(
                             <br />
                             Don't like receiving <b>eShop</b> emails?
                             <a
-                              href="http://localhost:3000/unsubscribe"
+                              href="https://onlineshop-2xjp.vercel.app/unsubscribe"
                               style="
                                 text-decoration: underline;
                                 color: #999999;
@@ -2257,7 +2257,7 @@ router.post(
                                                 bgcolor="#3498db"
                                               >
                                                 <a
-                                                  href="http://localhost:3000"
+                                                  href="https://onlineshop-2xjp.vercel.app/"
                                                   target="_blank"
                                                   style="
                                                     border: solid 1px #3126c9;

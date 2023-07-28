@@ -570,7 +570,7 @@ const Header = ({ activeHeading }) => {
                 value={searchTerm}
                 onChange={handleSearchChange}
                 onClick={(e) => myClickHandler4(e, true)}
-                className="h-[40px]  w-full px-2 border-[#3957db] border-[2px] rounded-md"
+                className="searchInput"
               />
               {searchTerm === "" && (
                 <BsSearch
@@ -579,7 +579,7 @@ const Header = ({ activeHeading }) => {
                 />
               )}
               {searchData && searchData.length === 0 && searchTerm !== "" ? (
-                <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+                <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4 rounded-md">
                   <div className="w-full flex items-start-py-3">
                     <img
                       src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
@@ -590,7 +590,7 @@ const Header = ({ activeHeading }) => {
                   </div>
                 </div>
               ) : searchData && searchData.length !== 0 && searchTerm !== "" ? (
-                <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
+                <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4 rounded-md">
                   {searchData &&
                     searchData.map((i, index) => {
                       return (
