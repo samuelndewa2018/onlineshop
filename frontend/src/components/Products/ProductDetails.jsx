@@ -210,6 +210,7 @@ const ProductDetails = ({ data }) => {
                       value={data.discountPrice}
                       displayType={"text"}
                       thousandSeparator={true}
+                      prefix={"Ksh. "}
                     />
                   </h4>
                   <h3 className={`${styles.price}`}>
