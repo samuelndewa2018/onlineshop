@@ -191,7 +191,7 @@ const Header = ({ activeHeading }) => {
         <div className="flex ml-2">
           <p className="hidden text-white lg:block">{promotionName}</p>
           <Typed
-            className="text-white lg:ml-20 sm:ml-0"
+            className="text-white lg:ml-20 ml-10"
             strings={[
               `${typingName1 === undefined ? "Welcome to eShop" : typingName1}`,
               `${typingName2 === undefined ? "Welcome to eShop" : typingName2}`,

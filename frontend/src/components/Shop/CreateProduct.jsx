@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import axios from "axios";
+import { conditionsData } from "../../static/data";
 import { server } from "../../server";
 
 const createProductSchema = yup.object({
@@ -23,6 +24,7 @@ const createProductSchema = yup.object({
     .number("Price should be numbers")
     .required("Discount Price is required"),
   stock: yup.number("Stock should be numbers").required("Stock is required"),
+  condition: yup.string().required("condition is required"),
 });
 
 const CreateProduct = () => {
@@ -80,6 +82,7 @@ const CreateProduct = () => {
       discountPrice: "",
       stock: "",
       images: "",
+      condition: "",
     },
     validationSchema: createProductSchema,
     onSubmit: async (values) => {
@@ -91,6 +94,7 @@ const CreateProduct = () => {
       const originalPrice = values.originalPrice;
       const discountPrice = values.discountPrice;
       const stock = values.stock;
+      const condition = values.condition;
 
       const newForm = new FormData();
 
@@ -104,6 +108,7 @@ const CreateProduct = () => {
       newForm.append("originalPrice", originalPrice);
       newForm.append("discountPrice", discountPrice);
       newForm.append("stock", stock);
+      newForm.append("condition", condition);
       newForm.append("shopId", seller._id);
       setLoading(true);
       dispatch(
@@ -111,6 +116,7 @@ const CreateProduct = () => {
           name,
           description,
           category,
+          condition,
           tags,
           originalPrice,
           discountPrice,
@@ -228,6 +234,31 @@ const CreateProduct = () => {
           />
           <div className="text-red-500 text-sm">
             {formik.touched.tags && formik.errors.tags}
+          </div>
+        </div>
+        <br />
+        <div>
+          <label className="pb-2">
+            Condition<span className="text-red-500">*</span>
+          </label>
+          <select
+            className="w-full mt-2 border h-[35px] rounded-[5px]"
+            onChange={formik.handleChange("condition")}
+            onBlur={formik.handleBlur("condition")}
+            value={formik.values.condition}
+          >
+            <option value="Choose Product Condition">
+              Choose Product Condition
+            </option>
+            {conditionsData &&
+              conditionsData.map((i) => (
+                <option value={i.title} key={i.title}>
+                  {i.title}
+                </option>
+              ))}
+          </select>
+          <div className="text-red-500">
+            {formik.touched.condition && formik.errors.condition}
           </div>
         </div>
         <br />

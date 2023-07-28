@@ -138,7 +138,7 @@ const ProductCard = ({ data, isEvent }) => {
             </div>
             <div className="flex items-center justify-end">
               <span className="font-[400] text-[14px] mx-3 text-[#68d284]">
-                {data.sold_out === 0 ? "New Product" : `${data.sold_out} sold`}
+                {data.sold_out === 0 ? "New Listed" : `${data.sold_out} sold`}
               </span>
             </div>
 

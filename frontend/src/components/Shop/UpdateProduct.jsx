@@ -22,7 +22,7 @@ const editProductSchema = yup.object({
   originalPrice: yup.string().required("Original Price is required"),
   discountPrice: yup.number().required("Discount Price is required"),
   stock: yup.number().required("Stock is required"),
-  // condition: yup.number().required("Condition is required"),
+  condition: yup.string().required("Condition is required"),
 });
 
 const EditProduct = () => {
@@ -63,7 +63,7 @@ const EditProduct = () => {
         const originalPrice = values.originalPrice;
         const discountPrice = values.discountPrice;
         const stock = values.stock;
-        // condition: values.condition,
+        const condition = values.condition;
 
         const newForm = new FormData();
 
@@ -77,6 +77,7 @@ const EditProduct = () => {
         newForm.append("originalPrice", originalPrice);
         newForm.append("discountPrice", discountPrice);
         newForm.append("stock", stock);
+        newForm.append("condition", condition);
 
         await axios.put(`${server}/product/update-product/${productId}`, {
           name,
@@ -86,6 +87,7 @@ const EditProduct = () => {
           originalPrice,
           discountPrice,
           stock,
+          condition,
           images,
         });
 
@@ -279,7 +281,30 @@ const EditProduct = () => {
               </div>
             </div>
             <br />
-
+            <div>
+              <label className="pb-2">
+                Condition<span className="text-red-500">*</span>
+              </label>
+              <select
+                className="w-full mt-2 border h-[35px] rounded-[5px]"
+                onChange={formik.handleChange("condition")}
+                onBlur={formik.handleBlur("condition")}
+                value={formik.values.condition}
+              >
+                <option value="Choose Product Condition">
+                  Choose Product Condition
+                </option>
+                {conditionsData &&
+                  conditionsData.map((i) => (
+                    <option value={i.title} key={i.title}>
+                      {i.title}
+                    </option>
+                  ))}
+              </select>
+              <div className="text-red-500">
+                {formik.touched.condition && formik.errors.condition}
+              </div>
+            </div>
             <br />
             <div>
               <label className="pb-2">Original Price</label>
