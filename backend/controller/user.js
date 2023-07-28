@@ -1330,7 +1330,7 @@ router.post(
     try {
       const token = await user.createPasswordResetToken();
       await user.save();
-      const resetURL = `https://onlineshop-2xjp.vercel.app/activation/${token}`;
+      const resetURL = `https://onlineshop-2xjp.vercel.app/reset-password/${token}`;
       const data = {
         email: email,
         subject: "Forgot Password Link",
