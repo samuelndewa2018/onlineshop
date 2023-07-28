@@ -1055,6 +1055,13 @@ router.post(
           </body>
         </html>
         `,
+        attachments: [
+          {
+            filename: "logo.png",
+            path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
+            cid: "logo",
+          },
+        ],
       });
       res.status(201).json({
         success: true,
@@ -1222,35 +1229,6 @@ router.put(
     }
   })
 );
-
-// // remove user avater
-// router.put(
-//   "/remove-avatar",
-//   isAuthenticated,
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const existsUser = await User.findById(req.user.id);
-//       const existAvatarPath = `../uploads/${existsUser.avatar}`;
-//       if (
-//         existAvatarPath &&
-//         existAvatarPath !== "../uploads/defaultavatar.png"
-//       ) {
-//         fs.unlinkSync(existAvatarPath);
-//       }
-
-//       const user = await User.findByIdAndUpdate(req.user.id, {
-//         avatar: "defaultavatar.png",
-//       });
-//       res.status(201).json({
-//         success: true,
-//         user,
-//       });
-//     } catch (error) {
-//       console.log(error);
-//       return next(new ErrorHandler(error.message, 500));
-//     }
-//   })
-// );
 
 // update user addresses
 
@@ -1820,6 +1798,13 @@ router.post(
           </body>
         </html>
         `,
+        attachments: [
+          {
+            filename: "logo.png",
+            path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
+            cid: "logo",
+          },
+        ],
       };
       sendMail(data);
       res.json(token);
