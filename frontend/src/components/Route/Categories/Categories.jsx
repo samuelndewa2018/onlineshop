@@ -86,7 +86,7 @@ const Categories = () => {
           )}
 
           <div
-            className="overflow-x-auto flex space-x-4 border-0 scroll__bar"
+            className="overflow-x-auto flex space-x-4 border-0 scroll__bar removeScrollbar"
             id="slider"
             ref={sliderRef}
             style={{ scrollBehavior: "smooth" }}

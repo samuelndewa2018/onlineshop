@@ -102,6 +102,17 @@
   border-radius: 0;
 }
 
+.removeScrollbar::-webkit-scrollbar-track {
+  background-color: transparent;
+  display: none;
+}
+
+/* Customize scrollbar thumb */
+.removeScrollbar::-webkit-scrollbar-thumb {
+  background-color: gray;
+  border-radius: 0;
+  display: none;
+}
 /* Minimize scrollbar size */
 @media (max-width: 767px) {
   ::-webkit-scrollbar {
