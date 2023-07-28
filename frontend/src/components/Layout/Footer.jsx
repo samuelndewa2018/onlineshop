@@ -170,7 +170,7 @@ const Footer = () => {
             </li>
           ))}
         </ul>
-        <div className="flex lg:hidden gap-3">
+        <div className="flex lg:hidden gap-3 ml-[10%]">
           <ul className="text-start">
             <h1 className="mb-1 font-semibold">Company</h1>
             {footerProductLinks.map((link, index) => (
