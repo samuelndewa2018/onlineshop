@@ -80,7 +80,7 @@ const Footer = () => {
               className="bg-[#56d879] hover:bg-teal-500 duration-300 px-5 py-2.5 rounded-md text-whie md:w-auto w-full"
             >
               {loading ? (
-                <p className="flex">
+                <p className="flex ml-[30%]">
                   <Spinner /> sending...
                 </p>
               ) : (
