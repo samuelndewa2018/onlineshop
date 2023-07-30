@@ -37,6 +37,8 @@ const CreateProduct = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [sizes, setSizes] = useState([{ name: "", price: "", stock: "" }]);
+
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -72,6 +74,12 @@ const CreateProduct = () => {
     });
   };
 
+  const handleSizeChange = (index, field, value) => {
+    const updatedSizes = [...sizes];
+    updatedSizes[index][field] = value;
+    setSizes(updatedSizes);
+  };
+
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -83,6 +91,7 @@ const CreateProduct = () => {
       stock: "",
       images: "",
       condition: "",
+      sizes: [{ name: "", price: "", stock: "" }],
     },
     validationSchema: createProductSchema,
     onSubmit: async (values) => {
@@ -110,6 +119,11 @@ const CreateProduct = () => {
       newForm.append("stock", stock);
       newForm.append("condition", condition);
       newForm.append("shopId", seller._id);
+      sizes.forEach((size, index) => {
+        newForm.append(`sizes[${index}].name`, size.name);
+        newForm.append(`sizes[${index}].price`, size.price);
+        newForm.append(`sizes[${index}].stock`, size.stock);
+      });
       setLoading(true);
       dispatch(
         createProduct({
@@ -123,6 +137,7 @@ const CreateProduct = () => {
           stock,
           shopId: seller._id,
           images,
+          sizes,
         })
       );
       setLoading(false);
@@ -260,6 +275,72 @@ const CreateProduct = () => {
           <div className="text-red-500">
             {formik.touched.condition && formik.errors.condition}
           </div>
+        </div>
+        <br />
+        {/* Sizes */}
+        <br />
+        <div>
+          <label className="pb-2">Sizes</label>
+          {sizes.map((size, index) => (
+            <div key={index}>
+              <input
+                type="text"
+                name={`sizes[${index}].name`}
+                onChange={(e) =>
+                  handleSizeChange(index, "name", e.target.value)
+                }
+                onBlur={formik.handleBlur(`sizes[${index}].name`)}
+                value={size.name}
+                className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="Size name"
+              />
+
+              <input
+                type="text"
+                name={`sizes[${index}].price`}
+                onChange={(e) =>
+                  handleSizeChange(index, "price", e.target.value)
+                }
+                onBlur={formik.handleBlur(`sizes[${index}].price`)}
+                value={size.price}
+                className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="Price"
+              />
+
+              <input
+                type="text"
+                name={`sizes[${index}].stock`}
+                onChange={(e) =>
+                  handleSizeChange(index, "stock", e.target.value)
+                }
+                onBlur={formik.handleBlur(`sizes[${index}].stock`)}
+                value={size.stock}
+                className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="Stock"
+              />
+              <div className="text-red-500">
+                {/* Display validation errors for sizes (if any) */}
+                {formik.touched.sizes &&
+                  formik.errors.sizes &&
+                  formik.errors.sizes[index] &&
+                  (formik.errors.sizes[index].name ||
+                    formik.errors.sizes[index].price ||
+                    formik.errors.sizes[index].stock)}
+              </div>
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={() =>
+              setSizes((prevSizes) => [
+                ...prevSizes,
+                { name: "", price: "", stock: "" },
+              ])
+            }
+            className="text-blue-600 underline"
+          >
+            Add Size
+          </button>
         </div>
         <br />
         <div>

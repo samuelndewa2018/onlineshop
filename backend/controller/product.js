@@ -39,9 +39,42 @@ router.post(
           });
         }
 
-        const productData = req.body;
-        productData.images = imagesLinks;
-        productData.shop = shop;
+        // Extract sizes data from the request body
+        const {
+          name,
+          description,
+          category,
+          tags,
+          originalPrice,
+          discountPrice,
+          stock,
+          condition,
+          reviews,
+          ratings,
+        } = req.body;
+        const sizes = req.body.sizes || []; // If sizes are not provided, default to an empty array
+
+        // Validate sizes data (optional step)
+        // You may want to perform additional validation on the sizes data here
+
+        // Create the product object
+        const productData = {
+          name,
+          description,
+          category,
+          tags,
+          originalPrice,
+          discountPrice,
+          stock,
+          condition,
+          images: imagesLinks,
+          reviews,
+          ratings,
+          shopId,
+          shop,
+          sold_out: 0,
+          sizes, // Assign the sizes data to the product
+        };
 
         const product = await Product.create(productData);
 

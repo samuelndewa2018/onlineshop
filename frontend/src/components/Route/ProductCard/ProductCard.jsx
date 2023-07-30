@@ -5,7 +5,7 @@ import {
   AiOutlineHeart,
   AiOutlineShoppingCart,
 } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../../../styles/styles";
 import { useDispatch, useSelector } from "react-redux";
 import ProductDetailsCard from "../ProductDetailsCard/ProductDetailsCard";
@@ -29,6 +29,7 @@ const ProductCard = ({ data, isEvent }) => {
   const [click, setClick] = useState(false);
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (wishlist && wishlist.find((i) => i._id === data._id)) {
@@ -85,16 +86,20 @@ const ProductCard = ({ data, isEvent }) => {
   };
 
   const addToCartHandler = (id) => {
-    const isItemExists = cart && cart.find((i) => i._id === id);
-    if (isItemExists) {
-      toast.error("Item already in cart!");
+    if (data.sizes.length !== 0) {
+      navigate(`/product/${id}`);
     } else {
-      if (data.stock < 1) {
-        toast.error("Product stock limited!");
+      const isItemExists = cart && cart.find((i) => i._id === id);
+      if (isItemExists) {
+        toast.error("Item already in cart!");
       } else {
-        const cartData = { ...data, qty: 1 };
-        dispatch(addTocart(cartData));
-        toast.success("Item added to cart successfully!");
+        if (data.stock < 1) {
+          toast.error("Product stock limited!");
+        } else {
+          const cartData = { ...data, qty: 1 };
+          dispatch(addTocart(cartData));
+          toast.success("Item added to cart successfully!");
+        }
       }
     }
   };

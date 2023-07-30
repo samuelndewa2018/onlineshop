@@ -217,6 +217,11 @@ const CartSingle = ({ data, quantityChangeHandler, removeFromCartHandler }) => {
               />
               x {value}
             </h4>
+            {data.size && (
+              <h4 className="font-[400] text-[15px] text-[#00000082]">
+                size: {data.size}
+              </h4>
+            )}
             <h4 className="font-[600] text-[17px] pt-[3px] text-[#d02222] font-Roboto">
               <NumericFormat
                 value={totalPrice}

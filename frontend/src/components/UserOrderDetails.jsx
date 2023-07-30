@@ -157,6 +157,11 @@ const UserOrderDetails = () => {
                           <h3 className="dark:text-white font-semibold leading-6 text-gray-800">
                             {item.name}
                           </h3>
+                          {item.size && (
+                            <p className="text-base dark:text-white xl:text-lg leading-6 text-gray-800">
+                              Size: {item.size}
+                            </p>
+                          )}
                           <div className="flex justify-start items-start flex-col">
                             {!item.isReviewed &&
                             data?.status === "Delivered" ? (

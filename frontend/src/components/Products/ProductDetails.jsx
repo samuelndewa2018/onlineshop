@@ -29,6 +29,8 @@ const ProductDetails = ({ data }) => {
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -73,8 +75,15 @@ const ProductDetails = ({ data }) => {
     } else {
       if (data.stock < 1) {
         toast.error("Product stock limited!");
+      } else if (data.sizes.length !== 0 && selectedSize === "") {
+        toast.error("Please select the size!");
       } else {
-        const cartData = { ...data, qty: count };
+        const cartData = {
+          ...data,
+          qty: count,
+          size: selectedSize,
+          discountPrice: selectedSize ? selectedPrice : data.discountPrice,
+        };
         dispatch(addTocart(cartData));
         toast.success("Item added to cart successfully!");
       }
@@ -207,7 +216,7 @@ const ProductDetails = ({ data }) => {
                 <div className="flex pt-3">
                   <h4 className={`${styles.productDiscountPrice}`}>
                     <NumericFormat
-                      value={data.discountPrice}
+                      value={selectedSize ? selectedPrice : data.discountPrice}
                       displayType={"text"}
                       thousandSeparator={true}
                       prefix={"Ksh. "}
@@ -263,6 +272,57 @@ const ProductDetails = ({ data }) => {
                           </div>
                         </div>
                       </div>
+                    </div>
+                  </div>
+                )}
+                {/* Display Sizes */}
+                {data.sizes && data.sizes.length > 0 && (
+                  <div className="flex mt-3  items-center">
+                    <span className="mr-3">Size:</span>
+                    <div className="relative">
+                      <select
+                        className="rounded border appearance-none border-gray-400 py-2 px-4 pr-10 focus:outline-none focus:border-red-500 text-base"
+                        value={selectedSize}
+                        onChange={(e) => {
+                          setSelectedSize(e.target.value);
+                          const selectedSizeObj = data.sizes.find(
+                            (size) => size.name === e.target.value
+                          );
+                          if (selectedSizeObj) {
+                            setSelectedPrice(selectedSizeObj.price);
+                          }
+                        }}
+                        required
+                      >
+                        <option value="" disabled>
+                          Select Size
+                        </option>
+                        {data.sizes &&
+                          data.sizes.length > 0 &&
+                          data.sizes.map((size, index) => (
+                            <option key={index} value={size.name}>
+                              {size.name} - Price:{" "}
+                              <NumericFormat
+                                value={size.price}
+                                displayType={"text"}
+                                thousandSeparator={true}
+                              />
+                            </option>
+                          ))}
+                      </select>
+                      <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
+                        <svg
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          className="w-4 h-4"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M6 9l6 6 6-6"></path>
+                        </svg>
+                      </span>
                     </div>
                   </div>
                 )}

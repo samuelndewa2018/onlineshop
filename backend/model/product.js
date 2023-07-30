@@ -1,5 +1,20 @@
 const mongoose = require("mongoose");
 
+const sizeSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  stock: {
+    type: Number,
+    required: true,
+  },
+});
+
 const productSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -32,6 +47,7 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  sizes: [sizeSchema],
   images: [
     {
       public_id: {
@@ -79,21 +95,6 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  variations: [
-    {
-      size: {
-        type: String,
-      },
-      stock: {
-        type: Number,
-        required: [true, "Please enter the stock for this variation!"],
-      },
-      sold_out: {
-        type: Number,
-        default: 0,
-      },
-    },
-  ],
   createdAt: {
     type: Date,
     default: Date.now(),
