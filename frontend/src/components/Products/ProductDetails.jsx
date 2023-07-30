@@ -31,6 +31,8 @@ const ProductDetails = ({ data }) => {
   const [select, setSelect] = useState(0);
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedPrice, setSelectedPrice] = useState(0);
+  const [selectedQuantity, setSelectedQuantity] = useState(0);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -231,13 +233,25 @@ const ProductDetails = ({ data }) => {
                   </h3>
                 </div>
                 <p
-                  className={`${
-                    data.stock === 0 ? `text-[#5500ff]` : `text-[#2200ff]`
-                  } mt-2`}
+                  className={`
+                    ${
+                      selectedSize && selectedQuantity !== 0
+                        ? `text-[#5500ff]`
+                        : selectedSize && selectedQuantity === 0
+                        ? `text-red-500`
+                        : !selectedSize && data.stock !== 0
+                        ? `text-[#5500ff]`
+                        : `text-red-500`
+                    }
+                    `}
                 >
-                  {data.stock !== 0
-                    ? `${data.stock} products reamaining`
-                    : `Out of Stocks`}
+                  {selectedSize && selectedQuantity !== 0
+                    ? `${selectedQuantity} products remaining`
+                    : selectedSize && selectedQuantity === 0
+                    ? `Out of Stock`
+                    : !selectedSize && data.stock !== 0
+                    ? `${data.stock} products remaining`
+                    : `Out of Stock`}
                 </p>
                 {data.stock < 1 ? (
                   <p className="text-red-600">Out Of Stock</p>
@@ -277,52 +291,46 @@ const ProductDetails = ({ data }) => {
                 )}
                 {/* Display Sizes */}
                 {data.sizes && data.sizes.length > 0 && (
-                  <div className="flex mt-3  items-center">
+                  <div className="block mt-3 items-center">
                     <span className="mr-3">Size:</span>
-                    <div className="relative">
-                      <select
-                        className="rounded border appearance-none border-gray-400 py-2 px-4 pr-10 focus:outline-none focus:border-red-500 text-base"
-                        value={selectedSize}
-                        onChange={(e) => {
-                          setSelectedSize(e.target.value);
-                          const selectedSizeObj = data.sizes.find(
-                            (size) => size.name === e.target.value
-                          );
-                          if (selectedSizeObj) {
-                            setSelectedPrice(selectedSizeObj.price);
-                          }
-                        }}
-                        required
-                      >
-                        <option value="" disabled>
-                          Select Size
-                        </option>
-                        {data.sizes &&
-                          data.sizes.length > 0 &&
-                          data.sizes.map((size, index) => (
-                            <option key={index} value={size.name}>
-                              {size.name} - Price:{" "}
-                              <NumericFormat
-                                value={size.price}
-                                displayType={"text"}
-                                thousandSeparator={true}
-                              />
-                            </option>
-                          ))}
-                      </select>
-                      <span className="absolute right-0 top-0 h-full w-10 text-center text-gray-600 pointer-events-none flex items-center justify-center">
-                        <svg
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          className="w-4 h-4"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M6 9l6 6 6-6"></path>
-                        </svg>
-                      </span>
+                    <div className="flex flex-wrap gap-2">
+                      {data.sizes &&
+                        data.sizes.length > 0 &&
+                        data.sizes.map((size, index) => (
+                          <button
+                            key={index}
+                            className={`px-4 py-2 rounded border ${
+                              size.stock === 0 ? "text-gray-300	" : "text-black"
+                            }  ${
+                              selectedSize === size.name
+                                ? "border-blue-500 text-blue-500"
+                                : "bg-white text-black"
+                            }`}
+                            onClick={() => {
+                              setSelectedSize(size.name);
+                              setSelectedPrice(size.price);
+                              setSelectedQuantity(size.stock);
+                            }}
+                            disabled={
+                              selectedSize === size.name &&
+                              selectedQuantity === 0
+                            }
+                            style={{
+                              opacity:
+                                selectedSize === size.name &&
+                                selectedQuantity === 0
+                                  ? 0.2
+                                  : 1,
+                            }}
+                          >
+                            {size.name} - Price:{" "}
+                            <NumericFormat
+                              value={size.price}
+                              displayType={"text"}
+                              thousandSeparator={true}
+                            />
+                          </button>
+                        ))}
                     </div>
                   </div>
                 )}
