@@ -323,25 +323,29 @@ const ProductDetails = ({ data }) => {
                                   : 1,
                             }}
                           >
-                            {size.name} - Price:{" "}
-                            <NumericFormat
-                              value={size.price}
-                              displayType={"text"}
-                              thousandSeparator={true}
-                            />
+                            {size.name}
                           </button>
                         ))}
                     </div>
                   </div>
                 )}
                 <div className="flex gap-4">
-                  {data.stock !== 0 && (
+                  {data.stock !== 0 ? (
                     <div
                       className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
                       onClick={() => addToCartHandler(data._id)}
                     >
                       <span className="text-white flex items-center">
                         Add to cart <AiOutlineShoppingCart className="ml-1" />
+                      </span>
+                    </div>
+                  ) : (
+                    <div
+                      className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                      // onClick={() => addToCartHandler(data._id)}
+                    >
+                      <span className="text-white flex items-center">
+                        Let me Know <AiOutlineShoppingCart className="ml-1" />
                       </span>
                     </div>
                   )}
