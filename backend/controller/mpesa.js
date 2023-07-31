@@ -91,7 +91,9 @@ exports.stkPush = catchAsyncErrors(async (req, res, next) => {
       });
   } catch (error) {
     console.log(error);
-    return next(new ErrorHandler("Error occurred. Please try again", 500));
+    return next(
+      new ErrorHandler(`Error occurred. Please try again${error}`, 500)
+    );
   }
 });
 
