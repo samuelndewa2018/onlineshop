@@ -12,7 +12,11 @@ app.use(
       "https://onlineshop-delta.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Access-Control-Allow-Credentials",
+    ],
     credentials: true,
   })
 );
