@@ -78,6 +78,9 @@ const ProductDetails = ({ data }) => {
     dispatch(addToWishlist(data));
     toast.success("Product added to wishlist");
   };
+  const notifyMe = () => {
+    toast.info("We will let you know");
+  };
 
   const addToCartHandler = (id) => {
     const isItemExists = cart && cart.find((i) => i._id === id);
@@ -348,7 +351,7 @@ const ProductDetails = ({ data }) => {
                   {data.stock === 0 ? (
                     <div
                       className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                      // onClick={() => addToCartHandler(data._id)}
+                      onClick={() => notifyMe()}
                     >
                       <span className="text-white flex items-center">
                         Notify Me <AiOutlineHeart className="ml-1" />
@@ -357,7 +360,7 @@ const ProductDetails = ({ data }) => {
                   ) : selectedSize && selectedQuantity === 0 ? (
                     <div
                       className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                      // onClick={() => addToWishlistHandler(data._id)}
+                      onClick={() => notifyMe()}
                     >
                       <span className="text-white flex items-center">
                         Notify Me <AiOutlineHeart className="ml-1" />{" "}
