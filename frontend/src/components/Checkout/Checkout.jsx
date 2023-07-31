@@ -166,19 +166,39 @@ const ShippingInfo = ({
   zipCode,
   setZipCode,
 }) => {
+  const email = user?.email;
+  const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber);
+  const [isChecked, setIsChecked] = useState(false);
+
+  const saveNumber = async (e) => {
+    e.preventDefault();
+    await axios.put(
+      `${server}/user/update-user-phone`,
+      {
+        email,
+        phoneNumber,
+      },
+      {
+        withCredentials: true,
+        headers: {
+          "Access-Control-Allow-Credentials": true,
+        },
+      }
+    );
+  };
   return (
     <div className="w-full 800px:w-[95%] bg-white rounded-md p-5 pb-8">
       <h5 className="text-[18px] font-[500]">Shipping Address</h5>
       <br />
       <form>
-        <div className="w-full block lg:flex pb-3">
+        <div className="w-full block lg:flex pb-3 gap-3">
           <div className="w-full lg:w-[50%]">
             <label className="block pb-2 font-[500]">Full Name</label>
             <input
               type="text"
               value={user && user.name}
               required
-              className={`${styles.input} lg:!w-[95%]`}
+              className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
           <div className="w-full lg:w-[50%]">
@@ -187,19 +207,20 @@ const ShippingInfo = ({
               type="email"
               value={user && user.email}
               required
-              className={`${styles.input} `}
+              className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
         </div>
 
-        <div className="w-full flex pb-3">
+        <div className="w-full flex pb-3 gap-3">
           <div className="w-[50%]">
             <label className="block pb-2 font-[500]">Phone Number</label>
             <input
               type="number"
               required
-              value={user && user.phoneNumber}
-              className={`${styles.input} !w-[95%]`}
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
           <div className="w-[50%]">
@@ -209,7 +230,7 @@ const ShippingInfo = ({
               value={zipCode}
               onChange={(e) => setZipCode(e.target.value)}
               required
-              className={`${styles.input}`}
+              className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
         </div>
@@ -218,7 +239,7 @@ const ShippingInfo = ({
           <div className="w-[50%]">
             <label className="block pb-2 font-[500]">Country</label>
             <select
-              className="w-[95%] border h-[40px] rounded-[5px]"
+              className="w-[95%] border h-10 rounded-md"
               value={"Kenya"}
               onChange={(e) => setCountry(e.target.value)}
             >
@@ -287,7 +308,7 @@ const ShippingInfo = ({
           </div>
         </div>
 
-        <div className="w-full block lg:flex pb-3">
+        <div className="w-full block lg:flex pb-3 gap-3">
           <div className="w-full lg:w-[50%]">
             <label className="block pb-2 font-[500]">Address1</label>
             <input
@@ -295,7 +316,7 @@ const ShippingInfo = ({
               required
               value={address1}
               onChange={(e) => setAddress1(e.target.value)}
-              className={`${styles.input} lg:!w-[95%]`}
+              className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
           <div className="w-full lg:w-[50%]">
@@ -305,13 +326,29 @@ const ShippingInfo = ({
               value={address2}
               onChange={(e) => setAddress2(e.target.value)}
               required
-              className={`${styles.input}`}
+              className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
           </div>
         </div>
 
         <div></div>
       </form>
+      <div className="w-[50%] flex items-center">
+        <input
+          type="checkbox"
+          value=""
+          checked={isChecked}
+          className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          onChange={(e) => {
+            setIsChecked(e.target.checked);
+            saveNumber(e);
+          }}
+        />
+
+        <label className="ml-2 block text-sm text-gray-900">
+          Save these details for future use
+        </label>
+      </div>
       <h5
         className="text-[18px] cursor-pointer inline-block"
         onClick={() => setUserInfo(!userInfo)}

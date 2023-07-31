@@ -285,7 +285,7 @@ const CreateProduct = () => {
         {/* Sizes */}
         <br />
         <div>
-          <label className="pb-2">Sizes</label>
+          <label className="pb-2">Sizes(not required)</label>
           {sizes.map((size, index) => (
             <div key={index}>
               <input
