@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { AiOutlineMessage, AiOutlineShoppingCart } from "react-icons/ai";
+import {
+  AiOutlineMessage,
+  AiOutlineShoppingCart,
+  AiOutlineHeart,
+} from "react-icons/ai";
 import Typed from "react-typed";
 import { FiCopy } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
@@ -259,46 +263,6 @@ const ProductDetails = ({ data }) => {
                     ? `${data.stock} products remaining`
                     : `Out of Stock`}
                 </p>
-                {data.stock < 1 ? (
-                  <p className="text-red-600">Out Of Stock</p>
-                ) : (
-                  <div className="w-full mt-4">
-                    <div className="w-full flex">
-                      <div className="w-1/2">
-                        <div className="text-lg font-bold">Qty:</div>
-                        <div className="flex items-center mt-2">
-                          <div
-                            className={`${
-                              count <= 1
-                                ? "bg-gray-300 cursor-not-allowed"
-                                : "bg-gray-300 cursor-pointer"
-                            } w-10 h-10 flex items-center justify-center rounded-full`}
-                            onClick={decrementCount}
-                          >
-                            <span className="text-xl">-</span>
-                          </div>
-                          <div className="mx-4">{count}</div>
-                          <div
-                            className={`${
-                              count >= data.stock
-                                ? "bg-gray-300 cursor-not-allowed"
-                                : "bg-gray-300 cursor-pointer"
-                            } w-10 h-10 flex items-center justify-center rounded-full`}
-                            onClick={
-                              data.stock <= count
-                                ? maximum
-                                : selectedSize && selectedQuantity <= count
-                                ? maximum
-                                : incrementCount
-                            }
-                          >
-                            <span className="text-xl">+</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
                 {/* Display Sizes */}
                 {data.sizes && data.sizes.length > 0 && (
                   <div className="block mt-3 items-center">
@@ -339,6 +303,47 @@ const ProductDetails = ({ data }) => {
                     </div>
                   </div>
                 )}
+                {data.stock < 1 ? (
+                  <p className="text-red-600">Out Of Stock</p>
+                ) : (
+                  <div className="w-full mt-4">
+                    <div className="w-full flex">
+                      <div className="w-1/2">
+                        <div className="text-lg font-bold">Qty:</div>
+                        <div className="flex items-center mt-2">
+                          <div
+                            className={`${
+                              count <= 1
+                                ? "bg-gray-300 cursor-not-allowed"
+                                : "bg-gray-300 cursor-pointer"
+                            } w-10 h-10 flex items-center justify-center rounded-full`}
+                            onClick={decrementCount}
+                          >
+                            <span className="text-xl">-</span>
+                          </div>
+                          <div className="mx-4">{count}</div>
+                          <div
+                            className={`${
+                              count >= data.stock
+                                ? "bg-gray-300 cursor-not-allowed"
+                                : "bg-gray-300 cursor-pointer"
+                            } w-10 h-10 flex items-center justify-center rounded-full`}
+                            onClick={
+                              data.stock <= count
+                                ? maximum
+                                : selectedSize && selectedQuantity <= count
+                                ? maximum
+                                : incrementCount
+                            }
+                          >
+                            <span className="text-xl">+</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex gap-4">
                   {data.stock === 0 ? (
                     <div
@@ -346,8 +351,7 @@ const ProductDetails = ({ data }) => {
                       onClick={() => addToCartHandler(data._id)}
                     >
                       <span className="text-white flex items-center">
-                        Add to Favourite{" "}
-                        <AiOutlineShoppingCart className="ml-1" />
+                        Add to Favourite <AiOutlineHeart className="ml-1" />
                       </span>
                     </div>
                   ) : selectedSize && selectedQuantity === 0 ? (
@@ -356,8 +360,7 @@ const ProductDetails = ({ data }) => {
                       onClick={() => addToWishlistHandler(data._id)}
                     >
                       <span className="text-white flex items-center">
-                        Add to favourite{" "}
-                        <AiOutlineShoppingCart className="ml-1" />{" "}
+                        Add to favourite <AiOutlineHeart className="ml-1" />{" "}
                       </span>
                     </div>
                   ) : (
