@@ -45,7 +45,11 @@ const ProductDetails = ({ data }) => {
   }, [data, wishlist]);
 
   const incrementCount = () => {
-    setCount(count + 1);
+    if (data.sizes.length !== 0 && selectedSize === "") {
+      toast.info("select size first");
+    } else {
+      setCount(count + 1);
+    }
   };
   const maximum = () => {
     toast.error("Maximun Stock reached");
@@ -68,6 +72,7 @@ const ProductDetails = ({ data }) => {
   const addToWishlistHandler = (data) => {
     setClick(!click);
     dispatch(addToWishlist(data));
+    toast.success("Product added to wishlist");
   };
 
   const addToCartHandler = (id) => {
@@ -85,6 +90,7 @@ const ProductDetails = ({ data }) => {
           qty: count,
           size: selectedSize,
           discountPrice: selectedSize ? selectedPrice : data.discountPrice,
+          selectedQuantity: selectedSize ? selectedQuantity : data.stock,
         };
         dispatch(addTocart(cartData));
         toast.success("Item added to cart successfully!");
@@ -279,7 +285,11 @@ const ProductDetails = ({ data }) => {
                                 : "bg-gray-300 cursor-pointer"
                             } w-10 h-10 flex items-center justify-center rounded-full`}
                             onClick={
-                              count >= data.stock ? maximum : incrementCount
+                              data.stock <= count
+                                ? maximum
+                                : selectedSize && selectedQuantity <= count
+                                ? maximum
+                                : incrementCount
                             }
                           >
                             <span className="text-xl">+</span>
@@ -330,22 +340,33 @@ const ProductDetails = ({ data }) => {
                   </div>
                 )}
                 <div className="flex gap-4">
-                  {data.stock !== 0 ? (
+                  {data.stock === 0 ? (
+                    <div
+                      className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                      onClick={() => addToCartHandler(data._id)}
+                    >
+                      <span className="text-white flex items-center">
+                        Add to Favourite{" "}
+                        <AiOutlineShoppingCart className="ml-1" />
+                      </span>
+                    </div>
+                  ) : selectedSize && selectedQuantity === 0 ? (
+                    <div
+                      className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                      onClick={() => addToWishlistHandler(data._id)}
+                    >
+                      <span className="text-white flex items-center">
+                        Add to favourite{" "}
+                        <AiOutlineShoppingCart className="ml-1" />{" "}
+                      </span>
+                    </div>
+                  ) : (
                     <div
                       className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
                       onClick={() => addToCartHandler(data._id)}
                     >
                       <span className="text-white flex items-center">
                         Add to cart <AiOutlineShoppingCart className="ml-1" />
-                      </span>
-                    </div>
-                  ) : (
-                    <div
-                      className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                      // onClick={() => addToCartHandler(data._id)}
-                    >
-                      <span className="text-white flex items-center">
-                        Let me Know <AiOutlineShoppingCart className="ml-1" />
                       </span>
                     </div>
                   )}
