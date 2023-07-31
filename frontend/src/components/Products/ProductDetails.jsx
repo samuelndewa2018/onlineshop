@@ -74,7 +74,7 @@ const ProductDetails = ({ data }) => {
   };
 
   const addToWishlistHandler = (data) => {
-    setClick(!click);
+    // setClick(!click);
     dispatch(addToWishlist(data));
     toast.success("Product added to wishlist");
   };
@@ -348,19 +348,19 @@ const ProductDetails = ({ data }) => {
                   {data.stock === 0 ? (
                     <div
                       className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                      onClick={() => addToCartHandler(data._id)}
+                      // onClick={() => addToCartHandler(data._id)}
                     >
                       <span className="text-white flex items-center">
-                        Add to Favourite <AiOutlineHeart className="ml-1" />
+                        Notify Me <AiOutlineHeart className="ml-1" />
                       </span>
                     </div>
                   ) : selectedSize && selectedQuantity === 0 ? (
                     <div
                       className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                      onClick={() => addToWishlistHandler(data._id)}
+                      // onClick={() => addToWishlistHandler(data._id)}
                     >
                       <span className="text-white flex items-center">
-                        Add to favourite <AiOutlineHeart className="ml-1" />{" "}
+                        Notify Me <AiOutlineHeart className="ml-1" />{" "}
                       </span>
                     </div>
                   ) : (
