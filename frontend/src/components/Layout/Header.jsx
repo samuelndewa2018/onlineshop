@@ -44,6 +44,7 @@ const Header = ({ activeHeading }) => {
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [activeItem, setActiveItem] = useState("home");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -116,7 +117,8 @@ const Header = ({ activeHeading }) => {
       e.stopPropagation();
     }
   };
-  const myClickHandler4 = (e, props) => {
+  const myClickHandler4 = (e, props, item) => {
+    setActiveItem(item);
     setSearchOpen(props);
     setOpenCart(false);
     setOpenWishlist(false);
@@ -129,8 +131,9 @@ const Header = ({ activeHeading }) => {
       e.stopPropagation();
     }
   };
-  const myClickHandler5 = (e) => {
+  const myClickHandler5 = (e, item) => {
     e.preventDefault();
+    setActiveItem(item);
     setSearchOpen(false);
     setOpenCart(false);
     setOpenWishlist(false);
@@ -146,6 +149,7 @@ const Header = ({ activeHeading }) => {
   };
   const myClickHandler6 = (e) => {
     e.preventDefault();
+    setActiveItem(item);
     setSearchOpen(false);
     setOpenCart(false);
     setOpenWishlist(false);
@@ -624,91 +628,115 @@ const Header = ({ activeHeading }) => {
             </div>
           </div>
         )}
-        <div className="bottomOption">
-          <div>
-            <BiHomeAlt2
-              style={{
-                color: "#000",
-                fontSize: "25px",
-                margin: "5px",
-                opacity: ".8",
-              }}
-              onClick={(e) => myClickHandler5(e)}
-            />
-          </div>
-
-          <div
-            style={{
-              position: "relative",
-            }}
-          >
-            <AiOutlineHeart
-              style={{
-                color: "#000",
-                fontSize: "25px",
-                margin: "5px",
-                opacity: ".8",
-              }}
-              onClick={(e) => myClickHandler3(e, true)}
-            />
-
-            <span className="absolute rounded-full flex items-center justify-center bottom-[70%] right-[5%] h-[20px] w-[20px] border-none text-white bg-[#3bc177]">
-              {wishlist.length}
-            </span>
-          </div>
-          <div
-            style={{
-              position: "relative",
-            }}
-          >
-            <AiOutlineMessage
-              style={{
-                color: "#000",
-                fontSize: "25px",
-                margin: "5px",
-                opacity: ".8",
-              }}
-              onClick={(e) => myClickHandler6(e, true)}
-            />
-          </div>
-
-          <div onClick={(e) => myClickHandler4(e, true)}>
-            <BsSearch
-              style={{
-                color: "#000",
-                fontSize: "25px",
-                margin: "5px",
-                opacity: ".8",
-              }}
-            />
-          </div>
-          <Link to="/compare-products">
-            <TbArrowsShuffle2
-              style={{
-                color: "#000",
-                fontSize: "25px",
-                margin: "5px",
-                opacity: ".8",
-              }}
-            />
-          </Link>
-          <div>
-            {isAuthenticated ? (
-              <div>
-                <Link to="/profile">
-                  <img
-                    src={`${user?.avatar?.url}`}
-                    alt=""
-                    className="w-[30px] h-[30px] rounded-full border-[3px] border-[#0eae88]"
-                  />
-                </Link>
-              </div>
-            ) : (
-              <Link to="/login">
-                <CgProfile size={34} color="rgb(0 0 0 / 83%)" />
+        <div className="navigation">
+          <ul>
+            <li
+              className={`list ${activeItem === "home" ? "active" : ""}`}
+              onClick={(e) => myClickHandler5(e, "home")}
+              style={{ "--clr": "#f44336" }}
+            >
+              <a href="#">
+                <span className="icon">
+                  <BiHomeAlt2
+                    style={{
+                      color: "#000",
+                      fontSize: "25px",
+                      margin: "15px",
+                      opacity: ".8",
+                      alignItems: "center",
+                    }}
+                  />{" "}
+                </span>
+              </a>
+            </li>
+            <li
+              className={`list ${activeItem === "person" ? "active" : ""}`}
+              onClick={(e) => myClickHandler6(e, "person")}
+              style={{ "--clr": "#ffa117" }}
+            >
+              <Link to="/inbox">
+                <span className="icon">
+                  <AiOutlineMessage
+                    style={{
+                      color: "#000",
+                      fontSize: "25px",
+                      margin: "15px",
+                      opacity: ".8",
+                      alignItems: "center",
+                    }}
+                  />{" "}
+                </span>
               </Link>
-            )}
-          </div>
+            </li>
+            <li
+              className={`list ${activeItem === "chatbubble" ? "active" : ""}`}
+              onClick={(e) => myClickHandler4(e, true, "chatbubble")}
+              // onClick={() => handleClick("chatbubble")}
+              style={{ "--clr": "#0fc70f" }}
+            >
+              <a href="#">
+                <span className="icon">
+                  <BsSearch
+                    style={{
+                      color: "#000",
+                      fontSize: "25px",
+                      margin: "15px",
+                      opacity: ".8",
+                    }}
+                  />{" "}
+                </span>
+              </a>
+            </li>
+            <li
+              className={`list ${activeItem === "camera" ? "active" : ""}`}
+              onClick={() => handleClick("camera")}
+              style={{ "--clr": "#2196f3" }}
+            >
+              <Link to="/compare-products">
+                <span className="icon">
+                  <TbArrowsShuffle2
+                    style={{
+                      color: "#000",
+                      fontSize: "25px",
+                      margin: "15px",
+                      opacity: ".8",
+                    }}
+                  />{" "}
+                </span>
+              </Link>
+            </li>
+            <li
+              className={`list ${activeItem === "settings" ? "active" : ""}`}
+              onClick={() => handleClick("settings")}
+              style={{ "--clr": "#b145e9" }}
+            >
+              <a href="#">
+                <span className="icon">
+                  <div>
+                    {isAuthenticated ? (
+                      <div>
+                        <Link to="/profile">
+                          <img
+                            src={`${user?.avatar?.url}`}
+                            alt=""
+                            className="w-[30px] h-[30px] m-[13px] rounded-full border-[3px] border-[#0eae88]"
+                          />
+                        </Link>
+                      </div>
+                    ) : (
+                      <Link to="/login">
+                        <CgProfile
+                          size={34}
+                          color="rgb(0 0 0 / 83%)"
+                          className="m-[12px]"
+                        />
+                      </Link>
+                    )}
+                  </div>
+                </span>
+              </a>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
