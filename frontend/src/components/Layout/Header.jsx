@@ -188,7 +188,9 @@ const Header = ({ activeHeading }) => {
         console.log(error.response.data.message);
       });
   };
-
+  const handleClick = (item) => {
+    setActiveItem(item);
+  };
   return (
     <div onClick={dropDown === true ? () => setDropDown(false) : () => {}}>
       <div className="flex p-auto w-full bg-[#3321c8] h-[40px] justify-between py-[7px] px-[5px] lg:py-[22px] lg:px-[60px] lg:h-[70px]">
