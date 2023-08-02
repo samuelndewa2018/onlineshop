@@ -147,7 +147,7 @@ const Header = ({ activeHeading }) => {
       e.stopPropagation();
     }
   };
-  const myClickHandler6 = (e) => {
+  const myClickHandler6 = (e, item) => {
     e.preventDefault();
     setActiveItem(item);
     setSearchOpen(false);
@@ -564,7 +564,7 @@ const Header = ({ activeHeading }) => {
         {/* search for bottom tab */}
         {searchOpen && (
           <div
-            onClick={(e) => myClickHandler4(e, false)}
+            onClick={(e) => myClickHandler4(e, false, "home")}
             className=" fixed top-0 left-0 right-0 bg-black/[.6] p-4 z-50 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%)] max-h-full appear__smoothly"
           >
             <div className="w-[90%] absolute top-[20%]">
@@ -573,7 +573,7 @@ const Header = ({ activeHeading }) => {
                 placeholder="Search Product..."
                 value={searchTerm}
                 onChange={handleSearchChange}
-                onClick={(e) => myClickHandler4(e, true)}
+                onClick={(e) => myClickHandler4(e, true, "chatbubble")}
                 className="searchInput"
               />
               {searchTerm === "" && (
@@ -600,7 +600,7 @@ const Header = ({ activeHeading }) => {
                       return (
                         <Link
                           to={`/product/${i._id}`}
-                          onClick={(e) => myClickHandler4(e, false)}
+                          onClick={(e) => myClickHandler4(e, false, "home")}
                         >
                           <div
                             onClick={() => {
