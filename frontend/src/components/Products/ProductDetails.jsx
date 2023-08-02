@@ -3,6 +3,7 @@ import {
   AiOutlineMessage,
   AiOutlineShoppingCart,
   AiOutlineHeart,
+  AiFillHeart,
 } from "react-icons/ai";
 import Typed from "react-typed";
 import { FiCopy } from "react-icons/fi";
