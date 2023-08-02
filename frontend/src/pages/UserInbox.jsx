@@ -209,7 +209,7 @@ const UserInbox = () => {
 
       {!open && (
         <>
-          <Header />
+          <Header activeItem={"person"} />
           <h1 className="text-center text-[30px] py-3 font-Poppins">
             All Messages
           </h1>

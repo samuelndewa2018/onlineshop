@@ -28,7 +28,7 @@ import CustomModal from "../CustomModal";
 import { toast } from "react-toastify";
 import { getAllProducts } from "../../redux/actions/product";
 
-const Header = ({ activeHeading }) => {
+const Header = ({ activeHeading, activeItem }) => {
   const { statements } = useSelector((state) => state.statements);
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const { wishlist } = useSelector((state) => state.wishlist);
@@ -44,7 +44,6 @@ const Header = ({ activeHeading }) => {
   const [open, setOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState("home");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -118,7 +117,6 @@ const Header = ({ activeHeading }) => {
     }
   };
   const myClickHandler4 = (e, props, item) => {
-    setActiveItem(item);
     setSearchOpen(props);
     setOpenCart(false);
     setOpenWishlist(false);
@@ -133,7 +131,6 @@ const Header = ({ activeHeading }) => {
   };
   const myClickHandler5 = (e, item) => {
     e.preventDefault();
-    setActiveItem(item);
     setSearchOpen(false);
     setOpenCart(false);
     setOpenWishlist(false);
@@ -149,7 +146,6 @@ const Header = ({ activeHeading }) => {
   };
   const myClickHandler6 = (e, item) => {
     e.preventDefault();
-    setActiveItem(item);
     setSearchOpen(false);
     setOpenCart(false);
     setOpenWishlist(false);
@@ -189,7 +185,7 @@ const Header = ({ activeHeading }) => {
       });
   };
   const handleClick = (item) => {
-    setActiveItem(item);
+    activeItem = item;
   };
   return (
     <div onClick={dropDown === true ? () => setDropDown(false) : () => {}}>

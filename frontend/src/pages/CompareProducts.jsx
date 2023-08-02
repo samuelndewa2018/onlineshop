@@ -25,7 +25,7 @@ const CompareProducts = () => {
         <Loader />
       ) : (
         <div>
-          <Header activeHeading={4} />
+          <Header activeHeading={4} activeItem={"camera"} />
           <br />
           <br />
           <div className={`${styles.section} appear__smoothly`}>

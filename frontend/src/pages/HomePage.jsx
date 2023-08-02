@@ -13,7 +13,7 @@ const HomePage = () => {
   return (
     <div>
       <Meta title="Home" />
-      <Header activeHeading={1} />
+      <Header activeHeading={1} activeItem={"home"} />
       <Hero />
       <Categories />
       <BestDeals />
