@@ -414,7 +414,26 @@ const Header = ({ activeHeading, activeItem }) => {
               />
             </Link>
           </div>
-          <div>
+          <div className="flex gap-2">
+            <div
+              style={{
+                position: "relative",
+              }}
+            >
+              <AiOutlineHeart
+                style={{
+                  color: "#000",
+                  fontSize: "25px",
+                  margin: "5px",
+                  opacity: ".8",
+                }}
+                onClick={(e) => myClickHandler3(e, true)}
+              />
+
+              <span className="absolute rounded-full flex items-center justify-center bottom-[70%] right-[5%] h-[20px] w-[20px] border-none text-white bg-[#3bc177]">
+                {wishlist.length}
+              </span>
+            </div>
             <div
               className="relative mr-[20px]"
               onClick={(e) => myClickHandler2(e, true)}
