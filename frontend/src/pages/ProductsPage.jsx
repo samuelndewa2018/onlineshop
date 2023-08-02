@@ -249,7 +249,7 @@ const ProductsPage = () => {
                       </button>
                     </li>
                     {Array.from({
-                      length: Math.ceil(data.length / productsPerPage),
+                      length: Math.ceil(data?.length / productsPerPage),
                     }).map((_, index) => (
                       <li key={index}>
                         <button
@@ -291,7 +291,7 @@ const ProductsPage = () => {
                 </nav>
               </div>
 
-              {data && data.length === 0 ? (
+              {data && data?.length === 0 ? (
                 <h1 className="text-center w-full pb-[100px] text-[20px]">
                   No products Found!
                 </h1>
