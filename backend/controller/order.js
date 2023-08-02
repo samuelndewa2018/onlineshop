@@ -332,7 +332,11 @@ router.post(
                                       <td style="display: flex;" align="start">
                                       <img src="cid:${item.images[0].url}" 
                                       style="height: 80px; width: 80px; margin-right: 5px"/>
-                                      ${item.name}
+                                      ${item.name}  <br/> ${
+                                            item.size
+                                              ? `Size: ${item.size}`
+                                              : ""
+                                          }
                                      </td>
                                         <td align="center">${item.qty}</td>
                                         <td align="right">${item.discountPrice
@@ -809,7 +813,11 @@ router.post(
                                       <td style="display: flex;" align="start">
                                       <img src="cid:${item.images[0].url}" 
                                       style="height: 80px; width: 80px; margin-right: 5px"/>
-                                      ${item.name}
+                                      ${item.name}  <br/> ${
+                                            item.size
+                                              ? `Size: ${item.size}`
+                                              : ""
+                                          }
                                      </td>
                                         <td align="center">${item.qty}</td>
                                         <td align="right">${item.discountPrice

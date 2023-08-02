@@ -26,6 +26,9 @@ const ProductDetailsCard = ({ setOpen, data }) => {
   const dispatch = useDispatch();
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedPrice, setSelectedPrice] = useState(0);
+  const [selectedQuantity, setSelectedQuantity] = useState(0);
 
   const handleMessageSubmit = () => {};
 
@@ -36,7 +39,11 @@ const ProductDetailsCard = ({ setOpen, data }) => {
   };
 
   const incrementCount = () => {
-    setCount(count + 1);
+    if (data.sizes.length !== 0 && selectedSize === "") {
+      toast.info("select size first");
+    } else {
+      setCount(count + 1);
+    }
   };
 
   const addToCartHandler = (id) => {
@@ -44,10 +51,19 @@ const ProductDetailsCard = ({ setOpen, data }) => {
     if (isItemExists) {
       toast.error("Item already in cart!");
     } else {
-      if (data.stock < count) {
+      if (data.stock < 1) {
         toast.error("Product stock limited!");
+      } else if (data.sizes.length !== 0 && selectedSize === "") {
+        toast.error("Please select the size!");
       } else {
-        const cartData = { ...data, qty: count };
+        const cartData = {
+          ...data,
+          qty: count,
+          size: selectedSize,
+          discountPrice: selectedSize ? selectedPrice : data.discountPrice,
+          selectedQuantity: selectedSize ? selectedQuantity : data.stock,
+        };
+        console.log("cartData", cartData);
         dispatch(addTocart(cartData));
         toast.success("Item added to cart successfully!");
       }
@@ -113,6 +129,10 @@ const ProductDetailsCard = ({ setOpen, data }) => {
     toast.error("Maximun Stock reached");
   };
 
+  const notifyMe = () => {
+    toast.info("We will let you know");
+  };
+
   return (
     <div className="bg-[#fff] ">
       {data ? (
@@ -168,8 +188,50 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                     ) : null}
                   </h3>
                 </div>
-                <div className="flex items-center justify-between pr-3">
-                  <div className="w-full">
+                {/* Display Sizes */}
+                {data.sizes && data.sizes.length > 0 && (
+                  <div className="block mt-3 items-center">
+                    <span className="mr-3">Size:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {data.sizes &&
+                        data.sizes.length > 0 &&
+                        data.sizes.map((size, index) => (
+                          <button
+                            key={index}
+                            className={`px-4 py-2 rounded border ${
+                              size.stock === 0 ? "text-gray-300	" : "text-black"
+                            }  ${
+                              selectedSize === size.name
+                                ? "border-blue-500 text-blue-500"
+                                : "bg-white text-black"
+                            }`}
+                            onClick={() => {
+                              setSelectedSize(size.name);
+                              setSelectedPrice(size.price);
+                              setSelectedQuantity(size.stock);
+                            }}
+                            disabled={
+                              selectedSize === size.name &&
+                              selectedQuantity === 0
+                            }
+                            style={{
+                              opacity:
+                                selectedSize === size.name &&
+                                selectedQuantity === 0
+                                  ? 0.2
+                                  : 1,
+                            }}
+                          >
+                            {size.name}
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+                {data.stock < 1 ? (
+                  <p className="text-red-600">Out Of Stock</p>
+                ) : (
+                  <div className="w-full mt-4">
                     <div className="w-full flex">
                       <div className="w-1/2">
                         <div className="text-lg font-bold">Qty:</div>
@@ -192,7 +254,11 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                                 : "bg-gray-300 cursor-pointer"
                             } w-10 h-10 flex items-center justify-center rounded-full`}
                             onClick={
-                              count >= data.stock ? maximum : incrementCount
+                              data.stock <= count
+                                ? maximum
+                                : selectedSize && selectedQuantity <= count
+                                ? maximum
+                                : incrementCount
                             }
                           >
                             <span className="text-xl">+</span>
@@ -200,35 +266,55 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                         </div>
                       </div>
                     </div>
+                    <div>
+                      {click ? (
+                        <AiFillHeart
+                          size={30}
+                          className="cursor-pointer"
+                          onClick={() => removeFromWishlistHandler(data)}
+                          color={click ? "red" : "#333"}
+                          title="Remove from wishlist"
+                        />
+                      ) : (
+                        <AiOutlineHeart
+                          size={30}
+                          className="cursor-pointer"
+                          onClick={() => addToWishlistHandler(data)}
+                          title="Add to wishlist"
+                        />
+                      )}
+                    </div>
                   </div>
-                  <div>
-                    {click ? (
-                      <AiFillHeart
-                        size={30}
-                        className="cursor-pointer"
-                        onClick={() => removeFromWishlistHandler(data)}
-                        color={click ? "red" : "#333"}
-                        title="Remove from wishlist"
-                      />
-                    ) : (
-                      <AiOutlineHeart
-                        size={30}
-                        className="cursor-pointer"
-                        onClick={() => addToWishlistHandler(data)}
-                        title="Add to wishlist"
-                      />
-                    )}
-                  </div>
-                </div>
+                )}
                 <div className="flex gap-4">
-                  <div
-                    className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center`}
-                    onClick={() => addToCartHandler(data._id)}
-                  >
-                    <span className="text-[#fff] flex items-center">
-                      Add to cart <AiOutlineShoppingCart className="ml-1" />
-                    </span>
-                  </div>
+                  {data.stock === 0 ? (
+                    <div
+                      className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                      onClick={() => notifyMe()}
+                    >
+                      <span className="text-white flex items-center">
+                        Notify Me <AiOutlineHeart className="ml-1" />
+                      </span>
+                    </div>
+                  ) : selectedSize && selectedQuantity === 0 ? (
+                    <div
+                      className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                      onClick={() => notifyMe()}
+                    >
+                      <span className="text-white flex items-center">
+                        Notify Me <AiOutlineHeart className="ml-1" />
+                      </span>
+                    </div>
+                  ) : (
+                    <div
+                      className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
+                      onClick={() => addToCartHandler(data._id)}
+                    >
+                      <span className="text-white flex items-center">
+                        Add to cart <AiOutlineShoppingCart className="ml-1" />
+                      </span>
+                    </div>
+                  )}
                   <div
                     className={`${styles.button} mt-6 rounded-[4px] h-11 flex items-center`}
                     onClick={() => addToCompareHandler(data._id)}

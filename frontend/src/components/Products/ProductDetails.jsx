@@ -23,8 +23,9 @@ import { TbArrowsShuffle2 } from "react-icons/tb";
 import { addTocompare } from "../../redux/actions/compare";
 import { NumericFormat } from "react-number-format";
 import { formatDistanceToNow } from "date-fns";
+import { IoIosShareAlt } from "react-icons/io";
 
-const ProductDetails = ({ data }) => {
+const ProductDetails = ({ data, isEvent }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const { cart } = useSelector((state) => state.cart);
   const { compare } = useSelector((state) => state.compare);
@@ -175,6 +176,27 @@ const ProductDetails = ({ data }) => {
       return data.description.length > 450
         ? data.description.slice(0, 450) + "..."
         : data.description;
+    }
+  };
+
+  const shareToSocialMedia = (value) => {
+    // Check if the navigator supports the share API
+    if (navigator.share) {
+      navigator
+        .share({
+          title: "Product Link",
+          text: "Check out this product!",
+          url: value,
+        })
+        .then(() => {
+          console.log("Product link shared successfully!");
+        })
+        .catch((error) => {
+          console.error("Error sharing product link:", error);
+        });
+    } else {
+      // Fallback to copying the link to clipboard
+      copyToClipboard(value);
     }
   };
 
@@ -387,24 +409,35 @@ const ProductDetails = ({ data }) => {
                 </div>
                 <div className="flex items-center my-3 text-szm">
                   <h3 className="product-heading mr-1 text-[13px]">
-                    Product Link:
+                    Share Product:
                   </h3>
-                  <a
-                    href="javascript:void(0);"
-                    onClick={() => {
-                      copyToClipboard(window.location.href);
-                    }}
+
+                  <p
+                    onClick={() =>
+                      shareToSocialMedia(
+                        `${
+                          isEvent === true
+                            ? `/product/${data._id}?isEvent=true`
+                            : `/product/${data._id}`
+                        }`
+                      )
+                    }
+                    className="cursor-pointer"
                   >
                     <div className="flex items-center text-[13px]">
-                      <FiCopy size={20} className="fs-5 me-2" />
+                      <IoIosShareAlt
+                        size={20}
+                        color="blue"
+                        className="fs-5 me-2"
+                      />{" "}
                       <Typed
-                        strings={["Click Here To Copy The Product Link"]}
+                        strings={["Click Here To Share this Product."]}
                         typeSpeed={40}
                         backSpeed={50}
                         loop
                       />
                     </div>
-                  </a>
+                  </p>
                 </div>
                 <div className="flex items-center pt-4">
                   <Link to={`/shop/preview/${data?.shop._id}`}>
