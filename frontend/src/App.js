@@ -75,7 +75,7 @@ import AdminCarousel from "./pages/AdminCarousel";
 import ShopUpdateProduct from "./pages/Shop/ShopUpdateProduct";
 import EditProduct from "./components/Shop/UpdateProduct";
 import AdminEditProduct from "./components/Admin/UpdateProduct";
-
+import ComingSoon from "./pages/ComingSoon";
 import AdminStatements from "./pages/AdminStatements";
 import NotFound from "./pages/NotFound";
 import Unsubscribe from "./pages/Unsubscribe";
@@ -133,6 +133,7 @@ const App = () => {
         <Route path="/compare-products" element={<CompareProducts />} />
         <Route path="/events" element={<EventsPage />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/coming-soon" element={<ComingSoon />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route
           path="/unsubscribe"

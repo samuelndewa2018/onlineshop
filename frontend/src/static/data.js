@@ -594,38 +594,46 @@ export const productData = [
 export const footerProductLinks = [
   {
     name: "About us",
-    link: "/about",
+    link: "/contact",
   },
   {
     name: "Careers",
-    link: "/carrers",
+    link: "/coming-soon",
   },
   {
     name: "Store Locations",
+    link: "/coming-soon",
   },
   {
     name: "Our Blog",
+    link: "/coming-soon",
   },
   {
     name: "Reviews",
+    link: "/coming-soon",
   },
 ];
 
 export const footercompanyLinks = [
   {
     name: "Game & Video",
+    link: "/coming-soon",
   },
   {
     name: "Phone &Tablets",
+    link: "/products",
   },
   {
     name: "Computers & Laptop",
+    link: "/products",
   },
   {
     name: "Sport Watches",
+    link: "/products",
   },
   {
     name: "Events",
+    link: "/events",
   },
 ];
 // conditions data
@@ -661,9 +669,11 @@ export const footerSupportLinks = [
   },
   {
     name: "Reviews",
+    link: "/coming-soon",
   },
   {
     name: "Shipping",
+    link: "/coming-soon",
   },
   {
     name: "Live chat",
