@@ -3,15 +3,15 @@ const mongoose = require("mongoose");
 const sizeSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+    required: false,
   },
   price: {
     type: Number,
-    required: true,
+    required: false,
   },
   stock: {
     type: Number,
-    required: true,
+    required: false,
   },
 });
 
