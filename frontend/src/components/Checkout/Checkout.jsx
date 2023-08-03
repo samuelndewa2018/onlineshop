@@ -239,7 +239,7 @@ const ShippingInfo = ({
           <div className="w-[50%]">
             <label className="block pb-2 font-[500]">Country</label>
             <select
-              className="w-[95%] border h-10 rounded-md"
+              className="w-[95%] border h-10 rounded-md px-4 py-2 bg-white text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               value={"Kenya"}
               onChange={(e) => setCountry(e.target.value)}
             >
@@ -250,7 +250,7 @@ const ShippingInfo = ({
             <label className="block pb-2 font-bold">County</label>
             <select
               name="county"
-              className="w-[95%] border h-[40px] rounded-[5px]"
+              className="w-[95%] border h-10 rounded-md px-4 py-2 bg-white text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               onChange={(e) => setCity(e.target.value)}
               value={city}
             >
