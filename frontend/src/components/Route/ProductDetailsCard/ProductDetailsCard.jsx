@@ -39,7 +39,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
   };
 
   const incrementCount = () => {
-    if (data.sizes.length !== 0 && selectedSize === "") {
+    if (data.sizes.length > 1 && selectedSize === "") {
       toast.info("select size first");
     } else {
       setCount(count + 1);
@@ -53,7 +53,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
     } else {
       if (data.stock < 1) {
         toast.error("Product stock limited!");
-      } else if (data.sizes.length !== 0 && selectedSize === "") {
+      } else if (data.sizes.length > 1 && selectedSize === "") {
         toast.error("Please select the size!");
       } else {
         const cartData = {
@@ -189,12 +189,12 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                   </h3>
                 </div>
                 {/* Display Sizes */}
-                {data.sizes && data.sizes.length > 0 && (
+                {data.sizes && data.sizes.length > 1 && (
                   <div className="block mt-3 items-center">
                     <span className="mr-3">Size:</span>
                     <div className="flex flex-wrap gap-2">
                       {data.sizes &&
-                        data.sizes.length > 0 &&
+                        data.sizes.length > 1 &&
                         data.sizes.map((size, index) => (
                           <button
                             key={index}
