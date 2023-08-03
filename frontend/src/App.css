@@ -387,6 +387,21 @@ input[type="number"] {
   transform: translateY(-27px);
 }
 
+.navigation ul li a .text {
+  position: absolute;
+  color: var(--clr);
+  font-weight: 400;
+  font-size: 0.75em;
+  letter-spacing: 0.05em;
+  transition: 0.5s;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.navigation ul li.active a .text {
+  opacity: 1;
+  transform: translateY(11px);
+}
+
 /* loader styling */
 :root {
   --hue: 223;
@@ -531,4 +546,93 @@ input[type="number"] {
   50% {
     stroke-dashoffset: 40.84;
   }
+}
+
+/* ?social media icons */
+.icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #fff;
+  background-color: #ff3f34;
+  transition: background-color 0.2s;
+  margin: 5px; /* Add some margin for spacing between icons */
+}
+
+.icon:hover {
+  background-color: #e23d32;
+  outline-offset: 4px;
+}
+
+.icon:hover i {
+  animation: shake 0.25s;
+}
+
+@keyframes shake {
+  10% {
+    transform: rotate(15deg);
+  }
+  20% {
+    transform: rotate(-15deg);
+  }
+  30% {
+    transform: rotate(15deg);
+  }
+  40% {
+    transform: rotate(-15deg);
+  }
+}
+
+.icon i {
+  font-size: 15px; /* Minimized size */
+  margin: 0; /* Removed auto margin to center icon vertically */
+}
+
+.facebook-icon {
+  background-color: #3b5998;
+}
+
+.twitter-icon {
+  background-color: #1da1f2;
+}
+
+.instagram-icon {
+  background: linear-gradient(
+    45deg,
+    #feda75,
+    #f58529,
+    #dd2a7b,
+    #8134af,
+    #515bd4
+  );
+  color: #fff;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; /* Safari compatibility */
+}
+
+/* Fallback background color if background-clip is not supported */
+.instagram-icon::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #feda75;
+}
+
+.youtube-icon {
+  background-color: #ff0000;
+}
+
+.whatsapp-icon {
+  background-color: #25d366;
 }

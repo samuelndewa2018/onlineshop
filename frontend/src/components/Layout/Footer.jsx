@@ -6,6 +6,8 @@ import {
   AiOutlineTwitter,
   AiOutlineWhatsApp,
 } from "react-icons/ai";
+import { BsFacebook } from "react-icons/bs";
+
 import { Link } from "react-router-dom";
 import {
   footercompanyLinks,
@@ -101,28 +103,33 @@ const Footer = () => {
           <br />
           <p>The home and elements needed to create beautiful products.</p>
           <div className="flex items-center mt-[15px]">
-            <AiFillFacebook size={25} className="cursor-pointer" />
+            <BsFacebook
+              size={20}
+              style={{ marginRight: "10px", cursor: "pointer" }}
+              className="icon facebook-icon"
+            />
             <AiOutlineTwitter
-              size={25}
-              style={{ marginLeft: "15px", cursor: "pointer" }}
+              size={20}
+              style={{ marginRight: "10px", cursor: "pointer" }}
+              className="icon twitter-icon"
             />
             <AiFillInstagram
-              size={25}
-              style={{ marginLeft: "15px", cursor: "pointer" }}
+              size={20}
+              style={{ marginRight: "10px", cursor: "pointer" }}
+              className="icon instagram-icon"
             />
             <AiFillYoutube
-              size={25}
-              style={{ marginLeft: "15px", cursor: "pointer" }}
+              size={20}
+              style={{ marginRight: "10px", cursor: "pointer" }}
+              className="icon youtube-icon"
             />
             <a
-              href="https://api.whatsapp.com/send?phone=254712012113"
+              href="https://api.whatsapp.com/send?phone=254741895028&text=Hey%20NinetyOne,%20what%20do%20I%20add"
               target="_blank"
               rel="noopener noreferrer"
+              className="icon whatsapp-icon"
             >
-              <AiOutlineWhatsApp
-                size={25}
-                style={{ marginLeft: "15px", cursor: "pointer" }}
-              />
+              <AiOutlineWhatsApp size={20} />
             </a>
           </div>
         </ul>
