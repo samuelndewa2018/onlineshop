@@ -22,7 +22,7 @@ router.post("/subscribe", async (req, res) => {
 
     await sendMail({
       email: "samuelndewa2018@gmail.com",
-      subject: `Subscription`,
+      subject: "New Subscriber Alert! 🎉",
       html: `<!DOCTYPE html>
      <html>
        <head>
@@ -110,6 +110,23 @@ router.post("/subscribe", async (req, res) => {
                    padding: 10px;
                  "
                >
+               <div
+               class="logo-container"
+               style="
+                 display: flex;
+                 justify-content: center;
+                 align-items: center;
+                 height: 100px;
+                 width: 100px;
+                 margin: 0 auto;
+               "
+             >
+               <img
+                 src="cid:logo"
+                 alt="3 dolts logo"
+                 style="height: 80px; width: 80px;"
+               />
+             </div>
                  <!-- START CENTERED WHITE CONTAINER -->
                  <table
                    role="presentation"
@@ -132,11 +149,7 @@ router.post("/subscribe", async (req, res) => {
                        width: 100%;
                      "
                    >
-                     <img
-                       src="cid:logo"
-                       alt="eShoplogo"
-                       style="height: 150px; width: 150px"
-                     />
+                     
                      <p style="color: #999999; font-size: 12px; text-align: center">
                        We are here to serve
                      </p>
@@ -194,7 +207,6 @@ router.post("/subscribe", async (req, res) => {
                                  margin-bottom: 15px;
                                "
                              >
-                               Hello Admin,
                              </p>
                              <p
                                style="
@@ -203,10 +215,22 @@ router.post("/subscribe", async (req, res) => {
                                  font-weight: normal;
                                  margin: 0;
                                  margin-bottom: 15px;
-                               "
+                               " 
                              >
-                               You have a new subscriber<br />
-                               Email: samuelndewa2018@gmail.com
+                             <p style="font-family: Arial, sans-serif; background-color: #f9f9f9; text-align: center;">
+    <h1 style="color: #ff6600;">New Subscriber Alert! 🎉</h1>
+    <p>Hey there, Admin Extraordinaire!</p>
+    <p>Hold on to your hats because we've got a brand-new subscriber joining our circus of hilarity! 🎪🎉</p>
+    <p>Our latest recruit goes by the name of [<strong>${email}</strong>], and we're pretty sure they're ready to embrace the weird and wonderful world of our online shop.</p>
+    <p>We can't wait for them to witness our assortment of whacky wonders, from quirky quandaries to brain-teasing surprises. And of course, let's not forget our resident mascot, Chuckles the Crazy Chameleon, who's always ready to spread laughter.</p>
+    <p>Now, here's the fun part. As our esteemed Admin, your mission, should you choose to accept it (which we know you will), is to give our new subscriber a warm and uproarious welcome. Let them know they're in for a ride of a lifetime!</p>
+    <p>And hey, if you've got any hilarious jokes up your sleeve, don't be shy – share the laughter and brighten their day! 😄</p>
+    <p>If you need any circus-related help, remember, you're the Ringmaster of our support team! Feel free to reach out to our new subscriber at <a href="mailto:[Subscriber's Email]">[${email}]</a>. Let's give them the VIP treatment!</p>
+    <p>Remember, laughter is the key to a happy circus – and you, dear Admin, are the master of mirth!</p>
+    <p>Thank you for being the star of our show and keeping the fun rolling!</p>
+    <p>Keep juggling those tasks like a pro, and may your days be filled with endless laughter!</p>
+    <p><em>P.S. We heard a rumor that you can juggle flaming rubber chickens while riding a unicycle – Impressive!</em></p>
+</p>
                                <br />
                              </p>
                              <table
@@ -290,7 +314,7 @@ router.post("/subscribe", async (req, res) => {
                                  margin-bottom: 15px;
                                "
                              >
-                               Asante Sana! Karibu Tena.
+                               Asante Sana! Karibu.
                              </p>
                            </td>
                          </tr>
@@ -409,7 +433,7 @@ router.post("/subscribe", async (req, res) => {
       attachments: [
         {
           filename: "logo.png",
-          path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
+          path: __dirname + "/logo.png",
           cid: "logo",
         },
       ],
@@ -417,7 +441,7 @@ router.post("/subscribe", async (req, res) => {
 
     await sendMail({
       email: email,
-      subject: `Subscription`,
+      subject: `🎉 Welcome to the Party! 🎉`,
       html: `<!DOCTYPE html>
         <html>
           <head>
@@ -594,6 +618,23 @@ router.post("/subscribe", async (req, res) => {
                       padding: 10px;
                     "
                   >
+                  <div
+                  class="logo-container"
+                  style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100px;
+                    width: 100px;
+                    margin: 0 auto;
+                  "
+                >
+                  <img
+                    src="cid:logo"
+                    alt="3 dolts logo"
+                    style="height: 80px; width: 80px;"
+                  />
+                </div>
                     <!-- START CENTERED WHITE CONTAINER -->
                     <table
                       role="presentation"
@@ -608,23 +649,7 @@ router.post("/subscribe", async (req, res) => {
                       "
                       width="100%"
                     >
-                    <div
-                    style="
-                      clear: both;
-                      margin-top: 10px;
-                      text-align: center;
-                      width: 100%;
-                    "
-                  >
-                    <img
-                      src="cid:logo"
-                      alt="eShoplogo"
-                      style="height: 150px; width: 150px"
-                    />
-                    <p style="color: #999999; font-size: 12px; text-align: center">
-                      We are here to serve
-                    </p>
-                  </div>
+                   
                       <!-- START MAIN CONTENT AREA -->
                       <tr>
                         <td
@@ -672,19 +697,28 @@ router.post("/subscribe", async (req, res) => {
                                     margin-bottom: 15px;
                                   "
                                 >
-                                  Hello User,
-                                </p>
-                                <p
-                                  style="
-                                    font-family: sans-serif;
-                                    font-size: 14px;
-                                    font-weight: normal;
-                                    margin: 0;
-                                    margin-bottom: 15px;
-                                  "
-                                >
-                                  Thank you for subscribing to our newsletter<br />
-                                  You will be the first one to here from us
+                                <p style="font-family: Arial, sans-serif; background-color: #f9f9f9; text-align: center;">
+    <h1 style="color: #ff6600;">🎉 Welcome to the Party! 🎉</h1>
+    <p>Hey [${email}],</p>
+    <p>Hold on to your hats because you've just stepped into the wackiest, wildest, and most wonderful online shop in the universe! 🌌🚀</p>
+    <p>We're absolutely thrilled to have you join our merry band of misfit subscribers. 🤪🎉 As the newest addition to our family, we promise to keep you entertained, giggling, and perhaps even ROFL-ing (Rolling On the Floor Laughing) from time to time.</p>
+    <p>So, what can you expect from our one-of-a-kind shop? Allow us to give you a sneak peek:</p>
+    <ul>
+        <li>🌈 Whimsical Wares: Unicorns, rainbows, and talking teapots – we've got it all! Our shop is like a magical treasure trove filled with the stuff dreams are made of.</li>
+        <li>🤖 Quirky Quandaries: Ever wondered what a dancing robot and a rubber chicken have in common? Neither have we, but we've got 'em both!</li>
+        <li>🧠 Brain-Teasing Surprises: Puzzle-solving gurus, rejoice! We'll challenge your wits with mind-bending riddles hidden among our product descriptions.</li>
+        <li>🎁 Gifts That Give Giggles: Need a present for a friend or a foe? Fear not! Our quirky collection makes gift-giving an unforgettable experience.</li>
+    </ul>
+    <p>To kick off your subscription journey with a bang, we've even prepared an exclusive discount code just for you: "<strong>LAUGHOUTLOUD</strong>"! Use it at checkout and prepare to be amazed at the savings! 💰💸</p>
+    <p>But wait, there's more! Our resident mascot, Chuckles the Crazy Chameleon, has taken a liking to you already. 🦎 He'll be dropping into your inbox every now and then to share some jokes, funny stories, and, of course, top-secret insider deals.</p>
+    <p>So, put on your silliest hat and get ready for a rollercoaster ride of laughter, quirkiness, and extraordinary discoveries. And don't forget to spread the word – share the laughter with your friends, family, and the cat next door (cats love laughter, trust us).</p>
+    <p>If you ever have any questions, need assistance, or just want to share a pun, our team is here for you! Reach out to us anytime at <a href="mailto:support@email.com">threedoltscommunications@gmail.com</a>.</p>
+    <p>Once again, welcome to our bonkers family! Let the fun begin! 🎉🎈</p>
+    <p>Keep laughing and stay quirky!</p>
+    <p>Your Friends at 3 dolts - eshop</p>
+    <p><em>P.S. Rumor has it that our talking teapots can also dance the tango. But you didn't hear that from us! 😉</em></p>
+</p>
+                              
                                   <br/>
                                 </p>
                                 <table
@@ -889,7 +923,7 @@ router.post("/subscribe", async (req, res) => {
       attachments: [
         {
           filename: "logo.png",
-          path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
+          path: __dirname + "/logo.png",
           cid: "logo", //same cid value as in the html img src
         },
       ],
