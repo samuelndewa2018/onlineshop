@@ -73,6 +73,10 @@ const ProductDetails = ({ data, isEvent }) => {
       setCount(count - 1);
     }
   };
+  useEffect(() => {
+    // Whenever selectedSize changes, reset the count to 1
+    setCount(1);
+  }, [selectedSize]);
 
   const removeFromWishlistHandler = (data) => {
     setClick(!click);
