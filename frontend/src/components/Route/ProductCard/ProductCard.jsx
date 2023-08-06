@@ -86,8 +86,9 @@ const ProductCard = ({ data, isEvent }) => {
   };
 
   const addToCartHandler = (id) => {
-    if (data.sizes.length !== 0) {
+    if (data.sizes.length > 1) {
       navigate(`/product/${id}`);
+      toast.info("Select size first.");
     } else {
       const isItemExists = cart && cart.find((i) => i._id === id);
       if (isItemExists) {

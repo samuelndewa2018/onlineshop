@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { RxCross1 } from "react-icons/rx";
 import { BsCartPlus } from "react-icons/bs";
 import styles from "../../styles/styles";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineHeart } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { removeFromWishlist } from "../../redux/actions/wishlist";
@@ -15,6 +15,7 @@ import { AiFillDelete } from "react-icons/ai";
 const Wishlist = ({ setOpenWishlist }) => {
   const { wishlist } = useSelector((state) => state.wishlist);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const removeFromWishlistHandler = (data) => {
     dispatch(removeFromWishlist(data));
@@ -32,10 +33,15 @@ const Wishlist = ({ setOpenWishlist }) => {
     }
   };
   const addToCartHandler = (data) => {
-    const newData = { ...data, qty: 1 };
-    dispatch(addTocart(newData));
-    dispatch(removeFromWishlist(data));
-    toast.success("Item added to cart");
+    if (data.sizes.length > 1) {
+      navigate(`/product/${data._id}`);
+      toast.info("Select size first.");
+    } else {
+      const newData = { ...data, qty: 1 };
+      dispatch(addTocart(newData));
+      dispatch(removeFromWishlist(data));
+      toast.success("Item added to cart");
+    }
   };
 
   return (
