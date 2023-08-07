@@ -13,7 +13,15 @@ router.post(
   "/create-order",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { cart, shippingAddress, user, totalPrice, paymentInfo } = req.body;
+      const {
+        cart,
+        shippingAddress,
+        user,
+        totalPrice,
+        paymentInfo,
+        shippingPrice,
+        discount,
+      } = req.body;
 
       const shopItemsMap = new Map();
 
@@ -44,6 +52,8 @@ router.post(
           user,
           totalPrice,
           paymentInfo,
+          shippingPrice,
+          discount,
         });
 
         const subTotals = order?.cart.reduce(
@@ -364,9 +374,7 @@ router.post(
                                       </tr> 
                                       <tr>
                                         <td colspan="2">Shipping Price:</td>
-                                        <td align="right">Ksh. ${Math.round(
-                                          subTotals * 0.1
-                                        )
+                                        <td align="right">Ksh. ${order?.shippingPrice
                                           .toString()
                                           .replace(
                                             /\B(?=(\d{3})+(?!\d))/g,
@@ -375,11 +383,7 @@ router.post(
                                       </tr>
                                       <tr>
                                         <td colspan="2">Discount: </td>
-                                        <td align="right">Ksh. ${Math.round(
-                                          order?.totalPrice -
-                                            Math.round(subTotals * 0.1) -
-                                            subTotals
-                                        )
+                                        <td align="right">Ksh. ${order?.discount
                                           .toString()
                                           .replace(
                                             /\B(?=(\d{3})+(?!\d))/g,
@@ -421,6 +425,7 @@ router.post(
                                   <p>
                                     ${shippingAddress.address1},<br />
                                     ${shippingAddress.address2},<br />
+                                    ${shippingAddress.zipCode},<br />
                                     ${shippingAddress.city},<br />
                                     ${shippingAddress.country}<br />
                                   </p>
@@ -845,9 +850,7 @@ router.post(
                                       </tr> 
                                       <tr>
                                         <td colspan="2">Shipping Price:</td>
-                                        <td align="right">Ksh. ${Math.round(
-                                          subTotals * 0.1
-                                        )
+                                        <td align="right">Ksh. ${(order?.shippingPrice)
                                           .toString()
                                           .replace(
                                             /\B(?=(\d{3})+(?!\d))/g,
@@ -856,11 +859,7 @@ router.post(
                                       </tr>
                                       <tr>
                                         <td colspan="2">Discount: </td>
-                                        <td align="right">Ksh. ${Math.round(
-                                          order?.totalPrice -
-                                            Math.round(subTotals * 0.1) -
-                                            subTotals
-                                        )
+                                        <td align="right">Ksh. ${order.discount
                                           .toString()
                                           .replace(
                                             /\B(?=(\d{3})+(?!\d))/g,
@@ -902,6 +901,7 @@ router.post(
                                   <p>
                                     ${shippingAddress.address1},<br />
                                     ${shippingAddress.address2},<br />
+                                    ${shippingAddress.zipCode},<br />
                                     ${shippingAddress.city},<br />
                                     ${shippingAddress.country}<br />
                                   </p>

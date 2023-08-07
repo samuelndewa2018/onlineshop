@@ -317,9 +317,7 @@ const UserOrderDetails = () => {
                       />
                     </p>
                   </div>
-                  {Math.round(
-                    data?.totalPrice - Math.round(subTotals * 0.1) - subTotals
-                  ) > 0 && (
+                  {data?.discount && (
                     <div className="flex justify-between items-center w-full">
                       <p className="text-base dark:text-white leading-4 text-gray-800">
                         Discount{" "}
@@ -329,11 +327,7 @@ const UserOrderDetails = () => {
                       </p>
                       <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
                         <NumericFormat
-                          value={Math.round(
-                            data?.totalPrice -
-                              Math.round(subTotals * 0.1) -
-                              subTotals
-                          )}
+                          value={data.discount}
                           displayType={"text"}
                           thousandSeparator={true}
                           prefix={"Ksh. "}
@@ -348,7 +342,7 @@ const UserOrderDetails = () => {
                     </p>
                     <p className="text-base dark:text-gray-300 leading-4 text-gray-600">
                       <NumericFormat
-                        value={Math.round(subTotals * 0.1)}
+                        value={data?.shippingPrice}
                         displayType={"text"}
                         thousandSeparator={true}
                         prefix={"Ksh. "}
@@ -391,7 +385,7 @@ const UserOrderDetails = () => {
                   </div>
                   <p className="text-lg font-semibold leading-6 dark:text-white text-gray-800">
                     <NumericFormat
-                      value={Math.round(subTotals * 0.1)}
+                      value={data?.shippingPrice}
                       displayType={"text"}
                       thousandSeparator={true}
                       prefix={"Ksh. "}
@@ -468,7 +462,7 @@ const UserOrderDetails = () => {
                     <p className="w-48 mt-5 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">
                       {data?.user.phoneNumber}
                     </p>
-                    <p className="w-48 mt-5 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">
+                    <p className="w-48 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">
                       {data?.shippingAddress.address1}
                     </p>
                     <p className="w-48 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">
@@ -479,6 +473,9 @@ const UserOrderDetails = () => {
                     </p>
                     <p className="w-48 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">
                       {data?.shippingAddress.city}
+                    </p>
+                    <p className="w-48 lg:w-full dark:text-gray-300 xl:w-48 text-center md:text-left text-sm leading-5 text-gray-600">
+                      {data?.shippingAddress.zipCode}
                     </p>
                   </div>
                   <div className="flex justify-center md:justify-start items-center md:items-start flex-col space-y-4">
