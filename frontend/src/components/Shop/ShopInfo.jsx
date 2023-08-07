@@ -1,11 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { server } from "../../server";
 import styles from "../../styles/styles";
 import Loader from "../Layout/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProductsShop } from "../../redux/actions/product";
+import { AiOutlineMessage } from "react-icons/ai";
+import { toast } from "react-toastify";
 
 const ShopInfo = ({ isOwner }) => {
   const [data, setData] = useState({});
@@ -13,6 +15,7 @@ const ShopInfo = ({ isOwner }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(getAllProductsShop(id));
@@ -28,6 +31,28 @@ const ShopInfo = ({ isOwner }) => {
         setIsLoading(false);
       });
   }, []);
+
+  const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const groupTitle = data._id + user._id;
+      const userId = user._id;
+      const sellerId = data._id;
+      await axios
+        .post(`${server}/conversation/create-new-conversation`, {
+          groupTitle,
+          userId,
+          sellerId,
+        })
+        .then((res) => {
+          navigate(`/inbox?${res.data.conversation._id}`);
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
+    } else {
+      toast.error("Please login to create a conversation");
+    }
+  };
 
   const logoutHandler = async () => {
     axios.get(`${server}/shop/logout`, {
@@ -71,18 +96,6 @@ const ShopInfo = ({ isOwner }) => {
             </p>
           </div>
           <div className="p-3">
-            <h5 className="font-[600]">InstaShop Link</h5>
-            <a
-              href={`https://www.instagram.com/${data.instaShop}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="insta-link"
-            >
-              <h4 className="text-[#000000a6]">{data.instaShop}</h4>
-            </a>
-          </div>
-
-          <div className="p-3">
             <h5 className="font-[600]">Total Products</h5>
             <h4 className="text-[#000000a6]">{products && products.length}</h4>
           </div>
@@ -95,6 +108,14 @@ const ShopInfo = ({ isOwner }) => {
             <h4 className="text-[#000000b0]">
               {data?.createdAt?.slice(0, 10)}
             </h4>
+          </div>
+          <div
+            className={`${styles.button} bg-[#6443d1] mt-4 ml-3 !rounded !h-11`}
+            onClick={handleMessageSubmit}
+          >
+            <span className="text-white flex items-center">
+              Send Message <AiOutlineMessage className="ml-1" />
+            </span>
           </div>
           {isOwner && (
             <div className="py-3 px-4">
