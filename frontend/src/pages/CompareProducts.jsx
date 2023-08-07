@@ -8,6 +8,7 @@ import Meta from "../components/Meta";
 import Loader from "../components/Layout/Loader";
 import styles from "../styles/styles";
 import { Link } from "react-router-dom";
+import SuggestedProduct from "../components/Products/SuggestedProduct";
 
 const CompareProducts = () => {
   const { compare, isLoading } = useSelector((state) => state.compare);
@@ -49,6 +50,8 @@ const CompareProducts = () => {
               </>
             ) : null}
           </div>
+          <SuggestedProduct data={compare?.[0]} />
+
           <Footer />
         </div>
       )}

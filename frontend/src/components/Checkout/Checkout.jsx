@@ -27,6 +27,11 @@ const Checkout = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  useEffect(() => {
+    if (city !== "Self Pickup") {
+      setZipCode("");
+    }
+  }, [city]);
 
   // shipping addresses
   const handleDeliveryOptionChange = (option) => {
@@ -223,12 +228,15 @@ const Checkout = () => {
       case "Self Pickup":
         setShippingPrice(0);
         setCity("Self Pickup");
+        setZipCode("Nairobi");
         break;
       case "Pick up mtaani":
         setShippingPrice(150);
         break;
       default:
-        setShippingPrice(0);
+        setShippingPrice(100);
+        setCity("");
+        setZipCode("");
         break;
     }
   };
@@ -516,7 +524,7 @@ const ShippingInfo = ({
         {city === "Nairobi" && (
           <div className="w-full block lg:flex pb-3 gap-3">
             <div className="w-full lg:w-[50%]">
-              <label className="block pb-2 font-[500]">Address1</label>
+              <label className="block pb-2 font-[500]">Address</label>
               <input
                 type="address"
                 required
@@ -526,7 +534,9 @@ const ShippingInfo = ({
               />
             </div>
             <div className="w-full lg:w-[50%]">
-              <label className="block pb-2 font-[500]">Address2</label>
+              <label className="block pb-2 font-[500]">
+                Other Delivery Information(optional)
+              </label>
               <input
                 type="address"
                 value={address2}
@@ -534,6 +544,21 @@ const ShippingInfo = ({
                 required
                 className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
               />
+            </div>
+          </div>
+        )}
+        {city === "Self Pickup" && (
+          <div class="bg-transparent border rounded-lg  mb-5 overflow-hidden">
+            <h5 class="card-header bg-slate-100 text-black text-xl font-bold px-4 py-2">
+              PickUp Address
+            </h5>
+            <div class="card-body px-4 py-2">
+              <p class="card-text mb-4">
+                Rasumal house shop 3F , 17 ,on third floor. <br /> It's opposite
+                imenti house on Tom mboya street . <br />
+                It's also the same building that hosts Heltz driving
+                school,(next to Dominion expo center. )
+              </p>
             </div>
           </div>
         )}
