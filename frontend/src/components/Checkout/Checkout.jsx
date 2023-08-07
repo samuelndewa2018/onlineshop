@@ -16,21 +16,228 @@ const Checkout = () => {
   const [userInfo, setUserInfo] = useState(false);
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
-  const [zipCode, setZipCode] = useState(null);
+  const [zipCode, setZipCode] = useState("");
   const [couponCode, setCouponCode] = useState("");
   const [couponCodeData, setCouponCodeData] = useState(null);
   const [discountPrice, setDiscountPrice] = useState(null);
+  const [deliveryOption, setDeliveryOption] = useState("");
+  const [shippingPrice, setShippingPrice] = useState(100);
   const navigate = useNavigate();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  // shipping addresses
+  const handleDeliveryOptionChange = (option) => {
+    switch (option) {
+      case "Nairobi":
+        setShippingPrice(100);
+        setCity("Nairobi");
+        setDeliveryOption("Nairobi");
+        break;
+      case "Mombasa":
+        setShippingPrice(250);
+        setCity("Mombasa");
+        break;
+      case "Kwale":
+        setShippingPrice(250);
+        setCity("Kwale");
+        break;
+      case "Kilifi":
+        setShippingPrice(250);
+        setCity("Kilifi");
+        break;
+      case "Tana River":
+        setShippingPrice(250);
+        setCity("Tana River");
+        break;
+      case "Lamu":
+        setShippingPrice(250);
+        setCity("Lamu");
+        break;
+      case "Taita Taveta":
+        setShippingPrice(250);
+        setCity("Taita Taveta");
+        break;
+      case "Garissa":
+        setShippingPrice(250);
+        setCity("Garissa");
+        break;
+      case "Wajir":
+        setShippingPrice(250);
+        setCity("Wajir");
+        break;
+      case "Mandera":
+        setShippingPrice(250);
+        setCity("Mandera");
+        break;
+      case "Marsabit":
+        setShippingPrice(250);
+        setCity("Marsabit");
+        break;
+      case "Isiolo":
+        setShippingPrice(250);
+        setCity("Isiolo");
+        break;
+      case "Meru":
+        setShippingPrice(250);
+        setCity("Meru");
+        break;
+      case "Tharaka-Nithi":
+        setShippingPrice(250);
+        setCity("Tharaka-Nithi");
+        break;
+      case "Embu":
+        setShippingPrice(250);
+        setCity("Embu");
+        break;
+      case "Kitui":
+        setShippingPrice(250);
+        setCity("Kitui");
+        break;
+      case "Machakos":
+        setShippingPrice(250);
+        setCity("Machakos");
+        break;
+      case "Makueni":
+        setShippingPrice(250);
+        setCity("Makueni");
+        break;
+      case "Nyandarua":
+        setShippingPrice(250);
+        setCity("Nyandarua");
+        break;
+      case "Nyeri":
+        setShippingPrice(250);
+        setCity("Nyeri");
+        break;
+      case "Kirinyaga":
+        setShippingPrice(250);
+        setCity("Kirinyaga");
+        break;
+      case "Murang'a":
+        setShippingPrice(250);
+        setCity("Murang'a");
+        break;
+      case "Kiambu":
+        setShippingPrice(250);
+        setCity("Kiambu");
+        break;
+      case "Turkana":
+        setShippingPrice(250);
+        setCity("Turkana");
+        break;
+      case "West Pokot":
+        setShippingPrice(250);
+        setCity("West Pokot");
+        break;
+      case "Samburu":
+        setShippingPrice(250);
+        setCity("Samburu");
+        break;
+      case "Trans-Nzoia":
+        setShippingPrice(250);
+        setCity("Trans-Nzoia");
+        break;
+      case "Uasin Gishu":
+        setShippingPrice(250);
+        setCity("Uasin Gishu");
+        break;
+      case "Elgeyo-Marakwe":
+        setShippingPrice(250);
+        setCity("Elgeyo-Marakwe");
+        break;
+      case "Nandi":
+        setShippingPrice(250);
+        setCity("Nandi");
+        break;
+      case "Baringo":
+        setShippingPrice(250);
+        setCity("Baringo");
+        break;
+      case "Laikipia":
+        setShippingPrice(250);
+        setCity("Laikipia");
+        break;
+      case "Nakuru":
+        setShippingPrice(250);
+        setCity("Nakuru");
+        break;
+      case "Narok":
+        setShippingPrice(250);
+        setCity("Narok");
+        break;
+      case "Kajiado":
+        setShippingPrice(250);
+        setCity("Kajiado");
+        break;
+      case "Kericho":
+        setShippingPrice(250);
+        setCity("Kericho");
+        break;
+      case "Bomet":
+        setShippingPrice(250);
+        setCity("Bomet");
+        break;
+      case "Kakamega":
+        setShippingPrice(250);
+        setCity("Kakamega");
+        break;
+      case "Vihiga":
+        setShippingPrice(250);
+        setCity("Vihiga");
+        break;
+      case "Bungoma":
+        setShippingPrice(250);
+        setCity("Bungoma");
+        break;
+      case "Busia":
+        setShippingPrice(250);
+        setCity("Busia");
+        break;
+      case "Siaya":
+        setShippingPrice(250);
+        setCity("Siaya");
+        break;
+      case "Kisumu":
+        setShippingPrice(250);
+        setCity("Kisumu");
+        break;
+      case "Homa Bay":
+        setShippingPrice(250);
+        setCity("Homa Bay");
+        break;
+      case "Migori":
+        setShippingPrice(250);
+        setCity("Migori");
+        break;
+      case "Kisii":
+        setShippingPrice(250);
+        setCity("Kisii");
+        break;
+      case "Nyamira":
+        setShippingPrice(250);
+        setCity("Nyamira");
+        break;
+      case "Self Pickup":
+        setShippingPrice(0);
+        setCity("Self Pickup");
+        break;
+      case "Pick up mtaani":
+        setShippingPrice(150);
+        break;
+      default:
+        setShippingPrice(0);
+        break;
+    }
+  };
+
   const paymentSubmit = () => {
     if (
-      address1 === "" ||
-      address2 === "" ||
-      zipCode === null ||
+      // address1 === "" ||
+      // address2 === "" ||
+      zipCode === "" ||
       country === "" ||
       city === ""
     ) {
@@ -48,7 +255,7 @@ const Checkout = () => {
         cart,
         totalPrice,
         subTotalPrice,
-        shipping,
+        shippingPrice,
         discountPrice,
         shippingAddress,
         user,
@@ -64,10 +271,6 @@ const Checkout = () => {
     (acc, item) => acc + item.qty * item.discountPrice,
     0
   );
-
-  // this is shipping cost variable
-  const shipping = subTotalPrice * 0.1;
-  // const shipping = subTotalPrice >= 5000 ? 0 : 250;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -106,8 +309,8 @@ const Checkout = () => {
   const discountPercentenge = couponCodeData ? discountPrice : "";
 
   const totalPrice = couponCodeData
-    ? (subTotalPrice + shipping - discountPercentenge).toFixed(2)
-    : (subTotalPrice + shipping).toFixed(2);
+    ? (subTotalPrice + shippingPrice - discountPercentenge).toFixed(2)
+    : (subTotalPrice + shippingPrice).toFixed(2);
 
   return (
     <div className="w-full flex flex-col items-center py-8">
@@ -127,17 +330,18 @@ const Checkout = () => {
             setAddress2={setAddress2}
             zipCode={zipCode}
             setZipCode={setZipCode}
+            handleDeliveryOptionChange={handleDeliveryOptionChange}
           />
         </div>
         <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
           <CartData
             handleSubmit={handleSubmit}
             totalPrice={totalPrice}
-            shipping={shipping}
             subTotalPrice={subTotalPrice}
             couponCode={couponCode}
             setCouponCode={setCouponCode}
             discountPercentenge={discountPercentenge}
+            shipping={shippingPrice}
           />
         </div>
       </div>
@@ -165,6 +369,8 @@ const ShippingInfo = ({
   setAddress2,
   zipCode,
   setZipCode,
+  deliveryOption,
+  handleDeliveryOptionChange,
 }) => {
   const email = user?.email;
   const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber);
@@ -224,19 +430,6 @@ const ShippingInfo = ({
             />
           </div>
           <div className="w-[50%]">
-            <label className="block pb-2 font-[500]">Zip Code</label>
-            <input
-              type="number"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
-              required
-              className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-        </div>
-
-        <div className="w-full flex pb-3">
-          <div className="w-[50%]">
             <label className="block pb-2 font-[500]">Country</label>
             <select
               className="w-[95%] border h-10 rounded-md px-4 py-2 bg-white text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -246,12 +439,14 @@ const ShippingInfo = ({
               <option value="Kenya">Kenya</option>
             </select>
           </div>
+        </div>
+        <div className="w-full flex pb-3">
           <div className="w-[50%]">
             <label className="block pb-2 font-bold">County</label>
             <select
               name="county"
               className="w-[95%] border h-10 rounded-md px-4 py-2 bg-white text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              onChange={(e) => setCity(e.target.value)}
+              onChange={(e) => handleDeliveryOptionChange(e.target.value)}
               value={city}
             >
               <option value="" selected disabled>
@@ -304,32 +499,44 @@ const ShippingInfo = ({
               <option value="Migori">Migori</option>
               <option value="Kisii">Kisii</option>
               <option value="Nyamira">Nyamira</option>
+              <option value="Self Pickup">Self Pickup(Nairobi)</option>
             </select>
           </div>
-        </div>
-
-        <div className="w-full block lg:flex pb-3 gap-3">
-          <div className="w-full lg:w-[50%]">
-            <label className="block pb-2 font-[500]">Address1</label>
+          <div className="w-[50%]">
+            <label className="block pb-2 font-[500]">Town/City</label>
             <input
-              type="address"
+              type="text"
+              value={zipCode}
+              onChange={(e) => setZipCode(e.target.value)}
               required
-              value={address1}
-              onChange={(e) => setAddress1(e.target.value)}
-              className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-          <div className="w-full lg:w-[50%]">
-            <label className="block pb-2 font-[500]">Address2</label>
-            <input
-              type="address"
-              value={address2}
-              onChange={(e) => setAddress2(e.target.value)}
-              required
-              className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="w-[95%] border h-10 rounded-md px-4 py-2 bg-white text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
         </div>
+        {city === "Nairobi" && (
+          <div className="w-full block lg:flex pb-3 gap-3">
+            <div className="w-full lg:w-[50%]">
+              <label className="block pb-2 font-[500]">Address1</label>
+              <input
+                type="address"
+                required
+                value={address1}
+                onChange={(e) => setAddress1(e.target.value)}
+                className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
+            <div className="w-full lg:w-[50%]">
+              <label className="block pb-2 font-[500]">Address2</label>
+              <input
+                type="address"
+                value={address2}
+                onChange={(e) => setAddress2(e.target.value)}
+                required
+                className="w-full px-3 h-10 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              />
+            </div>
+          </div>
+        )}
 
         <div></div>
       </form>
