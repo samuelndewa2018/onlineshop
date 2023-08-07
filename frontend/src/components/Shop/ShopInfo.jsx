@@ -12,6 +12,7 @@ import { toast } from "react-toastify";
 const ShopInfo = ({ isOwner }) => {
   const [data, setData] = useState({});
   const { products } = useSelector((state) => state.products);
+  const { user, isAuthenticated } = useSelector((state) => state.user);
   const [isLoading, setIsLoading] = useState(false);
   const { id } = useParams();
   const dispatch = useDispatch();
