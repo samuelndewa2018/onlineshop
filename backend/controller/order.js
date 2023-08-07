@@ -374,21 +374,28 @@ router.post(
                                       </tr> 
                                       <tr>
                                         <td colspan="2">Shipping Price:</td>
-                                        <td align="right">Ksh. ${order?.shippingPrice
-                                          .toString()
-                                          .replace(
-                                            /\B(?=(\d{3})+(?!\d))/g,
-                                            ","
-                                          )}</td>
+                                        <td align="right">Ksh. ${
+                                          order?.shippingPrice &&
+                                          order?.shippingPrice
+                                            .toString()
+                                            .replace(
+                                              /\B(?=(\d{3})+(?!\d))/g,
+                                              ","
+                                            )
+                                        }</td>
                                       </tr>
                                       <tr>
                                         <td colspan="2">Discount: </td>
-                                        <td align="right">Ksh. ${order?.discount
-                                          .toString()
-                                          .replace(
-                                            /\B(?=(\d{3})+(?!\d))/g,
-                                            ","
-                                          )}</td>
+                                        <td align="right">Ksh. ${
+                                          order?.discount
+                                            ? order?.discount
+                                                .toString()
+                                                .replace(
+                                                  /\B(?=(\d{3})+(?!\d))/g,
+                                                  ","
+                                                )
+                                            : 0
+                                        }</td>
                                       </tr>
                                       <br/>
                                       <tr>
@@ -850,21 +857,28 @@ router.post(
                                       </tr> 
                                       <tr>
                                         <td colspan="2">Shipping Price:</td>
-                                        <td align="right">Ksh. ${(order?.shippingPrice)
-                                          .toString()
-                                          .replace(
-                                            /\B(?=(\d{3})+(?!\d))/g,
-                                            ","
-                                          )}</td>
+                                        <td align="right">Ksh. ${
+                                          order?.shippingPrice &&
+                                          order?.shippingPrice
+                                            .toString()
+                                            .replace(
+                                              /\B(?=(\d{3})+(?!\d))/g,
+                                              ","
+                                            )
+                                        }</td>
                                       </tr>
                                       <tr>
                                         <td colspan="2">Discount: </td>
-                                        <td align="right">Ksh. ${order.discount
-                                          .toString()
-                                          .replace(
-                                            /\B(?=(\d{3})+(?!\d))/g,
-                                            ","
-                                          )}</td>
+                                        <td align="right">Ksh. ${
+                                          order?.discount
+                                            ? order?.discount
+                                                .toString()
+                                                .replace(
+                                                  /\B(?=(\d{3})+(?!\d))/g,
+                                                  ","
+                                                )
+                                            : 0
+                                        }</td>
                                       </tr>
                                       <br/>
                                       <tr>
