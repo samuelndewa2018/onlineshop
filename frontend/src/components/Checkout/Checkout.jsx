@@ -521,7 +521,7 @@ const ShippingInfo = ({
             />
           </div>
         </div>
-        {city === "Nairobi" && (
+        {city !== "Self Pickup" && (
           <div className="w-full block lg:flex pb-3 gap-3">
             <div className="w-full lg:w-[50%]">
               <label className="block pb-2 font-[500]">Address</label>
