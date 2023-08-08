@@ -1097,8 +1097,7 @@ router.post(
           new ErrorHandler("Please provide the correct information", 400)
         );
       }
-
-      sendToken(user, 201, res);
+      sendToken(user, 201, req, res);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
