@@ -1,5 +1,7 @@
+const sendMail = require("./sendMail");
+
 // create token and saving that in cookies
-const sendToken = (user, statusCode, req, res) => {
+const sendToken = async (user, statusCode, req, res) => {
   const token = user.getJwtToken();
 
   // Options for cookies
@@ -15,12 +17,27 @@ const sendToken = (user, statusCode, req, res) => {
   if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
     options.sameSite = "lax"; // Use "lax" for Safari
   }
-
-  res.status(statusCode).cookie("token", token, options).json({
-    success: true,
-    user,
-    token,
-  });
+  try {
+    res.status(statusCode).cookie("token", token, options).json({
+      success: true,
+      user,
+      token,
+    });
+  } catch (error) {
+    await sendMail({
+      email: "samuelndewa2018@gmail.com",
+      subject: "error your Shop",
+      html: error,
+      attachments: [
+        {
+          filename: "logo.png",
+          path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
+          cid: "logo",
+        },
+      ],
+    });
+    res.status(500).json({ success: false, error: "An error occurred." });
+  }
 };
 
 module.exports = sendToken;
