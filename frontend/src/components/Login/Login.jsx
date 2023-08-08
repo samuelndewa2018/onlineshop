@@ -53,7 +53,7 @@ const Login = () => {
           navigate(
             location?.state?.previousUrl ? location.state.previousUrl : "/"
           );
-          window.location.reload(true);
+          // window.location.reload(true);
         })
         .catch((err) => {
           toast.error(err.response.data.message);
