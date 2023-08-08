@@ -12,6 +12,7 @@ app.use(
       "https://onlineshop-delta.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
+
     allowedHeaders: [
       "Content-Type",
       "Authorization",
@@ -20,6 +21,11 @@ app.use(
     credentials: true,
   })
 );
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something went wrong!");
+});
+app.options("*", cors());
 
 app.use(
   express.json({
