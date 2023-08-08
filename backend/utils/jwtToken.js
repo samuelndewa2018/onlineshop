@@ -10,6 +10,12 @@ const sendToken = (user, statusCode, res) => {
     secure: true,
   };
 
+  // Check if the user agent is Safari and adjust the sameSite option
+  const userAgent = req.get("User-Agent");
+  if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+    options.sameSite = "lax"; // Use "lax" for Safari
+  }
+
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
     user,
