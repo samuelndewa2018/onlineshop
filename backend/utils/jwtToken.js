@@ -9,6 +9,8 @@ const sendToken = (user, statusCode, res) => {
     sameSite: "none", //when backend and frontend are not on the same site
     secure: true,
   };
+  document.cookie =
+    "allowThirdPartyCookies=true; expires=Fri, 31 Dec 9999 23:59:59 GMT";
 
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
