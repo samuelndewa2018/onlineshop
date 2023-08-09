@@ -1097,7 +1097,7 @@ router.post(
           new ErrorHandler("Please provide the correct information", 400)
         );
       }
-      sendToken(user, 201, req, res);
+      sendToken(user, 201, res);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
@@ -1134,8 +1134,8 @@ router.get(
       res.cookie("token", null, {
         expires: new Date(Date.now()),
         httpOnly: true,
-        sameSite: "none",
-        secure: true,
+        SameSite: "none",
+        Secure: true,
       });
       res.status(201).json({
         success: true,
