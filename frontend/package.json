@@ -2,6 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://onlineshop-delta.vercel.app/api/v2",
   "dependencies": {
     "@material-tailwind/react": "^2.0.6",
     "@material-ui/core": "^4.12.4",
