@@ -34,35 +34,3 @@
 // };
 
 // export default Cookies;
-import React, { useState, useEffect } from "react";
-import Cookies from "js-cookie"; // You might need to install the 'js-cookie' package
-
-function CookiesConsent() {
-  const [cookiesAccepted, setCookiesAccepted] = useState(false);
-
-  useEffect(() => {
-    // Check if cookies are accepted from cookies
-    const areCookiesAccepted = Cookies.get("cookiesAccepted") === "true";
-    setCookiesAccepted(areCookiesAccepted);
-  }, []);
-
-  const handleAcceptCookies = () => {
-    // Set cookies as accepted using Cookies library
-    Cookies.set("cookiesAccepted", "true");
-    setCookiesAccepted(true);
-  };
-
-  return (
-    <div className="cookies-consent">
-      {!cookiesAccepted && (
-        <div className="cookies-message">
-          <p>This website uses cookies to improve your experience.</p>
-          <button onClick={handleAcceptCookies}>Accept Cookies</button>
-        </div>
-      )}
-      {/* Rest of your app */}
-    </div>
-  );
-}
-
-export default CookiesConsent;
