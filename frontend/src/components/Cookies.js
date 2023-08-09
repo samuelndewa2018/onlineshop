@@ -35,20 +35,20 @@
 
 // export default Cookies;
 import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie"; // You might need to install the 'js-cookie' package
 
 function Cookies() {
   const [cookiesAccepted, setCookiesAccepted] = useState(false);
 
   useEffect(() => {
-    // Check if cookies are accepted from localStorage or cookies
-    const areCookiesAccepted =
-      localStorage.getItem("cookiesAccepted") === "true";
+    // Check if cookies are accepted from cookies
+    const areCookiesAccepted = Cookies.get("cookiesAccepted") === "true";
     setCookiesAccepted(areCookiesAccepted);
   }, []);
 
   const handleAcceptCookies = () => {
-    // Set cookies as accepted in localStorage or cookies
-    localStorage.setItem("cookiesAccepted", "true");
+    // Set cookies as accepted using Cookies library
+    Cookies.set("cookiesAccepted", "true");
     setCookiesAccepted(true);
   };
 
