@@ -4,10 +4,10 @@ const sendToken = (user, statusCode, res) => {
 
   // Options for cookies
   const options = {
-    expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    expiresIn: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     httpOnly: true,
-    SameSite: "none", //when backend and frontend are not on the same site
-    Secure: true,
+    sameSite: "none", //when backend and frontend are not on the same site
+    secure: true,
   };
 
   res.status(statusCode).cookie("token", token, options).json({
