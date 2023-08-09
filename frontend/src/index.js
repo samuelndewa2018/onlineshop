@@ -8,7 +8,7 @@ import Store from "./redux/store";
 
 ReactDOM.render(
   <Provider store={Store}>
-    {/* <Cookies /> */}
+    <Cookies />
     <App />
   </Provider>,
   document.getElementById("root")

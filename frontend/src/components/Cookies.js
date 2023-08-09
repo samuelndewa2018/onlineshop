@@ -43,3 +43,36 @@
 // };
 
 // export default Cookies;
+import React, { useState } from "react";
+
+const Cookies = () => {
+  const [showPopup, setShowPopup] = useState(true);
+
+  const handleYesClick = () => {
+    // Set a cookie to indicate user's preference for third-party cookies
+    document.cookie =
+      "allowThirdPartyCookies=true; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+    setShowPopup(false);
+  };
+
+  const handleCloseClick = () => {
+    setShowPopup(false);
+  };
+
+  return (
+    <div className={`cookie-popup ${showPopup ? "show" : ""}`}>
+      <div className="cookie-content">
+        <p>
+          This website uses cookies to enhance your experience. Do you allow the
+          use of third-party cookies?
+        </p>
+        <div className="cookie-buttons">
+          <button onClick={handleYesClick}>Yes</button>
+          <button onClick={handleCloseClick}>No</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Cookies;
