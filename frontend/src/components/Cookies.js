@@ -37,7 +37,7 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie"; // You might need to install the 'js-cookie' package
 
-function Cookies() {
+function CookiesConsent() {
   const [cookiesAccepted, setCookiesAccepted] = useState(false);
 
   useEffect(() => {
@@ -65,4 +65,4 @@ function Cookies() {
   );
 }
 
-export default Cookies;
+export default CookiesConsent;
