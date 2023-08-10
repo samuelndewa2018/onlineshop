@@ -34,3 +34,48 @@
 // };
 
 // export default Cookies;
+import React, { useState, useEffect } from "react";
+
+function CookieCheckCard() {
+  const [cookiesAllowed, setCookiesAllowed] = useState(true);
+
+  useEffect(() => {
+    // Check if cookies are allowed
+    const areCookiesAllowed = navigator.cookieEnabled;
+    setCookiesAllowed(areCookiesAllowed);
+  }, []);
+
+  return (
+    <div>
+      {!cookiesAllowed && (
+        <div
+          style={{
+            backgroundColor: "lightgray",
+            padding: "10px",
+            position: "fixed",
+            bottom: 0,
+            width: "100%",
+            textAlign: "center",
+          }}
+        >
+          <p>
+            Cookies are not enabled in your browser. Please go to settings and
+            enable cookies to use this website properly.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <div>
+      <h1>Your Website</h1>
+      <p>Welcome to your website. Please enjoy your stay.</p>
+      <CookieCheckCard />
+    </div>
+  );
+}
+
+export default App;
