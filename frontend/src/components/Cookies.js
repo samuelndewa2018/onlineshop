@@ -37,7 +37,7 @@
 import React, { useState, useEffect } from "react";
 
 function CookieCheckCard() {
-  const [cookiesAllowed, setCookiesAllowed] = useState(true);
+  const [cookiesAllowed, setCookiesAllowed] = useState(false);
 
   useEffect(() => {
     // Check if cookies are allowed
