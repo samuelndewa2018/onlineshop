@@ -1073,17 +1073,6 @@ router.post(
   })
 );
 
-router.get("/test-third-party-cookie", (req, res) => {
-  res.cookie("testCookie", "third-party-cookie-ok", {
-    domain: "https://onlineshop-2xjp.vercel.app/", // Replace with your actual domain
-    httpOnly: true,
-    secure: true, // Use 'false' if not using HTTPS in development
-    sameSite: "none", // Set sameSite to 'none' for third-party cookies
-  });
-
-  res.send("third-party-cookie-ok");
-});
-
 // login user
 router.post(
   "/login-user",
