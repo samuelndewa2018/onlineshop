@@ -117,11 +117,82 @@ const ProductCard = ({ data, isEvent }) => {
                 : `/product/${data._id}`
             }`}
           >
-            <img
-              src={`${data.images && data.images[0]?.url}`}
-              alt=""
-              className="w-full h-[170px] object-contain"
-            />
+            {data.isLoading === true ? (
+              <div className="rounded mt-3">
+                <div class="bg-slate-200 rounded animate-stripes p-1">
+                  <div class="preloader">
+                    <svg
+                      class="cart"
+                      role="img"
+                      aria-label="Shopping cart line animation"
+                      viewBox="0 0 128 128"
+                      width="128px"
+                      height="128px"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <g
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="8"
+                      >
+                        <g class="cart__track" stroke="hsla(0,10%,10%,0.1)">
+                          <polyline points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80" />
+                          <circle cx="43" cy="111" r="13" />
+                          <circle cx="102" cy="111" r="13" />
+                        </g>
+                        <g class="cart__lines" stroke="currentColor">
+                          <polyline
+                            class="cart__top"
+                            points="4,4 21,4 26,22 124,22 112,64 35,64 39,80 106,80"
+                            stroke-dasharray="338 338"
+                            stroke-dashoffset="-338"
+                          />
+                          <g
+                            class="cart__wheel1"
+                            transform="rotate(-90,43,111)"
+                          >
+                            <circle
+                              class="cart__wheel-stroke"
+                              cx="43"
+                              cy="111"
+                              r="13"
+                              stroke-dasharray="81.68 81.68"
+                              stroke-dashoffset="81.68"
+                            />
+                          </g>
+                          <g
+                            class="cart__wheel2"
+                            transform="rotate(90,102,111)"
+                          >
+                            <circle
+                              class="cart__wheel-stroke"
+                              cx="102"
+                              cy="111"
+                              r="13"
+                              stroke-dasharray="81.68 81.68"
+                              stroke-dashoffset="81.68"
+                            />
+                          </g>
+                        </g>
+                      </g>
+                    </svg>
+                    <div class="preloader__text">
+                      <p class="preloader__msg">Product coming...</p>
+                      <p class="preloader__msg preloader__msg--last">
+                        Please Wait...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <img
+                src={`${data.images && data.images[0]?.url}`}
+                alt=""
+                className="w-full h-[170px] object-contain"
+              />
+            )}
           </Link>
           <Link to={`/shop/preview/${data?.shop._id}`}>
             <h5 className={`${styles.shop_name}`}>{data.shop.name}</h5>
