@@ -366,24 +366,24 @@ const Hero = () => {
                   >
                     {sellers &&
                       sellers.map((i) => (
-                        <Link key={i} to={`/shop/preview/${i._id}`}>
-                          {/* {sellers.map((i) => ( */}
-                          <div className="relative flex">
+                        <Link
+                          key={i}
+                          to={`/shop/preview/${i._id}`}
+                          class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div className="flex w-full">
                             <img
-                              className="w-36 h-36 lg:w-full lg:h-full object-cover lg:max-h-[120px] lg:max-w-[150px]"
+                              className="w-36 h-36 lg:w-full lg:h-full object-cover lg:max-h-[120px] lg:max-w-[150px] rounded-t-lg md:h-auto md:w-48 md:rounded-none md:rounded-l-lg"
                               src={`${i.avatar && i.avatar.url}`}
-                              alt="Sunset in the mountains"
+                              alt="shop avatars"
                             />
-                            <div className="px-6 py-4 flex-1 flex flex-col">
-                              <div className="font-bold text-sm mb-2">
+                            <div className="flex flex-col justify-between p-4 mt-3 leading-normal">
+                              <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">
                                 {i.name}
-                                <br />
-                                {i.address}
-                              </div>
+                              </h5>
                             </div>
-                            <br />
                           </div>
-                          <div className="absolute bottom-1 left-2 sm:hidden">
+                          <div className="absolute bottom-1 left-2 lg:hidden">
                             <span
                               className="bg-zinc-400 text-white py-1 px-2 text-xs rounded-full"
                               style={{ transform: "rotate(45deg)" }}
