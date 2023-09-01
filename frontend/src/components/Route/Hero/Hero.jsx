@@ -399,7 +399,7 @@ const Hero = () => {
                 </div>
               </div>
               <div className="max-h-[120px]">
-                <div class="w-full p-2 max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div class="w-full my-4 lg:my-0 p-2 max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                   <ul class="space-y-1 space-x-1 grid grid-cols-2">
                     <li>
                       <Link
