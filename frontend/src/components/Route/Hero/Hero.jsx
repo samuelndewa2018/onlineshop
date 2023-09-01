@@ -5,6 +5,9 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { server } from "../../../server";
 import { useSelector } from "react-redux";
+import { BsQuestionCircle, BsPersonExclamation } from "react-icons/bs";
+import { BiSolidPhoneCall } from "react-icons/bi";
+import { TfiShoppingCartFull } from "react-icons/tfi";
 
 const Hero = () => {
   const { statements } = useSelector((state) => state.statements);
@@ -395,35 +398,55 @@ const Hero = () => {
                   </Carousel>
                 </div>
               </div>
-              <div className="flex max-h-[120px]">
-                {sortedNewProducts &&
-                  sortedNewProducts.slice(0, 1).map((i) => {
-                    return (
+              <div className="max-h-[120px]">
+                <div class="w-full p-2 max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                  <ul class="space-y-1 space-x-1 grid grid-cols-2">
+                    <li>
                       <Link
-                        to={`/product/${i._id}`}
-                        className="rounded relative overflow-hidden shadow-lg flex flex-row w-36 h-36 lg:w-full lg:h-full"
+                        to="/faq"
+                        class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
                       >
-                        <img
-                          className="w-36 h-36 min-w-full lg:min-w-[50%] lg:w-full lg:h-full object-cover"
-                          src={`${i.images && i.images[0].url}`}
-                          alt="Sunset in the mountains"
-                        />
-                        <div className="px-6 py-4 flex-1 flex flex-col">
-                          <div className="font-bold text-sm mb-2">{i.name}</div>
-                        </div>
-                        <div className="absolute bottom-1 left-2 sm:hidden">
-                          <span
-                            className="bg-zinc-400 text-white py-1 px-2 text-xs rounded-full"
-                            style={{ transform: "rotate(45deg)" }}
-                          >
-                            {i.name.length > 14
-                              ? i.name.slice(0, 14) + "..."
-                              : i.name}
-                          </span>
-                        </div>
+                        <BsQuestionCircle color="#2330db" size={25} />
+                        <span class="flex-1 ml-3 whitespace-nowrap font-light">
+                          FAQ
+                        </span>
                       </Link>
-                    );
-                  })}
+                    </li>
+                    <li>
+                      <a
+                        href="tel: +254712012113"
+                        class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
+                      >
+                        <BiSolidPhoneCall color="#2330db" size={25} />
+                        <span class="flex-1 ml-3 whitespace-nowrap font-light">
+                          Call
+                        </span>
+                      </a>
+                    </li>
+                    <li>
+                      <Link
+                        to="/profile"
+                        class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
+                      >
+                        <TfiShoppingCartFull color="#2330db" size={25} />
+                        <span class="flex-1 ml-3 whitespace-nowrap font-light">
+                          Order
+                        </span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="/login"
+                        class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
+                      >
+                        <BsPersonExclamation color="#2330db" size={25} />
+                        <span class="flex-1 ml-3 whitespace-nowrap font-light">
+                          Sign
+                        </span>
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
           )}
