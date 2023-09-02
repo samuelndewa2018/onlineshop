@@ -7,10 +7,22 @@ import ProfileContent from "../components/Profile/ProfileContent";
 import { useSelector } from "react-redux";
 import Meta from "../components/Meta";
 import Footer from "../components/Layout/Footer";
+import { useLocation } from "react-router-dom";
 
 const ProfilePage = () => {
   const { loading } = useSelector((state) => state.user);
   const [active, setActive] = useState(1);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const activeParam = params.get("active");
+
+    if (activeParam === "2") {
+      setActive(2);
+    }
+  }, [location]);
 
   return (
     <div>
