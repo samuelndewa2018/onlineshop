@@ -214,7 +214,7 @@ const Hero = () => {
                           src={`${i.images && i.images[0].url}`}
                           alt="Sunset in the mountains"
                         />
-                        <div className="px-6 py-6 flex-1 hidden lg:flex flex-col">
+                        <div className="px-6 py-12 lg:py-6 flex-1 hidden lg:flex flex-col">
                           <div className="font-bold text-sm mb-2">{i.name}</div>
                         </div>
                         <div className="absolute bottom-1 left-2 sm:hidden">
@@ -263,7 +263,7 @@ const Hero = () => {
                           src={`${i.images && i.images[0].url}`}
                           alt="Sunset in the mountains"
                         />
-                        <div className="px-6 py-6 flex-1 flex flex-col">
+                        <div className="px-6 py-12 lg:py-6 flex-1 flex flex-col">
                           <div className="font-bold text-sm mb-2">{i.name}</div>
                         </div>
                         <div className="absolute bottom-1 left-2 sm:hidden">
@@ -313,7 +313,7 @@ const Hero = () => {
                           src={i.promotionImage}
                           alt="Sunset in the mountains"
                         />
-                        <div className="px-6 py-6 flex-1 flex flex-col">
+                        <div className="px-6 py-12 lg:py-6 flex-1 flex flex-col">
                           <div className="font-bold text-sm mb-2">
                             {i.promotionDetails}
                           </div>
@@ -378,7 +378,7 @@ const Hero = () => {
                               alt="shop avatars"
                             />
                             <div className="flex flex-col justify-between p-4 mt-3 leading-normal">
-                              <h5 class="mb-2 font-bold tracking-tight text-gray-900 dark:text-white">
+                              <h5 class="mb-2 px-6 lg:px-0 font-bold tracking-tight text-gray-900 dark:text-white">
                                 {i.name}
                               </h5>
                             </div>
