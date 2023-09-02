@@ -26,10 +26,7 @@ const BestDeals = () => {
         <div className="overflow-x-auto flex space-x-4 mb-12 border-0">
           {data &&
             data.map((product, index) => (
-              <div
-                className="flex-none h-[400px] w-[168px] sm:w-[250px]"
-                key={index}
-              >
+              <div className="flex-none w-[168px] sm:w-[250px]" key={index}>
                 <ProductCard data={product} />
               </div>
             ))}
