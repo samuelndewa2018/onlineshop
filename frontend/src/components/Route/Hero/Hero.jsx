@@ -346,8 +346,8 @@ const Hero = () => {
           ) : (
             <div className="rounded flex justify-center lg:grid lg:grid-cols-2 gap-2 mt-3 mx-2">
               <div className="flex max-h-[120px] relative">
-                <div className="max-w-full lg:max-w-[100%]">
-                  <div className="absolute top-1 left-2 z-10">
+                <div className="max-w-full lg:max-w-[100%] my-4 lg:my-0">
+                  <div className="absolute top-4 left-2 z-10">
                     <span
                       className="bg-blue-500 text-white py-1 px-2 text-xs rounded-full"
                       style={{ transform: "rotate(45deg)" }}
@@ -362,7 +362,7 @@ const Hero = () => {
                     showThumbs={false}
                     // interval={5000}
                     // stopOnHover={true}
-                    className="rounded relative overflow-hidden shadow-lg flex flex-row w-36 h-36 lg:w-full lg:h-full"
+                    className="rounded relative overflow-hidden shadow-lg flex flex-row w-32 h-32 lg:w-full lg:h-full"
                   >
                     {sellers &&
                       sellers.map((i) => (
@@ -373,7 +373,7 @@ const Hero = () => {
                         >
                           <div className="flex w-full">
                             <img
-                              className="w-36 h-36 lg:w-full lg:h-full object-cover lg:max-h-[120px] lg:max-w-[150px] rounded-t-lg md:h-auto md:w-48 md:rounded-none md:rounded-l-lg"
+                              className="w-32 h-32 lg:w-full lg:h-full object-cover lg:max-h-[120px] lg:max-w-[150px] rounded-t-lg md:h-auto md:w-48 md:rounded-none md:rounded-l-lg"
                               src={`${i.avatar && i.avatar.url}`}
                               alt="shop avatars"
                             />
