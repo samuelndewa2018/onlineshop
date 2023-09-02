@@ -360,7 +360,7 @@ const Hero = () => {
                     infiniteLoop
                     showStatus={false}
                     showThumbs={false}
-                    // interval={5000}
+                    interval={5000}
                     // stopOnHover={true}
                     className="rounded relative overflow-hidden shadow-lg flex flex-row w-32 h-32 lg:w-full lg:h-full"
                   >
