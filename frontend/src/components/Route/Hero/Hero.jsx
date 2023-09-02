@@ -11,6 +11,7 @@ import { TfiShoppingCartFull } from "react-icons/tfi";
 
 const Hero = () => {
   const { statements } = useSelector((state) => state.statements);
+  const { orders } = useSelector((state) => state.order);
   const [carouselData, setCarouselData] = useState([]);
   const [bestSelling, setBestSelling] = useState([]);
   const [featuredProduct, setFeaturedProduct] = useState([]);
@@ -423,16 +424,19 @@ const Hero = () => {
                         </span>
                       </a>
                     </li>
-                    <li>
+                    <li class="relative">
                       <Link
-                        to="/profile"
+                        to="/profile?active=2"
                         class="flex items-center p-3 text-base font-bold text-gray-900 rounded-lg bg-gray-50 hover:bg-gray-100 group hover:shadow dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white"
                       >
                         <TfiShoppingCartFull color="#2330db" size={25} />
-                        <span class="flex-1 ml-3 whitespace-nowrap font-light">
-                          Order
-                        </span>
+                        {orders?.length > 0 && (
+                          <span class="flex-1 ml-3 whitespace-nowrap font-light">
+                            Order
+                          </span>
+                        )}
                       </Link>
+                      <div class="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full"></div>
                     </li>
                     <li>
                       <Link
