@@ -81,6 +81,7 @@ import NotFound from "./pages/NotFound";
 import Unsubscribe from "./pages/Unsubscribe";
 import SendEmailsPage from "./pages/SendEmailsPage";
 import Location from "./Trial/Location";
+import ScrollToTop from "./components/ScroolTop";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
@@ -114,6 +115,7 @@ const App = () => {
           </Routes>
         </Elements>
       )}
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
