@@ -371,7 +371,7 @@ const Hero = () => {
                           to={`/shop/preview/${i._id}`}
                           class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
                         >
-                          <div className="flex w-full">
+                          <div className="flex w-full h-[120px]">
                             <img
                               className="w-32 h-32 lg:w-full lg:h-full object-cover lg:max-h-[120px] lg:max-w-[150px] rounded-t-lg md:h-auto md:w-48 md:rounded-none md:rounded-l-lg"
                               src={`${i.avatar && i.avatar.url}`}
