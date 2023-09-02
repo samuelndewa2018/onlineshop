@@ -96,7 +96,7 @@ const Categories = () => {
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((category, index) => (
                   <div
-                    className="border mt-1 p-3 min-w-[100px] w-fit h-[100px] lg:h-[120px] rounded-md cursor-pointer"
+                    className="border mx-2 mt-1 p-3 min-w-[100px] w-fit h-[100px] lg:h-[120px] rounded-md cursor-pointer"
                     key={index}
                     onClick={() => submitHandle(category)}
                   >
