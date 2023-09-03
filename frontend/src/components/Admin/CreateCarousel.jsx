@@ -111,7 +111,7 @@ const CreateCarouselPage = () => {
                         id="name"
                         name="name"
                         value={caption}
-                        onChange={(e) => setCaption(e.target.value)}
+                        onChange={(value) => setCaption(value)}
                         placeholder="Enter carousel details"
                       />
                       <br />
