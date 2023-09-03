@@ -159,7 +159,10 @@ const Hero = () => {
                     src={`${slide.image[0]?.url}`}
                     alt={slide.caption}
                   />
-                  <p className="legend">{slide.caption}</p>
+                  <p
+                    dangerouslySetInnerHTML={{ __html: slide.caption }}
+                    className="legend"
+                  ></p>{" "}
                 </div>
               ))}
             </Carousel>

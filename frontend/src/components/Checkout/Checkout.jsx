@@ -7,6 +7,7 @@ import axios from "axios";
 import { server } from "../../server";
 import { toast } from "react-toastify";
 import { NumericFormat } from "react-number-format";
+import { updatUserAddress } from "../../redux/actions/user";
 
 const Checkout = () => {
   const { user } = useSelector((state) => state.user);
@@ -27,11 +28,15 @@ const Checkout = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
   useEffect(() => {
-    if (city !== "Self Pickup") {
-      setZipCode("");
+    if (!userInfo && city !== "Self Pickup") {
+      setAddress1("");
     }
-  }, [city]);
+    if (!userInfo && city === "Self Pickup") {
+      setAddress1("Nairobi City");
+    }
+  }, [city, userInfo]);
 
   // shipping addresses
   const handleDeliveryOptionChange = (option) => {
@@ -243,9 +248,9 @@ const Checkout = () => {
 
   const paymentSubmit = () => {
     if (
-      // address1 === "" ||
+      address1 === "" ||
       // address2 === "" ||
-      zipCode === "" ||
+      // zipCode === "" ||
       country === "" ||
       city === ""
     ) {
@@ -383,6 +388,7 @@ const ShippingInfo = ({
   const email = user?.email;
   const [phoneNumber, setPhoneNumber] = useState(user && user.phoneNumber);
   const [isChecked, setIsChecked] = useState(false);
+  const dispatch = useDispatch();
 
   const saveNumber = async (e) => {
     e.preventDefault();
@@ -399,6 +405,26 @@ const ShippingInfo = ({
         },
       }
     );
+  };
+
+  const handleSubmit = async (e) => {
+    const addressType = "Others";
+
+    if (addressType === "" || country === "" || city === "") {
+      toast.error("Please fill all the fields!");
+    } else {
+      dispatch(
+        updatUserAddress(
+          country,
+          city,
+          address1,
+          address2,
+          zipCode,
+          addressType
+        ),
+        toast.success("Address saved")
+      );
+    }
   };
   return (
     <div className="w-full 800px:w-[95%] bg-white rounded-md p-5 pb-8">
@@ -514,8 +540,8 @@ const ShippingInfo = ({
             <label className="block pb-2 font-[500]">Town/City</label>
             <input
               type="text"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
+              value={address1}
+              onChange={(e) => setAddress1(e.target.value)}
               required
               className="w-[95%] border h-10 rounded-md px-4 py-2 bg-white text-gray-800 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
@@ -566,20 +592,23 @@ const ShippingInfo = ({
         <div></div>
       </form>
       <div className="w-[50%] flex items-center">
-        <input
-          type="checkbox"
-          value=""
-          checked={isChecked}
-          className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          onChange={(e) => {
-            setIsChecked(e.target.checked);
-            saveNumber(e);
-          }}
-        />
-
-        <label className="ml-2 block text-sm text-gray-900">
-          Save these details for future use
-        </label>
+        <button
+          className="flex justify-center items-center mb-3"
+          onClick={() => handleSubmit()}
+        >
+          <input
+            type="checkbox"
+            value=""
+            className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+            // onChange={(e) => {
+            //   setIsChecked(e.target.checked);
+            //   saveNumber(e);
+            // }}
+          />{" "}
+          <label className="ml-2 text-gray-900">
+            save my address for future use
+          </label>
+        </button>
       </div>
       <h5
         className="text-[18px] cursor-pointer inline-block"

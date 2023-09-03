@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { server } from "../../server";
-
+import ReactQuill from "react-quill";
 import { toast } from "react-toastify";
 import { RiCloseLine } from "react-icons/ri";
 import { AiOutlinePlusCircle } from "react-icons/ai";
@@ -106,15 +106,13 @@ const CreateCarouselPage = () => {
                 <form onSubmit={handleCreateCarousel} className="w-full">
                   <div className="w-full block p-4">
                     <div className="w-full pb-2">
-                      <label className="pb-2">Name:</label>
-                      <input
-                        type="text"
-                        name="text"
-                        onChange={(e) => setCaption(e.target.value)}
+                      <label className="pb-2">Description:</label>
+                      <ReactQuill
+                        id="name"
+                        name="name"
                         value={caption}
-                        className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        onChange={(e) => setCaption(e.target.value)}
                         placeholder="Enter carousel details"
-                        required
                       />
                       <br />
                     </div>

@@ -810,6 +810,12 @@ const Address = () => {
     {
       name: "Office",
     },
+    {
+      name: "Anonymous",
+    },
+    {
+      name: "Others",
+    },
   ];
 
   const handleSubmit = async (e) => {
@@ -946,7 +952,7 @@ const Address = () => {
                     </div>
 
                     <div className="w-full pb-2">
-                      <label className="block pb-2">Address 1</label>
+                      <label className="block pb-2">Town/City</label>
                       <input
                         type="address"
                         className={`${styles.input}`}
@@ -956,18 +962,7 @@ const Address = () => {
                       />
                     </div>
                     <div className="w-full pb-2">
-                      <label className="block pb-2">Address 2</label>
-                      <input
-                        type="address"
-                        className={`${styles.input}`}
-                        required
-                        value={address2}
-                        onChange={(e) => setAddress2(e.target.value)}
-                      />
-                    </div>
-
-                    <div className="w-full pb-2">
-                      <label className="block pb-2">Zip Code</label>
+                      <label className="block pb-2">Phone Number</label>
                       <input
                         type="text"
                         className={`${styles.input}`}
@@ -976,7 +971,15 @@ const Address = () => {
                         onChange={(e) => setZipCode(e.target.value)}
                       />
                     </div>
-
+                    <div className="w-full pb-2">
+                      <label className="block pb-2">Other Information</label>
+                      <textarea
+                        type="address"
+                        className={`${styles.input}`}
+                        value={address2}
+                        onChange={(e) => setAddress2(e.target.value)}
+                      />
+                    </div>
                     <div className="w-full pb-2">
                       <label className="block pb-2">Address Type</label>
                       <select

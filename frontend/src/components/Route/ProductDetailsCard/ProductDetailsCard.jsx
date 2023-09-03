@@ -330,7 +330,7 @@ const ProductDetailsCard = ({ setOpen, data }) => {
                 <div className="flex">
                   <Link to={`/shop/preview/${data.shop._id}`} className="flex">
                     <img
-                      src={`${data.images && data.images[0]?.url}`}
+                      src={`${data.shop && data.shop?.avatar?.url}`}
                       alt=""
                       className="h-[100px] w-[100px] object-cover mr-3 mt-3"
                     />
