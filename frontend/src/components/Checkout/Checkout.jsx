@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styles from "../../styles/styles";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import axios from "axios";
 import { server } from "../../server";
