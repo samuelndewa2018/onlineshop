@@ -22,6 +22,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { HiUserRemove } from "react-icons/hi";
 import Spinner from "../Spinner";
 import CustomModal from "../CustomModal";
+import Loader from "../Layout/Loader";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
@@ -260,7 +261,7 @@ const ProfileContent = ({ active }) => {
 
 const AllOrders = () => {
   const { user } = useSelector((state) => state.user);
-  const { orders } = useSelector((state) => state.order);
+  const { orders, isLoading } = useSelector((state) => state.order);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -303,57 +304,61 @@ const AllOrders = () => {
   return (
     <div>
       <h3 className="pb-4 ml-2 font-bold">{user.name}'s Orders</h3>
-      <div className="grid grid-cols-1">
-        {rows?.map((row) => (
-          <div
-            key={row.id}
-            className="p-4 border m-2 border-indigo-500  rounded-lg"
-          >
-            <div className="flex items-center justify-between mb-2">
-              <h4 className="text-lg font-medium">Order No. {row.no}</h4>
-              <span
-                className={`font-medium ${getOrderStatusColor(row.status)}`}
-              >
-                {row.status}
-              </span>
-            </div>
-            <p className="mb-2">Ordered On: {row.createdAt}</p>
-            <div className="block lg:flex">
-              <div className="flex">
-                <div className="mb-4 flex mr-1 w-full lg:w-24">
-                  <img
-                    src={`${row.image[0]?.url}`}
-                    alt="Order"
-                    className="w-fit lg:w-24 h-24 ml-[20%] lg:ml-0 rounded-lg object-contain"
-                  />
-                </div>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <div className="grid grid-cols-1">
+          {rows?.map((row) => (
+            <div
+              key={row.id}
+              className="p-4 border m-2 border-indigo-500  rounded-lg"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-lg font-medium">Order No. {row.no}</h4>
+                <span
+                  className={`font-medium ${getOrderStatusColor(row.status)}`}
+                >
+                  {row.status}
+                </span>
               </div>
-              <div className="ml-1 block lg:flex space-x-0 lg:space-x-8">
-                <div>
-                  <div className="mb-2">
-                    <p className="font-bold">Items:</p>
-                    {row.items.slice(0, 1) + "..."}
-                  </div>
-                </div>
+              <p className="mb-2">Ordered On: {row.createdAt}</p>
+              <div className="block lg:flex">
                 <div className="flex">
-                  <div className="mb-2 block">
-                    <p className="font-bold">Items Qty:</p>{" "}
-                    <p>{row.itemsQty}</p>
-                  </div>
-                  <div className="mb-2 ml-6 lg:ml-2">
-                    <p className="font-bold">Total:</p>
-                    <p>{row.total}</p>
+                  <div className="mb-4 flex mr-1 w-full lg:w-24">
+                    <img
+                      src={`${row.image[0]?.url}`}
+                      alt="Order"
+                      className="w-fit lg:w-24 h-24 ml-[20%] lg:ml-0 rounded-lg object-contain"
+                    />
                   </div>
                 </div>
-                <div className="block">
-                  <p className="font-bold mb-3">Actions</p>
-                  {row.orderButton}
+                <div className="ml-1 block lg:flex space-x-0 lg:space-x-8">
+                  <div>
+                    <div className="mb-2">
+                      <p className="font-bold">Items:</p>
+                      {row.items.slice(0, 1) + "..."}
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <div className="mb-2 block">
+                      <p className="font-bold">Items Qty:</p>{" "}
+                      <p>{row.itemsQty}</p>
+                    </div>
+                    <div className="mb-2 ml-6 lg:ml-2">
+                      <p className="font-bold">Total:</p>
+                      <p>{row.total}</p>
+                    </div>
+                  </div>
+                  <div className="block">
+                    <p className="font-bold mb-3">Actions</p>
+                    {row.orderButton}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
