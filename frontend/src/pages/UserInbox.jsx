@@ -10,7 +10,7 @@ import { AiOutlineArrowRight, AiOutlineSend } from "react-icons/ai";
 import { TfiGallery } from "react-icons/tfi";
 import styles from "../styles/styles";
 import Meta from "../components/Meta";
-import DynamicLoader from "../Layout/DynamicLoader";
+import DynamicLoader from "../components/Layout/DynamicLoader";
 const ENDPOINT = "https://socket-server-uv0e.onrender.com/"; //endpoind to be added
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
