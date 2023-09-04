@@ -42,7 +42,7 @@ const CreateCarouselPage = () => {
       });
 
       toast.success("Carousel created!");
-      // window.location.reload();
+      window.location.reload();
     } catch (error) {
       toast.error(error.response.data);
     }

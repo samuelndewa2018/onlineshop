@@ -12,7 +12,7 @@ const CarouselCard = ({ image, caption, handleDelete }) => {
       <p
         dangerouslySetInnerHTML={{ __html: caption }}
         className="mt-2 text-gray-600"
-      ></p>{" "}
+      ></p>
       <div className="flex mt-2">
         <button
           className="px-3 py-1 bg-red-500 text-white rounded-md shadow-sm"
