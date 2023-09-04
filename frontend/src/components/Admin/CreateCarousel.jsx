@@ -42,7 +42,7 @@ const CreateCarouselPage = () => {
       });
 
       toast.success("Carousel created!");
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       toast.error(error.response.data);
     }
@@ -147,7 +147,7 @@ const CreateCarouselPage = () => {
                     <div className=" w-full pb-2">
                       <input
                         type="submit"
-                        value="Create Category"
+                        value="Create Carousel"
                         className={`${styles.input} mt-5 cursor-pointer`}
                         required
                         readOnly
