@@ -159,10 +159,20 @@ const Hero = () => {
                     src={`${slide.image[0]?.url}`}
                     alt={slide.caption}
                   />
-                  <p
-                    dangerouslySetInnerHTML={{ __html: slide.caption }}
-                    className="legend"
-                  ></p>{" "}
+                  <p className="legend">
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: slide.caption,
+                      }}
+                    ></p>
+                    <br />
+                    <Link
+                      to="/products"
+                      class="text-white border p-2 border-white focus:outline-none focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm"
+                    >
+                      see more
+                    </Link>
+                  </p>
                 </div>
               ))}
             </Carousel>
