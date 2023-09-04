@@ -420,6 +420,7 @@ input[type="number"] {
   transition: background-color var(--trans-dur), color var(--trans-dur);
 }
 .Gbody2 {
+  margin-top: 7%;
   background-color: transparent;
   color: var(--fg);
   font: 1em/1.5 "DM Sans", sans-serif;
