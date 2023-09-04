@@ -22,7 +22,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { HiUserRemove } from "react-icons/hi";
 import Spinner from "../Spinner";
 import CustomModal from "../CustomModal";
-import Loader from "../Layout/Loader";
+import DynamicLoader from "../Layout/DynamicLoader";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
@@ -305,7 +305,10 @@ const AllOrders = () => {
     <div>
       <h3 className="pb-4 ml-2 font-bold">{user.name}'s Orders</h3>
       {isLoading ? (
-        <Loader />
+        <DynamicLoader
+          message={"Bringing orders..."}
+          delayedmessage={"Sorry orders not coming..."}
+        />
       ) : (
         <div className="grid grid-cols-1">
           {rows?.map((row) => (

@@ -419,6 +419,14 @@ input[type="number"] {
   place-items: center;
   transition: background-color var(--trans-dur), color var(--trans-dur);
 }
+.Gbody2 {
+  background-color: transparent;
+  color: var(--fg);
+  font: 1em/1.5 "DM Sans", sans-serif;
+  display: grid;
+  place-items: center;
+  transition: background-color var(--trans-dur), color var(--trans-dur);
+}
 .preloader {
   text-align: center;
   max-width: 20em;
