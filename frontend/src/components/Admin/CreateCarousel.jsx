@@ -108,11 +108,13 @@ const CreateCarouselPage = () => {
                     <div className="w-full pb-2">
                       <label className="pb-2">Description:</label>
                       <ReactQuill
-                        id="name"
-                        name="name"
+                        theme="snow"
+                        type="text"
+                        name="text"
                         value={caption}
                         onChange={(value) => setCaption(value)}
                         placeholder="Enter carousel details"
+                        required
                       />
                       <br />
                     </div>
