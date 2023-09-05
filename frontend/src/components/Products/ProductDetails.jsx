@@ -593,8 +593,8 @@ const ProductDetailsInfo = ({
                 <div className="w-full flex my-4" key={index}>
                   <img
                     src={`${
-                      item.user.avatar?.url
-                        ? item.user.avatar?.url
+                      item.user.avatar.url
+                        ? item.user.avatar.url
                         : "https://res.cloudinary.com/bramuels/image/upload/v1692606180/avatars/pgjeicwdkm5pdpk99eon.png"
                     }`}
                     className="w-[50px] h-[50px] rounded-full"
