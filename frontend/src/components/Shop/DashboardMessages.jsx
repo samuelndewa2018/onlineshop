@@ -9,7 +9,7 @@ import styles from "../../styles/styles";
 import { TfiGallery } from "react-icons/tfi";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
-import { DynamicLoader } from "../Layout/DynamicLoader";
+import DynamicLoader from "../Layout/DynamicLoader";
 const ENDPOINT = "https://socket-server-uv0e.onrender.com/"; ///end point.. to be change to hosted
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
