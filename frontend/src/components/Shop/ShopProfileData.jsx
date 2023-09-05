@@ -110,9 +110,14 @@ const ShopProfileData = ({ isOwner }) => {
               .map((item, index) => (
                 <div className="w-full flex my-4" key={index}>
                   <img
-                    src={`${item.user.avatar?.url}`}
+                    src={`${item.user.avatar.url}`}
                     className="w-[50px] h-[50px] rounded-full"
                     alt=""
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src =
+                        "https://res.cloudinary.com/bramuels/image/upload/v1692606180/avatars/pgjeicwdkm5pdpk99eon.png";
+                    }}
                   />
                   <div className="pl-2">
                     <div className="flex w-full items-center">
