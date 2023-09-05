@@ -9,6 +9,7 @@ import styles from "../../styles/styles";
 import { TfiGallery } from "react-icons/tfi";
 import socketIO from "socket.io-client";
 import { format } from "timeago.js";
+import { DynamicLoader } from "../Layout/DynamicLoader";
 const ENDPOINT = "https://socket-server-uv0e.onrender.com/"; ///end point.. to be change to hosted
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
@@ -24,6 +25,7 @@ const DashboardMessages = () => {
   const [activeStatus, setActiveStatus] = useState(false);
   const [images, setImages] = useState();
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
 
   useEffect(() => {
@@ -45,6 +47,7 @@ const DashboardMessages = () => {
   useEffect(() => {
     const getConversation = async () => {
       try {
+        setLoading(true);
         const resonse = await axios.get(
           `${server}/conversation/get-all-conversation-seller/${seller?._id}`,
           {
@@ -53,8 +56,10 @@ const DashboardMessages = () => {
         );
 
         setConversations(resonse.data.conversations);
+        setLoading(false);
       } catch (error) {
-        // console.log(error);
+        console.log(error);
+        setLoading(false);
       }
     };
     getConversation();
@@ -212,22 +217,30 @@ const DashboardMessages = () => {
             All Messages
           </h1>
           {/* All messages list */}
-          {conversations &&
-            conversations.map((item, index) => (
-              <MessageList
-                data={item}
-                key={index}
-                index={index}
-                setOpen={setOpen}
-                setCurrentChat={setCurrentChat}
-                me={seller._id}
-                setUserData={setUserData}
-                userData={userData}
-                online={onlineCheck(item)}
-                setActiveStatus={setActiveStatus}
-                isLoading={isLoading}
-              />
-            ))}
+          {loading ? (
+            <DynamicLoader
+              message={"Bringing messages.."}
+              delayedmessage={"Sorry messages not coming.."}
+            />
+          ) : (
+            <>
+              {conversations &&
+                conversations.map((item, index) => (
+                  <MessageList
+                    data={item}
+                    key={index}
+                    index={index}
+                    setOpen={setOpen}
+                    setCurrentChat={setCurrentChat}
+                    me={seller._id}
+                    setUserData={setUserData}
+                    userData={userData}
+                    online={onlineCheck(item)}
+                    setActiveStatus={setActiveStatus}
+                  />
+                ))}
+            </>
+          )}
         </>
       )}
 
@@ -259,10 +272,10 @@ const MessageList = ({
   setUserData,
   online,
   setActiveStatus,
-  isLoading,
 }) => {
   console.log(data);
   const [user, setUser] = useState([]);
+  const [messageloading, setMessageloading] = useState(false);
   const navigate = useNavigate();
   const handleClick = (id) => {
     navigate(`/dashboard-messages?${id}`);
@@ -275,50 +288,72 @@ const MessageList = ({
 
     const getUser = async () => {
       try {
+        setMessageloading(true);
         const res = await axios.get(`${server}/user/user-info/${userId}`);
         setUser(res.data.user);
+        setMessageloading(false);
       } catch (error) {
         console.log(error);
+        setMessageloading(false);
       }
     };
     getUser();
   }, [me, data]);
 
   return (
-    <div
-      className={`w-full flex p-3 px-3 ${
-        active === index ? "bg-[#00000010]" : "bg-transparent"
-      }  cursor-pointer`}
-      onClick={(e) =>
-        setActive(index) ||
-        handleClick(data._id) ||
-        setCurrentChat(data) ||
-        setUserData(user) ||
-        setActiveStatus(online)
-      }
-    >
-      <div className="relative">
-        <img
-          src={`${user?.avatar?.url}`}
-          alt=""
-          className="w-[50px] h-[50px] rounded-full"
-        />
-        {online ? (
-          <div className="w-[12px] h-[12px] bg-green-400 rounded-full absolute top-[2px] right-[2px]" />
-        ) : (
-          <div className="w-[12px] h-[12px] bg-[#c7b9b9] rounded-full absolute top-[2px] right-[2px]" />
-        )}
-      </div>
-      <div className="pl-3">
-        <h1 className="text-[18px]">{user?.name}</h1>
-        <p className="text-[16px] text-[#000c]">
-          {!isLoading && data?.lastMessageId !== user?._id
-            ? "You:"
-            : user?.name?.split(" ")[0] + ": "}{" "}
-          {data?.lastMessage}
-        </p>
-      </div>
-    </div>
+    <>
+      {messageloading ? (
+        <div class="rounded-md p-4 max-w-sm w-full">
+          <div class="animate-pulse flex space-x-4">
+            <div class="rounded-full bg-slate-200 h-10 w-10"></div>
+            <div class="flex-1 space-y-6 py-1">
+              <div class="h-2 bg-slate-200 rounded"></div>
+              <div class="space-y-3">
+                <div class="grid grid-cols-3 gap-4">
+                  <div class="h-2 bg-slate-200 rounded col-span-2"></div>
+                  <div class="h-2 bg-slate-200 rounded col-span-1"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div
+          className={`w-full flex p-3 px-3 ${
+            active === index ? "bg-[#00000010]" : "bg-transparent"
+          }  cursor-pointer`}
+          onClick={(e) =>
+            setActive(index) ||
+            handleClick(data._id) ||
+            setCurrentChat(data) ||
+            setUserData(user) ||
+            setActiveStatus(online)
+          }
+        >
+          <div className="relative">
+            <img
+              src={`${user?.avatar?.url}`}
+              alt=""
+              className="w-[50px] h-[50px] rounded-full"
+            />
+            {online ? (
+              <div className="w-[12px] h-[12px] bg-green-400 rounded-full absolute top-[2px] right-[2px]" />
+            ) : (
+              <div className="w-[12px] h-[12px] bg-[#c7b9b9] rounded-full absolute top-[2px] right-[2px]" />
+            )}
+          </div>
+          <div className="pl-3">
+            <h1 className="text-[18px]">{user?.name}</h1>
+            <p className="text-[16px] text-[#000c]">
+              {data?.lastMessageId !== user?._id
+                ? "You:"
+                : user?.name?.split(" ")[0] + ": "}{" "}
+              {data?.lastMessage}
+            </p>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
