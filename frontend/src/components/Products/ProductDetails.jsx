@@ -531,7 +531,7 @@ const ProductDetailsInfo = ({
 
   return (
     <div className="bg-[#f5f6fb] px-3 800px:px-10 py-2 rounded">
-      <div className="w-full flex justify-between border-b pt-10 pb-2">
+      <div className="w-full flex justify-between border-b pt-5 pb-2">
         <div className="relative">
           <h5
             className={
@@ -592,7 +592,11 @@ const ProductDetailsInfo = ({
               .map((item, index) => (
                 <div className="w-full flex my-4" key={index}>
                   <img
-                    src={`${item.user.avatar?.url}`}
+                    src={`${
+                      item.user.avatar?.url
+                        ? item.user.avatar?.url
+                        : "https://res.cloudinary.com/bramuels/image/upload/v1692606180/avatars/pgjeicwdkm5pdpk99eon.png"
+                    }`}
                     className="w-[50px] h-[50px] rounded-full"
                     alt=""
                   />
