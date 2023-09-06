@@ -45,6 +45,11 @@ exports.token = async (req, res, next) => {
 
 //stk push
 exports.stkPush = catchAsyncErrors(async (req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://onlineshop-2xjp.vercel.app"
+  );
+
   const phone = req.body.phone.substring(1); //formated to 72190........
   const amount = req.body.amount;
   const date = new Date();
