@@ -250,6 +250,7 @@ const PaymentInfo = ({
               const order = {
                 cart: orderData?.cart,
                 shippingAddress: orderData?.shippingAddress,
+                shippingPrice: orderData.shippingPrice,
                 user: user && user,
                 totalPrice: orderData?.totalPrice,
               };
