@@ -5,12 +5,17 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+const allowedOrigins = ["https://onlineshop-2xjp.vercel.app"];
+
 app.use(
   cors({
-    origin: [
-      "https://onlineshop-2xjp.vercel.app",
-      "https://onlineshop-delta.vercel.app",
-    ],
+    origin: function (origin, callback) {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
       "Content-Type",
