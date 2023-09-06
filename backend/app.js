@@ -11,6 +11,7 @@ app.options(
     origin: [
       "https://onlineshop-2xjp.vercel.app",
       "https://onlineshop-delta.vercel.app",
+      "https://sandbox.safaricom.co.ke",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
