@@ -11,11 +11,6 @@ app.options(
     origin: [
       "https://onlineshop-2xjp.vercel.app",
       "https://onlineshop-delta.vercel.app",
-      "https://sandbox.safaricom.co.ke",
-      "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
-      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
-      "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query",
-      "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
@@ -32,11 +27,6 @@ app.use(
     origin: [
       "https://onlineshop-2xjp.vercel.app",
       "https://onlineshop-delta.vercel.app",
-      "https://sandbox.safaricom.co.ke",
-      "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
-      "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
-      "https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query",
-      "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [

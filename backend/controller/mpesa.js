@@ -102,7 +102,7 @@ router.post(
           });
       } catch (error) {
         console.log(error);
-        return next(new ErrorHandler(`${error}`, 500));
+        return next(new ErrorHandler(`${error.data.errorMessage}`, 500));
       }
     });
   })
