@@ -101,8 +101,7 @@ router.post(
             res.send(response.data);
           });
       } catch (error) {
-        // return next(new ErrorHandler("Error occurred. Please try again", 500));
-        console.log(error);
+        return next(new ErrorHandler("Error occurred. Please try again", 500));
       }
     });
   })
