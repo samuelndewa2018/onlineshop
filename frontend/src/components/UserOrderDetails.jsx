@@ -39,28 +39,32 @@ const UserOrderDetails = () => {
   );
 
   const reviewHandler = async (e) => {
-    await axios
-      .put(
-        `${server}/product/create-new-review`,
-        {
-          user,
-          rating,
-          comment,
-          productId: selectedItem?._id,
-          orderId: id,
-        },
-        { withCredentials: true }
-      )
-      .then((res) => {
-        toast.success(res.data.message);
-        dispatch(getAllOrdersOfUser(user._id));
-        setComment("");
-        setRating(null);
-        setOpen(false);
-      })
-      .catch((error) => {
-        toast.error(error);
-      });
+    if (rating > 1) {
+      await axios
+        .put(
+          `${server}/product/create-new-review`,
+          {
+            user,
+            rating,
+            comment,
+            productId: selectedItem?._id,
+            orderId: id,
+          },
+          { withCredentials: true }
+        )
+        .then((res) => {
+          toast.success(res.data.message);
+          dispatch(getAllOrdersOfUser(user._id));
+          setComment("");
+          setRating(null);
+          setOpen(false);
+        })
+        .catch((error) => {
+          toast.error(error);
+        });
+    } else {
+      toast.error("Please give us a star");
+    }
   };
   const myClickHandler = (e, props) => {
     setOpen(props);
@@ -290,7 +294,7 @@ const UserOrderDetails = () => {
                   </div>
                   <div
                     className={`${styles.button} text-white text-[20px] ml-3`}
-                    onClick={rating > 1 ? reviewHandler : null}
+                    onClick={reviewHandler}
                   >
                     Submit
                   </div>
