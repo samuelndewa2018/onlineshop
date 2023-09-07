@@ -13,6 +13,7 @@ const CreateStatements = () => {
     promotionImage: "",
     promotionDetails: "",
     productId: "",
+    exchangeRate: "",
   });
   const [selectedStatement, setSelectedStatement] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -85,6 +86,7 @@ const CreateStatements = () => {
           promotionImage: "",
           promotionDetails: "",
           productId: "",
+          exchangeRate: "",
         });
         setSelectedStatement(null);
       } else {
@@ -105,6 +107,7 @@ const CreateStatements = () => {
       promotionImage: statement.promotionImage,
       promotionDetails: statement.promotionDetails,
       productId: statement.productId,
+      exchangeRate: statement.exchangeRate,
     });
   };
 
@@ -219,6 +222,21 @@ const CreateStatements = () => {
             />
           </div>
           <div>
+            <label htmlFor="promotionImage" className="block font-medium mb-1">
+              Exchange Rate
+            </label>
+            <input
+              type="text"
+              id="exchangeRate"
+              name="exchangeRate"
+              className="border border-gray-300 rounded px-4 py-2 w-full"
+              value={formData.exchangeRate}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <div>
             <label
               htmlFor="promotionDetails"
               className="block font-medium mb-1"
@@ -296,6 +314,7 @@ const CreateStatements = () => {
                     <li>{statement.typingName3}</li>
                     <li>{statement.promotionDetails}</li>
                     <li>{statement.productId}</li>
+                    <li>{statement.exchangeRate}</li>
                   </div>
                 </div>
               </>

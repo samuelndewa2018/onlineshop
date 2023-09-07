@@ -13,6 +13,7 @@ router.post("/create-statements", async (req, res) => {
       promotionImage,
       promotionDetails,
       productId,
+      exchangeRate,
     } = req.body;
 
     const statement = new Statements({
@@ -23,6 +24,7 @@ router.post("/create-statements", async (req, res) => {
       promotionImage,
       promotionDetails,
       productId,
+      exchangeRate,
     });
 
     await statement.save();
@@ -60,6 +62,7 @@ router.put("/update-statement/:id", async (req, res) => {
       promotionImage,
       promotionDetails,
       productId,
+      exchangeRate,
     } = req.body;
 
     const statement = await Statements.findById(req.params.id);
@@ -74,6 +77,8 @@ router.put("/update-statement/:id", async (req, res) => {
     statement.promotionImage = promotionImage;
     statement.promotionDetails = promotionDetails;
     statement.productId = productId;
+    statement.exchangeRate = exchangeRate;
+
     statement.updatedAt = Date.now();
 
     await statement.save();

@@ -28,6 +28,10 @@ const statementsSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  exchangeRate: {
+    type: Number,
+    default: 145,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

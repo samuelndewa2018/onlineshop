@@ -16,7 +16,7 @@ import mpesa1 from "./mpesa1.png";
 
 const Payment = () => {
   const { user } = useSelector((state) => state.user);
-
+  const { statements } = useSelector((state) => state.statements);
   const [orderData, setOrderData] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading1, setLoading1] = useState(false);
@@ -27,8 +27,11 @@ const Payment = () => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
     setOrderData(orderData);
   }, []);
-  const paypalTotals = Math.round(orderData?.totalPrice / 145);
 
+  const exchangeRate = statements?.map((i) => i.exchangeRate);
+  const paypalTotals = (orderData?.totalPrice / exchangeRate).toFixed(2);
+
+  console.log("exchangeRate, ", exchangeRate);
   const createOrder = (data, actions) => {
     return actions.order
       .create({
