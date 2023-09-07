@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllOrdersOfShop } from "../../redux/actions/order";
 import { getAllProductsShop } from "../../redux/actions/product";
 import { Button } from "@material-ui/core";
+import { NumericFormat } from "react-number-format";
 import { DataGrid } from "@material-ui/data-grid";
 
 const DashboardHero = () => {
@@ -105,7 +106,12 @@ const DashboardHero = () => {
             </h3>
           </div>
           <h5 className="pt-2 pl-[36px] text-[22px] font-[500]">
-            ${availableBalance}
+            <NumericFormat
+              value={availableBalance}
+              displayType={"text"}
+              thousandSeparator={true}
+              prefix={"Ksh. "}
+            />{" "}
           </h5>
           <Link to="/dashboard-withdraw-money">
             <h5 className="pt-4 pl-[2] text-[#077f9c]">Withdraw Money</h5>

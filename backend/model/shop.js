@@ -46,6 +46,10 @@ const shopSchema = new mongoose.Schema({
   instaShop: {
     type: String,
   },
+  availableBalance: {
+    type: Number,
+    default: 0,
+  },
   createdAt: {
     type: Date,
     default: Date.now(),

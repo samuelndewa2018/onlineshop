@@ -605,9 +605,7 @@ const ShippingInfo = ({
             //   saveNumber(e);
             // }}
           />{" "}
-          <label className="ml-2 text-gray-900">
-            save my address for future use
-          </label>
+          <label className="ml-2 text-gray-900">save my address</label>
         </button>
       </div>
       <h5

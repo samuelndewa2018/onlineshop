@@ -61,6 +61,25 @@ router.post(
           0
         );
 
+        if (order.paymentInfo.status === "succeeded") {
+          try {
+            const shop = await Shop.findById(shopId);
+
+            if (!shop) {
+              console.error(`Shop with ID ${shopId} not found.`);
+            } else {
+              const amountToAdd = (subTotals * 0.9).toFixed(2);
+              shop.availableBalance += parseInt(amountToAdd);
+
+              await shop.save();
+            }
+          } catch (error) {
+            console.error(
+              `Error updating availableBalance for shop ${shopId}: ${error}`
+            );
+          }
+        }
+
         const attachments = order.cart.map((item) => ({
           filename: item.images[0].url,
           path: item.images[0].url,
@@ -1113,9 +1132,15 @@ router.put(
 
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
-        order.paymentInfo.status = "Succeeded";
-        const serviceCharge = order.totalPrice * 0.1;
-        await updateSellerInfo(order.totalPrice - serviceCharge);
+        if (order.paymentInfo.status !== "succeeded") {
+          const seller = await Shop.findById(req.seller.id);
+
+          const realTotalPrice = order.totalPrice - order.shippingPrice;
+          const amountToAdd = (realTotalPrice * 0.9).toFixed(2);
+          seller.availableBalance += parseInt(amountToAdd);
+          await seller.save();
+        }
+        order.paymentInfo.status = "succeeded";
       }
 
       await order.save({ validateBeforeSave: false });
@@ -1131,14 +1156,6 @@ router.put(
         product.sold_out += qty;
 
         await product.save({ validateBeforeSave: false });
-      }
-
-      async function updateSellerInfo(amount) {
-        const seller = await Shop.findById(req.seller.id);
-
-        seller.availableBalance = amount;
-
-        await seller.save();
       }
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
