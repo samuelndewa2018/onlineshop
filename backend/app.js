@@ -26,6 +26,7 @@ app.use(
   cors({
     origin: [
       "https://onlineshop-2xjp.vercel.app",
+      "http://localhost:3000",
       "https://onlineshop-delta.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
