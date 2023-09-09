@@ -8,12 +8,12 @@ const request = require("request");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 
-// const pass_key = process.env.pass_key;
-// const short_code = process.env.SHORT_CODE;
+const pass_key = String(process.env.pass_key);
+const short_code = String(process.env.SHORT_CODE);
 
-const pass_key =
-  "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
-const short_code = "174379";
+// const pass_key =
+//   "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+// const short_code = "174379";
 
 // const short_code_env = process.env.SHORT_CODE;
 // const short_code = short_code_env.toString();
