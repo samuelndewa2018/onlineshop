@@ -8,8 +8,8 @@ const request = require("request");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 
-const pass_key = process.env.pass_key;
-const short_code = process.env.SHORT_CODE;
+const pass_key = `${process.env.pass_key}`;
+const short_code = `${process.env.SHORT_CODE}`;
 
 // const pass_key =
 //   "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
@@ -72,7 +72,7 @@ router.post(
         ("0" + date.getSeconds()).slice(-2);
 
       const base64Encoded = Buffer.from(
-        short_code.toString() + pass_key.toString() + timestamp
+        short_code + pass_key + timestamp
       ).toString("base64");
 
       const password = base64Encoded;

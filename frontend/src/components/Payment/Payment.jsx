@@ -334,8 +334,9 @@ const PaymentInfo = ({
           setSuccess(false);
           if (error.response.data.message === "Request cancelled by user") {
             setErrorMessage("You cancelled the transaction");
+          } else {
+            setErrorMessage(error.response.data.message);
           }
-          setErrorMessage(error.response.data.message);
         });
     },
   });
