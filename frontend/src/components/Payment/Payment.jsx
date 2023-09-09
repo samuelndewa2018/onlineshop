@@ -328,15 +328,14 @@ const PaymentInfo = ({
           );
         })
         .catch((error) => {
-          // toast.error(error.response.data.message);
-          setLoading(false);
           setError(true);
-          setSuccess(false);
           if (error.response.data.message === "Request cancelled by user") {
             setErrorMessage("You cancelled the transaction");
           } else {
             setErrorMessage(error.response.data.message);
           }
+          setLoading(false);
+          setSuccess(false);
         });
     },
   });

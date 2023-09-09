@@ -8,17 +8,9 @@ const request = require("request");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 
-const pass_key = `"${process.env.pass_key}"`;
-const short_code = `"${process.env.SHORT_CODE}"`;
-
-// const pass_key =
-//   "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
-// const short_code = "174379";
-
-// const short_code_env = process.env.SHORT_CODE;
-// const short_code = short_code_env.toString();
-// const pass_key_env = process.env.pass_key;
-// const pass_key = pass_key_env.toString();
+const pass_key =
+  "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
+const short_code = "174379";
 
 const key = process.env.CONSUMER_KEY;
 const secret = process.env.CONSUMER_SECRET;
