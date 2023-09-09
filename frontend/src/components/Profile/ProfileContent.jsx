@@ -869,7 +869,7 @@ const Address = () => {
           >
             <div
               onClick={(e) => myClickHandler(e, true)}
-              className="w-[85%] lg:w-[35%] h-[70vh] lg:h-[80vh]  bg-white rounded shadow relative overflow-y-scroll appear__smoothly"
+              className="w-[85%] lg:w-[35%] h-[70vh] lg:h-[80vh] bg-white rounded shadow relative overflow-y-scroll appear__smoothly"
             >
               <div className="w-full flex justify-end p-3">
                 <RxCross1
