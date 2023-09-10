@@ -212,7 +212,29 @@ const EditProduct = () => {
     setModalOpen2(true);
     setIndex2(index2);
   };
+  const quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      [{ align: [] }],
+      ["link", "image", "video"],
+      ["clean"],
+    ],
+  };
 
+  const quillFormats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "list",
+    "bullet",
+    "link",
+    "image",
+    "video",
+  ];
   return (
     <div>
       <DashboardHeader />
@@ -274,6 +296,8 @@ const EditProduct = () => {
               <ReactQuill
                 id="description"
                 name="description"
+                modules={quillModules}
+                formats={quillFormats}
                 value={formik.values.description}
                 onChange={(value) => formik.setFieldValue("description", value)}
               />
