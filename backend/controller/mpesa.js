@@ -12,9 +12,6 @@ const pass_key =
   "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
 const short_code = "174379";
 
-const key = process.env.CONSUMER_KEY;
-const secret = process.env.CONSUMER_SECRET;
-
 //access token function
 function getAccessToken() {
   const consumer_key = process.env.CONSUMER_KEY;

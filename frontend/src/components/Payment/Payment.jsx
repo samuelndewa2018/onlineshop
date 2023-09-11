@@ -32,7 +32,6 @@ const Payment = () => {
   const exchangeRate = statements?.map((i) => i.exchangeRate);
   const paypalTotals = (orderData?.totalPrice / exchangeRate).toFixed(2);
 
-  console.log("exchangeRate, ", exchangeRate);
   const createOrder = (data, actions) => {
     return actions.order
       .create({
@@ -138,6 +137,7 @@ const Payment = () => {
 
     setLoading1(false);
   };
+
   const mpesaPaymentHandler = async (e) => {
     e.preventDefault();
 
@@ -250,38 +250,38 @@ const PaymentInfo = ({
             clearInterval(timer);
             //successfull payment
             setLoading(false);
-            setTimeout(async () => {
-              const config = {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              };
-              const order = {
-                cart: orderData?.cart,
-                shippingAddress: orderData?.shippingAddress,
-                shippingPrice: orderData.shippingPrice,
-                user: user && user,
-                totalPrice: orderData?.totalPrice,
-              };
+            // setTimeout(async () => {
+            //   const config = {
+            //     headers: {
+            //       "Content-Type": "application/json",
+            //     },
+            //   };
+            //   const order = {
+            //     cart: orderData?.cart,
+            //     shippingAddress: orderData?.shippingAddress,
+            //     shippingPrice: orderData.shippingPrice,
+            //     user: user && user,
+            //     totalPrice: orderData?.totalPrice,
+            //   };
 
-              order.paymentInfo = {
-                type: "Mpesa",
-                status: "succeeded",
-              };
-              await axios
-                .post(`${server}/order/create-order`, order, config)
-                .then((res) => {
-                  setOpen(false);
-                  navigate("/order/success");
-                  toast.success("Your Payment is Sucessful and order placed");
-                  localStorage.setItem("cartItems", JSON.stringify([]));
-                  localStorage.setItem("latestOrder", JSON.stringify([]));
-                  setTimeout(() => {
-                    window.location.reload();
-                  }, 5000);
-                });
-            }, 10000);
-            toast.success("Your Payment is Validating");
+            //   order.paymentInfo = {
+            //     type: "Mpesa",
+            //     status: "succeeded",
+            //   };
+            //   await axios
+            //     .post(`${server}/order/create-order`, order, config)
+            //     .then((res) => {
+            //       setOpen(false);
+            //       navigate("/order/success");
+            //       toast.success("Your Payment is Sucessful and order placed");
+            //       localStorage.setItem("cartItems", JSON.stringify([]));
+            //       localStorage.setItem("latestOrder", JSON.stringify([]));
+            //       setTimeout(() => {
+            //         window.location.reload();
+            //       }, 5000);
+            //     });
+            // }, 10000);
+            // toast.success("Your Payment is Validating");
           } else if (response.errorCode === "500.001.1001") {
           } else {
             clearInterval(timer);
