@@ -216,6 +216,7 @@ const PaymentInfo = ({
       status: "succeeded",
     };
     setValidating(true);
+    setSuccess(false);
     await axios
       .post(`${server}/order/create-order`, order, config)
       .then((res) => {
@@ -249,12 +250,12 @@ const PaymentInfo = ({
         })
         .then(async (response) => {
           if (response.data.ResultCode === "0") {
+            createOrderNow();
             setSuccess(false);
             setValidating(true);
             clearInterval(timer);
             //successfull payment
             setLoading(false);
-            createOrderNow();
             // toast.success("Your Payment is Validating");
           } else if (response.errorCode === "500.001.1001") {
           } else {
