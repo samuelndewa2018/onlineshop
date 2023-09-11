@@ -238,14 +238,16 @@ const PaymentInfo = ({
                 type: "Mpesa",
                 status: "succeeded",
               };
-              await axios.post(`${server}/order/create-order`, order, config);
-              setOrderCreated(true).then((res) => {
-                localStorage.setItem("cartItems", JSON.stringify([]));
-                localStorage.setItem("latestOrder", JSON.stringify([]));
-                setTimeout(() => {
-                  window.location.reload();
-                }, 5000);
-              });
+              await axios
+                .post(`${server}/order/create-order`, order, config)
+                .then((res) => {
+                  setOrderCreated(true);
+                  localStorage.setItem("cartItems", JSON.stringify([]));
+                  localStorage.setItem("latestOrder", JSON.stringify([]));
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 5000);
+                });
             }
             setValidating(false);
             setOpen(false);
