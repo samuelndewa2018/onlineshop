@@ -240,7 +240,6 @@ const PaymentInfo = ({
               .post(`${server}/order/create-order`, order, config)
               .then((res) => {
                 setValidating(false);
-                clearInterval(timer);
                 setOpen(false);
                 navigate("/order/success");
                 toast.success("Your Payment is Sucessful and order placed");
@@ -267,7 +266,7 @@ const PaymentInfo = ({
         .catch((err) => {
           console.log(err.message);
         });
-    }, 2000);
+    }, 5000);
   };
 
   const formik = useFormik({
