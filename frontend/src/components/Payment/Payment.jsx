@@ -215,6 +215,7 @@ const PaymentInfo = ({
       type: "Mpesa",
       status: "succeeded",
     };
+    setValidating(true);
     await axios
       .post(`${server}/order/create-order`, order, config)
       .then((res) => {
