@@ -187,6 +187,7 @@ const PaymentInfo = ({
   const [successMessage, setSuccessMessage] = useState("");
   const [validating, setValidating] = useState(false);
   const [limit, setLimit] = useState(false);
+  const [orderCreated, setOrderCreated] = useState(false);
 
   useEffect(() => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
@@ -219,26 +220,26 @@ const PaymentInfo = ({
             clearInterval(timer);
             //successfull payment
             setLoading(false);
-            const config = {
-              headers: {
-                "Content-Type": "application/json",
-              },
-            };
-            const order = {
-              cart: orderData?.cart,
-              shippingAddress: orderData?.shippingAddress,
-              shippingPrice: orderData.shippingPrice,
-              user: user && user,
-              totalPrice: orderData?.totalPrice,
-            };
+            if (!orderCreated) {
+              const config = {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              };
+              const order = {
+                cart: orderData?.cart,
+                shippingAddress: orderData?.shippingAddress,
+                shippingPrice: orderData.shippingPrice,
+                user: user && user,
+                totalPrice: orderData?.totalPrice,
+              };
 
-            order.paymentInfo = {
-              type: "Mpesa",
-              status: "succeeded",
-            };
-            await axios
-              .post(`${server}/order/create-order`, order, config)
-              .then((res) => {
+              order.paymentInfo = {
+                type: "Mpesa",
+                status: "succeeded",
+              };
+              await axios.post(`${server}/order/create-order`, order, config);
+              setOrderCreated(true).then((res) => {
                 setValidating(false);
                 setOpen(false);
                 navigate("/order/success");
@@ -249,8 +250,7 @@ const PaymentInfo = ({
                   window.location.reload();
                 }, 5000);
               });
-            return;
-            // toast.success("Your Payment is Validating");
+            }
           } else if (response.errorCode === "500.001.1001") {
           } else {
             clearInterval(timer);
@@ -262,13 +262,12 @@ const PaymentInfo = ({
             setTimeout(() => {
               window.location.reload();
             }, 10000);
-            return;
           }
         })
         .catch((err) => {
           console.log(err.message);
         });
-    }, 2000);
+    }, 30000);
   };
 
   const formik = useFormik({
