@@ -239,6 +239,7 @@ const PaymentInfo = ({
             await axios
               .post(`${server}/order/create-order`, order, config)
               .then((res) => {
+                setValidating(false);
                 setOpen(false);
                 navigate("/order/success");
                 toast.success("Your Payment is Sucessful and order placed");
