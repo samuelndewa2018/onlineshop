@@ -249,6 +249,7 @@ const PaymentInfo = ({
                   window.location.reload();
                 }, 5000);
               });
+            return;
             // toast.success("Your Payment is Validating");
           } else if (response.errorCode === "500.001.1001") {
           } else {
@@ -261,6 +262,7 @@ const PaymentInfo = ({
             setTimeout(() => {
               window.location.reload();
             }, 10000);
+            return;
           }
         })
         .catch((err) => {
