@@ -268,7 +268,7 @@ const PaymentInfo = ({
         .catch((err) => {
           console.log(err.message);
         });
-    }, 30000);
+    }, 2000);
   };
 
   const formik = useFormik({
