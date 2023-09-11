@@ -5,28 +5,10 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-// app.options(
-//   "*",
-//   cors({
-//     origin: [
-//       "https://onlineshop-2xjp.vercel.app",
-//       "https://onlineshop-delta.vercel.app",
-//     ],
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     allowedHeaders: [
-//       "Content-Type",
-//       "Authorization",
-//       "Access-Control-Allow-Credentials",
-//     ],
-//     credentials: true,
-//   })
-// );
-
 app.use(
   cors({
     origin: [
       "https://onlineshop-2xjp.vercel.app",
-      "http://localhost:3000",
       "https://onlineshop-delta.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
