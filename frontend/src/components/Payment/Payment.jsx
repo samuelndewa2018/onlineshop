@@ -240,10 +240,6 @@ const PaymentInfo = ({
               };
               await axios.post(`${server}/order/create-order`, order, config);
               setOrderCreated(true).then((res) => {
-                setValidating(false);
-                setOpen(false);
-                navigate("/order/success");
-                toast.success("Your Payment is Sucessful and order placed");
                 localStorage.setItem("cartItems", JSON.stringify([]));
                 localStorage.setItem("latestOrder", JSON.stringify([]));
                 setTimeout(() => {
@@ -251,6 +247,10 @@ const PaymentInfo = ({
                 }, 5000);
               });
             }
+            setValidating(false);
+            setOpen(false);
+            navigate("/order/success");
+            toast.success("Your Payment is Sucessful and order placed");
           } else if (response.errorCode === "500.001.1001") {
           } else {
             clearInterval(timer);
