@@ -240,6 +240,7 @@ const PaymentInfo = ({
               .post(`${server}/order/create-order`, order, config)
               .then((res) => {
                 setValidating(false);
+                clearInterval(timer);
                 setOpen(false);
                 navigate("/order/success");
                 toast.success("Your Payment is Sucessful and order placed");
