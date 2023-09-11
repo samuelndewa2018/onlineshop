@@ -138,34 +138,6 @@ const Payment = () => {
     setLoading1(false);
   };
 
-  const mpesaPaymentHandler = async (e) => {
-    e.preventDefault();
-
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-
-    order.paymentInfo = {
-      type: "Mpesa",
-      status: "succeeded",
-    };
-
-    await axios
-      .post(`${server}/order/create-order`, order, config)
-      .then((res) => {
-        setOpen(false);
-        navigate("/order/success");
-        toast.success("Order successful!");
-        localStorage.setItem("cartItems", JSON.stringify([]));
-        localStorage.setItem("latestOrder", JSON.stringify([]));
-        setTimeout(() => {
-          window.location.reload();
-        }, 5000);
-      });
-  };
-
   return (
     <div className="w-full flex flex-col items-center py-8">
       <div className="w-[90%] 1000px:w-[70%] block 800px:flex">
@@ -179,7 +151,6 @@ const Payment = () => {
             cashOnDeliveryHandler={cashOnDeliveryHandler}
             loading1={loading1}
             loading2={loading2}
-            mpesaPaymentHandler={mpesaPaymentHandler}
           />
         </div>
         <div className="w-full 800px:w-[35%] 800px:mt-0 mt-8">
@@ -199,12 +170,10 @@ const mpesaSchema = yup.object({
 });
 const PaymentInfo = ({
   user,
-  mpesaPaymentHandler,
   open,
   setOpen,
   onApprove,
   createOrder,
-  paymentHandler,
   cashOnDeliveryHandler,
   loading1,
   loading2,
@@ -228,7 +197,7 @@ const PaymentInfo = ({
   var reqcount = 0;
   const navigate = useNavigate();
   const stkPushQuery = (checkOutRequestID) => {
-    const timer = setInterval(() => {
+    const timer = setInterval(async () => {
       reqcount += 1;
       if (reqcount === 30) {
         clearInterval(timer);
@@ -239,48 +208,46 @@ const PaymentInfo = ({
         setErrorMessage("You took too long to pay");
         return;
       }
-      axios
+      await axios
         .post(`${server}/mpesa/stkpushquery`, {
           CheckoutRequestID: checkOutRequestID,
         })
-        .then((response) => {
+        .then(async (response) => {
           if (response.data.ResultCode === "0") {
             setSuccess(false);
             setValidating(true);
             clearInterval(timer);
             //successfull payment
             setLoading(false);
-            // setTimeout(async () => {
-            //   const config = {
-            //     headers: {
-            //       "Content-Type": "application/json",
-            //     },
-            //   };
-            //   const order = {
-            //     cart: orderData?.cart,
-            //     shippingAddress: orderData?.shippingAddress,
-            //     shippingPrice: orderData.shippingPrice,
-            //     user: user && user,
-            //     totalPrice: orderData?.totalPrice,
-            //   };
+            const config = {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            };
+            const order = {
+              cart: orderData?.cart,
+              shippingAddress: orderData?.shippingAddress,
+              shippingPrice: orderData.shippingPrice,
+              user: user && user,
+              totalPrice: orderData?.totalPrice,
+            };
 
-            //   order.paymentInfo = {
-            //     type: "Mpesa",
-            //     status: "succeeded",
-            //   };
-            //   await axios
-            //     .post(`${server}/order/create-order`, order, config)
-            //     .then((res) => {
-            //       setOpen(false);
-            //       navigate("/order/success");
-            //       toast.success("Your Payment is Sucessful and order placed");
-            //       localStorage.setItem("cartItems", JSON.stringify([]));
-            //       localStorage.setItem("latestOrder", JSON.stringify([]));
-            //       setTimeout(() => {
-            //         window.location.reload();
-            //       }, 5000);
-            //     });
-            // }, 10000);
+            order.paymentInfo = {
+              type: "Mpesa",
+              status: "succeeded",
+            };
+            await axios
+              .post(`${server}/order/create-order`, order, config)
+              .then((res) => {
+                setOpen(false);
+                navigate("/order/success");
+                toast.success("Your Payment is Sucessful and order placed");
+                localStorage.setItem("cartItems", JSON.stringify([]));
+                localStorage.setItem("latestOrder", JSON.stringify([]));
+                setTimeout(() => {
+                  window.location.reload();
+                }, 5000);
+              });
             // toast.success("Your Payment is Validating");
           } else if (response.errorCode === "500.001.1001") {
           } else {
