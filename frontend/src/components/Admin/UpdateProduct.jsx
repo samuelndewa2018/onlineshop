@@ -5,6 +5,7 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import * as yup from "yup";
 import { toast } from "react-toastify";
+import { conditionsData } from "../../static/data";
 import { AiOutlinePlusCircle, AiOutlineDelete } from "react-icons/ai";
 import Spinner from "../Spinner";
 import { server } from "../../server";
@@ -21,7 +22,7 @@ const editProductSchema = yup.object({
   originalPrice: yup.string().required("Original Price is required"),
   discountPrice: yup.number().required("Discount Price is required"),
   stock: yup.number().required("Stock is required"),
-  // condition: yup.number().required("Condition is required"),
+  condition: yup.string().required("Condition is required"),
 });
 
 const AdminEditProduct = () => {
@@ -72,8 +73,7 @@ const AdminEditProduct = () => {
         const discountPrice = values.discountPrice;
         const stock = values.stock;
         const sizes = values.sizes;
-
-        // condition: values.condition,
+        const condition = values.condition;
 
         const newForm = new FormData();
 
@@ -87,6 +87,7 @@ const AdminEditProduct = () => {
         newForm.append("originalPrice", originalPrice);
         newForm.append("discountPrice", discountPrice);
         newForm.append("stock", stock);
+        newForm.append("condition", condition);
         sizes.forEach((size, index) => {
           newForm.append(`sizes[${index}].name`, size.name);
           newForm.append(`sizes[${index}].price`, size.price);
@@ -101,6 +102,7 @@ const AdminEditProduct = () => {
           originalPrice,
           discountPrice,
           stock,
+          condition,
           images,
           sizes,
         });
@@ -340,6 +342,31 @@ const AdminEditProduct = () => {
               />
               <div className="text-red-500">
                 {formik.touched.tags && formik.errors.tags}
+              </div>
+            </div>
+            <br />
+            <div>
+              <label className="pb-2">
+                Condition<span className="text-red-500">*</span>
+              </label>
+              <select
+                className="w-full mt-2 border h-[35px] rounded-[5px]"
+                onChange={formik.handleChange("condition")}
+                onBlur={formik.handleBlur("condition")}
+                value={formik.values.condition}
+              >
+                <option value="Choose Product Condition">
+                  Choose Product Condition
+                </option>
+                {conditionsData &&
+                  conditionsData.map((i) => (
+                    <option value={i.title} key={i.title}>
+                      {i.title}
+                    </option>
+                  ))}
+              </select>
+              <div className="text-red-500">
+                {formik.touched.condition && formik.errors.condition}
               </div>
             </div>
             <br />
