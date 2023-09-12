@@ -249,7 +249,11 @@ const PaymentInfo = ({
           CheckoutRequestID: checkOutRequestID,
         })
         .then(async (response) => {
-          if (response.data.ResultCode === "0") {
+          if (
+            response.data.ResultCode === "0" &&
+            response.data.ResponseDescription ===
+              "The service request has been accepted successsfully"
+          ) {
             createOrderNow();
             setSuccess(false);
             setValidating(true);
@@ -273,7 +277,7 @@ const PaymentInfo = ({
         .catch((err) => {
           console.log(err.message);
         });
-    }, 30000);
+    }, 2000);
   };
 
   const formik = useFormik({

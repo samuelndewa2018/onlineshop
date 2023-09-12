@@ -35,7 +35,16 @@ const AdminEditProduct = () => {
   const [select, setSelect] = useState(0); // Selected image index
   const [modalOpen, setModalOpen] = useState(false);
   const [index, setIndex] = useState("");
+  const [modalOpen2, setModalOpen2] = useState(false);
+  const [index2, setIndex2] = useState("");
   const [image, setImage] = useState("");
+  const [sizes, setSizes] = useState([{ name: "", price: "", stock: "" }]);
+
+  const handleSizeChange = (index, field, value) => {
+    const updatedSizes = [...formik.values.sizes];
+    updatedSizes[index][field] = value;
+    formik.setFieldValue("sizes", updatedSizes);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -48,6 +57,7 @@ const AdminEditProduct = () => {
       stock: "",
       condition: "",
       images: "",
+      sizes: [{ name: "", price: "", stock: "" }],
     },
     validationSchema: editProductSchema,
     onSubmit: async (values) => {
@@ -61,6 +71,8 @@ const AdminEditProduct = () => {
         const originalPrice = values.originalPrice;
         const discountPrice = values.discountPrice;
         const stock = values.stock;
+        const sizes = values.sizes;
+
         // condition: values.condition,
 
         const newForm = new FormData();
@@ -75,6 +87,11 @@ const AdminEditProduct = () => {
         newForm.append("originalPrice", originalPrice);
         newForm.append("discountPrice", discountPrice);
         newForm.append("stock", stock);
+        sizes.forEach((size, index) => {
+          newForm.append(`sizes[${index}].name`, size.name);
+          newForm.append(`sizes[${index}].price`, size.price);
+          newForm.append(`sizes[${index}].stock`, size.stock);
+        });
 
         await axios.put(`${server}/product/update-product/${productId}`, {
           name,
@@ -85,6 +102,7 @@ const AdminEditProduct = () => {
           discountPrice,
           stock,
           images,
+          sizes,
         });
 
         setLoading(false);
@@ -126,6 +144,7 @@ const AdminEditProduct = () => {
           discountPrice: productData.discountPrice,
           stock: productData.stock,
           condition: productData.condition,
+          sizes: productData.sizes,
         });
 
         setcurrentImages(productData.images);
@@ -150,6 +169,12 @@ const AdminEditProduct = () => {
       };
       reader.readAsDataURL(file);
     });
+  };
+  const handleDeleteSize = (index2) => {
+    const updatedSizes = [...formik.values.sizes];
+    updatedSizes.splice(index2, 1);
+    formik.setFieldValue("sizes", updatedSizes);
+    setModalOpen2(false);
   };
   const handleImageChange2 = (e) => {
     e.preventDefault();
@@ -177,6 +202,11 @@ const AdminEditProduct = () => {
     setModalOpen(true);
     setIndex(index);
     setImage(image);
+  };
+
+  const setOperations2 = async (index2) => {
+    setModalOpen2(true);
+    setIndex2(index2);
   };
   const quillModules = {
     toolbar: [
@@ -212,6 +242,16 @@ const AdminEditProduct = () => {
             cancel={"No, cancel"}
             setModalOpen={setModalOpen}
             performAction={() => deleteImage(index, image)}
+            closeModel={() => setModalOpen(false)}
+          />
+        )}
+        {modalOpen2 && (
+          <CustomModal
+            message={"Are you sure you want to delete this size?"}
+            ok={" Yes, I'm sure"}
+            cancel={"No, cancel"}
+            setModalOpen={setModalOpen}
+            performAction={() => handleDeleteSize(index2)}
             closeModel={() => setModalOpen(false)}
           />
         )}
@@ -303,7 +343,78 @@ const AdminEditProduct = () => {
               </div>
             </div>
             <br />
+            <div>
+              <label className="pb-2">Sizes</label>
+              {formik.values.sizes &&
+                formik.values.sizes.map((size, index) => (
+                  <div key={index}>
+                    <input
+                      type="text"
+                      name={`sizes[${index}].name`}
+                      onChange={(e) =>
+                        handleSizeChange(index, "name", e.target.value)
+                      }
+                      onBlur={formik.handleBlur(`sizes[${index}].name`)}
+                      value={size.name}
+                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      placeholder="Size name"
+                    />
 
+                    <input
+                      type="text"
+                      name={`sizes[${index}].price`}
+                      onChange={(e) =>
+                        handleSizeChange(index, "price", e.target.value)
+                      }
+                      onBlur={formik.handleBlur(`sizes[${index}].price`)}
+                      value={size.price}
+                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      placeholder="Price"
+                    />
+
+                    <input
+                      type="text"
+                      name={`sizes[${index}].stock`}
+                      onChange={(e) =>
+                        handleSizeChange(index, "stock", e.target.value)
+                      }
+                      onBlur={formik.handleBlur(`sizes[${index}].stock`)}
+                      value={size.stock}
+                      className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                      placeholder="Stock"
+                    />
+                    <button
+                      type="button"
+                      // onClick={() => handleDeleteSize(index)}
+                      onClick={() => setOperations2(index)}
+                      className="text-red-500 cursor-pointer"
+                    >
+                      <AiOutlineDelete size={20} />
+                    </button>
+                    <div className="text-red-500">
+                      {/* Display validation errors for sizes (if any) */}
+                      {formik.touched.sizes &&
+                        formik.errors.sizes &&
+                        formik.errors.sizes[index] &&
+                        (formik.errors.sizes[index].name ||
+                          formik.errors.sizes[index].price ||
+                          formik.errors.sizes[index].stock)}
+                    </div>
+                  </div>
+                ))}
+              <button
+                type="button"
+                onClick={() =>
+                  formik.setFieldValue("sizes", [
+                    ...formik.values.sizes,
+                    { name: "", price: "", stock: "" },
+                  ])
+                }
+                className="text-blue-600 underline"
+              >
+                Add Size
+              </button>
+            </div>
             <br />
             <div>
               <label className="pb-2">Original Price</label>
