@@ -198,40 +198,6 @@ const PaymentInfo = ({
   var reqcount = 0;
   const navigate = useNavigate();
 
-  const createOrderNow = async () => {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
-    const order = {
-      cart: orderData?.cart,
-      shippingAddress: orderData?.shippingAddress,
-      shippingPrice: orderData.shippingPrice,
-      user: user && user,
-      totalPrice: orderData?.totalPrice,
-    };
-    order.paymentInfo = {
-      type: "Mpesa",
-      status: "succeeded",
-    };
-    setValidating(true);
-    setSuccess(false);
-    await axios
-      .post(`${server}/order/create-order`, order, config)
-      .then((res) => {
-        setValidating(false);
-        setOpen(false);
-        navigate("/order/success");
-        toast.success("Your Payment is Sucessful and order placed");
-        localStorage.setItem("cartItems", JSON.stringify([]));
-        localStorage.setItem("latestOrder", JSON.stringify([]));
-        setTimeout(() => {
-          window.location.reload();
-        }, 5000);
-      });
-  };
-
   let orderCreated = false;
 
   const stkPushQuery = (checkOutRequestID) => {
@@ -255,8 +221,38 @@ const PaymentInfo = ({
             // createOrderNow();
             if (!orderCreated) {
               // Payment was successful, create the order here.
-              createOrderNow(); // You need to implement this function.
-              orderCreated = true; // Set a flag to indicate that the order has been created.
+              const config = {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              };
+              const order = {
+                cart: orderData?.cart,
+                shippingAddress: orderData?.shippingAddress,
+                shippingPrice: orderData.shippingPrice,
+                user: user && user,
+                totalPrice: orderData?.totalPrice,
+              };
+              order.paymentInfo = {
+                type: "Mpesa",
+                status: "succeeded",
+              };
+              setValidating(true);
+              setSuccess(false);
+              await axios
+                .post(`${server}/order/create-order`, order, config)
+                .then((res) => {
+                  setValidating(false);
+                  setOpen(false);
+                  navigate("/order/success");
+                  toast.success("Your Payment is Sucessful and order placed");
+                  localStorage.setItem("cartItems", JSON.stringify([]));
+                  localStorage.setItem("latestOrder", JSON.stringify([]));
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 5000);
+                });
+              orderCreated = true;
             }
             setSuccess(false);
             setValidating(true);
