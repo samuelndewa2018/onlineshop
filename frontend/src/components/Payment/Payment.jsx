@@ -188,7 +188,6 @@ const PaymentInfo = ({
   const [validating, setValidating] = useState(false);
   const [limit, setLimit] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
-  const [createo, setCreateo] = useState(false);
 
   useEffect(() => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
@@ -218,26 +217,22 @@ const PaymentInfo = ({
     };
     setValidating(true);
     setSuccess(false);
-    await axios
-      .post(`${server}/order/create-order`, order, config)
-      .then((res) => {
-        setValidating(false);
-        setOpen(false);
-        navigate("/order/success");
-        toast.success("Your Payment is Sucessful and order placed");
-        localStorage.setItem("cartItems", JSON.stringify([]));
-        localStorage.setItem("latestOrder", JSON.stringify([]));
-        setTimeout(() => {
-          window.location.reload();
-        }, 5000);
-      });
+    setTimeout(async () => {
+      await axios
+        .post(`${server}/order/create-order`, order, config)
+        .then((res) => {
+          setValidating(false);
+          setOpen(false);
+          navigate("/order/success");
+          toast.success("Your Payment is Sucessful and order placed");
+          localStorage.setItem("cartItems", JSON.stringify([]));
+          localStorage.setItem("latestOrder", JSON.stringify([]));
+          setTimeout(() => {
+            window.location.reload();
+          }, 5000);
+        });
+    }, 5000);
   };
-
-  useEffect(() => {
-    if (createo) {
-      createOrderNow();
-    }
-  }, [createo]);
 
   const stkPushQuery = (checkOutRequestID) => {
     const timer = setInterval(async () => {
@@ -257,8 +252,9 @@ const PaymentInfo = ({
         })
         .then(async (response) => {
           if (response.data.ResultCode === "0") {
-            setCreateo(true);
+            createOrderNow();
             setSuccess(false);
+            setValidating(true);
             clearInterval(timer);
             //successfull payment
             setLoading(false);
@@ -279,7 +275,7 @@ const PaymentInfo = ({
         .catch((err) => {
           console.log(err.message);
         });
-    }, 2000);
+    }, 5000);
   };
 
   const formik = useFormik({
