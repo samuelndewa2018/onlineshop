@@ -68,7 +68,7 @@ app.use("/api/v2/event", event);
 app.use("/api/v2/coupon", coupon);
 app.use("/api/v2/payment", payment);
 app.use("/api/v2/withdraw", withdraw);
-app.use("/api/v2/mpesa", mpesaRoutes);
+app.use("/api/v2/pesa", mpesaRoutes);
 app.use("/api/v2/statements", statementsRoutes);
 app.use("/api/v2/category", category);
 app.use("/api/v2/carousel", carousel);

@@ -148,8 +148,8 @@ router.get("/registerurl", (req, resp) => {
           {
             ShortCode: "174379",
             ResponseType: "Complete",
-            ConfirmationURL: `${callbackurl}/api/v2/mpesa/confirmation`,
-            ValidationURL: `${callbackurl}/api/v2/mpesa/validation`,
+            ConfirmationURL: `${callbackurl}/api/v2/pesa/confirmation`,
+            ValidationURL: `${callbackurl}/api/v2/pesa/validation`,
           },
           {
             headers: {

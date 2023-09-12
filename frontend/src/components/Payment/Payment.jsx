@@ -245,7 +245,7 @@ const PaymentInfo = ({
         return;
       }
       await axios
-        .post(`${server}/mpesa/stkpushquery`, {
+        .post(`${server}/pesa/stkpushquery`, {
           CheckoutRequestID: checkOutRequestID,
         })
         .then(async (response) => {
@@ -292,7 +292,7 @@ const PaymentInfo = ({
       await setLoading(true);
       await axios
         .post(
-          `${server}/mpesa/stk`,
+          `${server}/pesa/stk`,
           { phone, amount },
           { withCredentials: true }
         )
