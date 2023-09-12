@@ -297,7 +297,9 @@ const ProductDetails = ({ data, isEvent }) => {
                       }
                       `}
                     >
-                      {selectedSize && selectedQuantity !== 0
+                      {selectedSize &&
+                      selectedQuantity !== 0 &&
+                      selectedQuantity > 0
                         ? `${selectedQuantity} products remaining`
                         : selectedSize && selectedQuantity <= 0
                         ? `Out of Stock`
