@@ -73,6 +73,29 @@ router.post(
 
               await shop.save();
             }
+            order.cart.forEach(async (o) => {
+              if (o.sizes.length > 0) {
+                await updateOrderWithSizes(o._id, o.qty, o.size);
+              }
+              await updateOrder(o._id, o.qty);
+            });
+
+            async function updateOrder(id, qty) {
+              const product = await Product.findById(id);
+
+              product.stock -= qty;
+              product.sold_out += qty;
+
+              await product.save({ validateBeforeSave: false });
+            }
+
+            async function updateOrderWithSizes(id, qty, size) {
+              const product = await Product.findById(id);
+
+              product.sizes.find((s) => s.name === size).stock -= qty;
+
+              await product.save({ validateBeforeSave: false });
+            }
           } catch (error) {
             console.error(
               `Error updating availableBalance for shop ${shopId}: ${error}`
@@ -1122,7 +1145,10 @@ router.put(
       if (!order) {
         return next(new ErrorHandler("Order not found with this id", 400));
       }
-      if (req.body.status === "Transferred to delivery partner") {
+      if (
+        req.body.status === "Transferred to delivery partner" &&
+        order.paymentInfo.status !== "succeeded"
+      ) {
         order.cart.forEach(async (o) => {
           if (o.sizes.length > 0) {
             await updateOrderWithSizes(o._id, o.qty, o.size);
