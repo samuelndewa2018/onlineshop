@@ -135,6 +135,49 @@ router.post("/callback", (req, res) => {
   res.status(200).json("ok");
 });
 
+// REGISTER URL FOR C2B
+app.get("/registerurl", (req, resp) => {
+  getAccessToken()
+    .then((accessToken) => {
+      const callbackurl = process.env.CALL_BACK_URL;
+      const url = "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl";
+      const auth = "Bearer " + accessToken;
+      axios
+        .post(
+          url,
+          {
+            ShortCode: "174379",
+            ResponseType: "Complete",
+            ConfirmationURL: `${callbackurl}/confirmation`,
+            ValidationURL: `${callbackurl}/validation`,
+          },
+          {
+            headers: {
+              Authorization: auth,
+            },
+          }
+        )
+        .then((response) => {
+          resp.status(200).json(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+          resp.status(500).send("❌ Request failed");
+        });
+    })
+    .catch(console.log);
+});
+
+app.get("/confirmation", (req, res) => {
+  console.log("All transaction will be sent to this URL");
+  console.log(req.body);
+});
+
+app.get("/validation", (req, resp) => {
+  console.log("Validating payment");
+  console.log(req.body);
+});
+
 //stk query
 router.post(
   "/stkpushquery",
