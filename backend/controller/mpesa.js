@@ -105,7 +105,7 @@ const callback_root = process.env.CALL_BACK_ROOT;
 const callbackurl = process.env.CALL_BACK_URL;
 
 //callback stk
-router.post("/callback", (req, res) => {
+router.post("/callback", async (req, res) => {
   if (!req.body.Body.stkCallback.CallbackMetadata) {
     console.log(req.body.Body.stkCallback.ResultDesc);
     res.status(200).json("ok");
@@ -125,7 +125,7 @@ router.post("/callback", (req, res) => {
   transaction.mpesa_ref = code;
   transaction.amount = amount;
 
-  transaction
+  await transaction
     .save()
     .then((data) => {
       console.log({ message: "transaction saved successfully", data });
