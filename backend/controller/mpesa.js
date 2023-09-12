@@ -136,7 +136,7 @@ router.post("/callback", (req, res) => {
 });
 
 // REGISTER URL FOR C2B
-app.get("/registerurl", (req, resp) => {
+router.get("/registerurl", (req, resp) => {
   getAccessToken()
     .then((accessToken) => {
       const callbackurl = process.env.CALL_BACK_URL;
@@ -168,12 +168,12 @@ app.get("/registerurl", (req, resp) => {
     .catch(console.log);
 });
 
-app.get("/confirmation", (req, res) => {
+router.get("/confirmation", (req, res) => {
   console.log("All transaction will be sent to this URL");
   console.log(req.body);
 });
 
-app.get("/validation", (req, resp) => {
+router.get("/validation", (req, resp) => {
   console.log("Validating payment");
   console.log(req.body);
 });
