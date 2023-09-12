@@ -232,6 +232,8 @@ const PaymentInfo = ({
       });
   };
 
+  let orderCreated = false;
+
   const stkPushQuery = (checkOutRequestID) => {
     const timer = setInterval(async () => {
       reqcount += 1;
@@ -249,12 +251,13 @@ const PaymentInfo = ({
           CheckoutRequestID: checkOutRequestID,
         })
         .then(async (response) => {
-          if (
-            response.data.ResultCode === "0" &&
-            response.data.ResponseDescription ===
-              "The service request has been accepted successsfully"
-          ) {
-            createOrderNow();
+          if (response.data.ResultCode === "0") {
+            // createOrderNow();
+            if (!orderCreated) {
+              // Payment was successful, create the order here.
+              createOrderNow(); // You need to implement this function.
+              orderCreated = true; // Set a flag to indicate that the order has been created.
+            }
             setSuccess(false);
             setValidating(true);
             clearInterval(timer);
