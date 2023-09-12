@@ -171,11 +171,13 @@ router.get("/registerurl", (req, resp) => {
 router.get("/confirmation", (req, res) => {
   console.log("All transaction will be sent to this URL");
   console.log(req.body);
+  res.status(200).json("Confirmation success");
 });
 
-router.get("/validation", (req, resp) => {
+router.get("/validation", (req, res) => {
   console.log("Validating payment");
   console.log(req.body);
+  res.status(200).json("Validating success");
 });
 
 //stk query
