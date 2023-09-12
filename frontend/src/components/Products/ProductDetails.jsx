@@ -289,7 +289,7 @@ const ProductDetails = ({ data, isEvent }) => {
                       ${
                         selectedSize && selectedQuantity !== 0
                           ? `text-[#5500ff]`
-                          : selectedSize && selectedQuantity === 0
+                          : selectedSize && selectedQuantity <= 0
                           ? `text-red-500`
                           : !selectedSize && data.stock !== 0
                           ? `text-[#5500ff]`
@@ -299,7 +299,7 @@ const ProductDetails = ({ data, isEvent }) => {
                     >
                       {selectedSize && selectedQuantity !== 0
                         ? `${selectedQuantity} products remaining`
-                        : selectedSize && selectedQuantity === 0
+                        : selectedSize && selectedQuantity <= 0
                         ? `Out of Stock`
                         : !selectedSize && data.stock !== 0
                         ? `${data.stock} products remaining`
@@ -316,7 +316,7 @@ const ProductDetails = ({ data, isEvent }) => {
                               <button
                                 key={index}
                                 className={`px-4 py-2 rounded border ${
-                                  size.stock === 0
+                                  size.stock <= 0
                                     ? "text-gray-300	"
                                     : "text-black"
                                 }  ${
@@ -331,12 +331,12 @@ const ProductDetails = ({ data, isEvent }) => {
                                 }}
                                 disabled={
                                   selectedSize === size.name &&
-                                  selectedQuantity === 0
+                                  selectedQuantity <= 0
                                 }
                                 style={{
                                   opacity:
                                     selectedSize === size.name &&
-                                    selectedQuantity === 0
+                                    selectedQuantity <= 0
                                       ? 0.2
                                       : 1,
                                 }}
@@ -407,7 +407,7 @@ const ProductDetails = ({ data, isEvent }) => {
                     )}
 
                     <div className="flex gap-4">
-                      {data.stock === 0 ? (
+                      {data.stock <= 0 ? (
                         <div
                           className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
                           onClick={() => notifyMe()}
@@ -416,7 +416,7 @@ const ProductDetails = ({ data, isEvent }) => {
                             Notify Me <AiOutlineHeart className="ml-1" />
                           </span>
                         </div>
-                      ) : selectedSize && selectedQuantity === 0 ? (
+                      ) : selectedSize && selectedQuantity <= 0 ? (
                         <div
                           className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
                           onClick={() => notifyMe()}
