@@ -188,6 +188,7 @@ const PaymentInfo = ({
   const [validating, setValidating] = useState(false);
   const [limit, setLimit] = useState(false);
   const [paymentDone, setPaymentDone] = useState(false);
+  const [createo, setCreateo] = useState(false);
 
   useEffect(() => {
     const orderData = JSON.parse(localStorage.getItem("latestOrder"));
@@ -232,6 +233,12 @@ const PaymentInfo = ({
       });
   };
 
+  useEffect(() => {
+    if (createo) {
+      createOrderNow();
+    }
+  }, [createo]);
+
   const stkPushQuery = (checkOutRequestID) => {
     const timer = setInterval(async () => {
       reqcount += 1;
@@ -249,12 +256,8 @@ const PaymentInfo = ({
           CheckoutRequestID: checkOutRequestID,
         })
         .then(async (response) => {
-          if (
-            response.data.ResultCode === "0" &&
-            response.data.ResponseDescription ===
-              "The service request has been accepted successsfully"
-          ) {
-            createOrderNow();
+          if (response.data.ResultCode === "0") {
+            setCreateo(true);
             setSuccess(false);
             setValidating(true);
             clearInterval(timer);
