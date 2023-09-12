@@ -259,7 +259,6 @@ const PaymentInfo = ({
           if (response.data.ResultCode === "0") {
             setCreateo(true);
             setSuccess(false);
-            setValidating(true);
             clearInterval(timer);
             //successfull payment
             setLoading(false);
