@@ -79,7 +79,7 @@ router.post(
         PartyA: `254${phone}`,
         PartyB: short_code,
         PhoneNumber: `254${phone}`,
-        CallBackURL: `${callbackurl}/${callbackroute}`,
+        CallBackURL: `${callbackurl}/api/v2/mpesa/${callbackroute}`,
         AccountReference: "eShop",
         TransactionDesc: "Lipa na M-PESA",
       };
@@ -148,8 +148,8 @@ router.get("/registerurl", (req, resp) => {
           {
             ShortCode: "174379",
             ResponseType: "Complete",
-            ConfirmationURL: `${callbackurl}/confirmation`,
-            ValidationURL: `${callbackurl}/validation`,
+            ConfirmationURL: `${callbackurl}/api/v2/mpesa/confirmation`,
+            ValidationURL: `${callbackurl}/api/v2/mpesa/validation`,
           },
           {
             headers: {
