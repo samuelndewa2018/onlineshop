@@ -198,7 +198,39 @@ const PaymentInfo = ({
   var reqcount = 0;
   const navigate = useNavigate();
 
-  let orderCreated = false;
+  const createOrderNow = async () => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    const order = {
+      cart: orderData?.cart,
+      shippingAddress: orderData?.shippingAddress,
+      shippingPrice: orderData.shippingPrice,
+      user: user && user,
+      totalPrice: orderData?.totalPrice,
+    };
+    order.paymentInfo = {
+      type: "Mpesa",
+      status: "succeeded",
+    };
+    setValidating(true);
+    setSuccess(false);
+    await axios
+      .post(`${server}/order/create-order`, order, config)
+      .then((res) => {
+        setValidating(false);
+        setOpen(false);
+        navigate("/order/success");
+        toast.success("Your Payment is Sucessful and order placed");
+        localStorage.setItem("cartItems", JSON.stringify([]));
+        localStorage.setItem("latestOrder", JSON.stringify([]));
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000);
+      });
+  };
 
   const stkPushQuery = (checkOutRequestID) => {
     const timer = setInterval(async () => {
@@ -217,43 +249,12 @@ const PaymentInfo = ({
           CheckoutRequestID: checkOutRequestID,
         })
         .then(async (response) => {
-          if (response.data.ResultCode === "0") {
-            // createOrderNow();
-            if (!orderCreated) {
-              // Payment was successful, create the order here.
-              const config = {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              };
-              const order = {
-                cart: orderData?.cart,
-                shippingAddress: orderData?.shippingAddress,
-                shippingPrice: orderData.shippingPrice,
-                user: user && user,
-                totalPrice: orderData?.totalPrice,
-              };
-              order.paymentInfo = {
-                type: "Mpesa",
-                status: "succeeded",
-              };
-              setValidating(true);
-              setSuccess(false);
-              await axios
-                .post(`${server}/order/create-order`, order, config)
-                .then((res) => {
-                  setValidating(false);
-                  setOpen(false);
-                  navigate("/order/success");
-                  toast.success("Your Payment is Sucessful and order placed");
-                  localStorage.setItem("cartItems", JSON.stringify([]));
-                  localStorage.setItem("latestOrder", JSON.stringify([]));
-                  setTimeout(() => {
-                    window.location.reload();
-                  }, 5000);
-                });
-              orderCreated = true;
-            }
+          if (
+            response.data.ResultCode === "0" &&
+            response.data.ResponseDescription ===
+              "The service request has been accepted successsfully"
+          ) {
+            createOrderNow();
             setSuccess(false);
             setValidating(true);
             clearInterval(timer);
