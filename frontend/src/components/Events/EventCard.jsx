@@ -38,7 +38,7 @@ const EventCard = ({ active, data }) => {
           </div>
           <div class="w-full shrink-0 grow-0 basis-auto lg:w-6/12 xl:w-8/12">
             <div class="px-6 py-12 md:px-12">
-              <h2 class="mb-6 pb-2 text-4xl font-bold">{data?.name}</h2>
+              <h2 class="mb-6 pb-2 font-bold">{data?.name}</h2>
               <p class="mb-6 pb-2 text-neutral-500 dark:text-neutral-300">
                 {data?.description}
               </p>
