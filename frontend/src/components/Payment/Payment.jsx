@@ -217,6 +217,7 @@ const PaymentInfo = ({
     };
     setValidating(true);
     setSuccess(false);
+    setSuccessMessage("Validating your Payment");
     setTimeout(async () => {
       await axios
         .post(`${server}/order/create-order`, order, config)
@@ -234,7 +235,8 @@ const PaymentInfo = ({
     }, 5000);
   };
 
-  const stkPushQuery = (checkOutRequestID) => {
+  const stkPushQuery = async (checkOutRequestID) => {
+    await setCounting(true);
     const timer = setInterval(async () => {
       reqcount += 1;
       if (reqcount === 30) {
@@ -251,22 +253,69 @@ const PaymentInfo = ({
           CheckoutRequestID: checkOutRequestID,
         })
         .then(async (response) => {
-          if (response.data.ResultCode === "0") {
-            createOrderNow();
+          if (
+            response.data.ResultCode === "0" &&
+            response.data.ResponseDescription ===
+              "The service request has been accepted successsfully"
+          ) {
             setSuccess(false);
             setValidating(true);
             clearInterval(timer);
+            setSuccessMessage("Validating your Payment");
             //successfull payment
             setLoading(false);
+            const config = {
+              headers: {
+                "Content-Type": "application/json",
+              },
+            };
+            const order = {
+              cart: orderData?.cart,
+              shippingAddress: orderData?.shippingAddress,
+              shippingPrice: orderData.shippingPrice,
+              user: user && user,
+              totalPrice: orderData?.totalPrice,
+            };
+
+            order.paymentInfo = {
+              type: "Mpesa",
+              status: "succeeded",
+            };
+
+            await axios
+              .post(`${server}/order/create-order`, order, config)
+              .then((res) => {
+                setOpen(false);
+                navigate("/order/success");
+                toast.success("Your Payment is Sucessful and order placed");
+                localStorage.setItem("cartItems", JSON.stringify([]));
+                localStorage.setItem("latestOrder", JSON.stringify([]));
+                setTimeout(() => {
+                  window.location.reload();
+                }, 5000);
+              });
             // toast.success("Your Payment is Validating");
           } else if (response.errorCode === "500.001.1001") {
+            console.log(response);
           } else {
             clearInterval(timer);
             setLoading(false);
             setError(true);
             setSuccess(false);
-            setErrorMessage(response.data.ResultDesc);
-            toast.error(response.data.ResultDesc);
+            setCounting(false);
+            if (response.data.ResultDesc === "Request cancelled by user") {
+              setErrorMessage("You cancelled the transaction");
+              toast.error("You cancelled the transaction");
+            } else if (
+              response.data.ResultDesc ===
+              "The initiator information is invalid."
+            ) {
+              setErrorMessage("You entered the wrong PIN");
+              toast.error("You entered the wrong PIN");
+            } else {
+              setErrorMessage(response.data.ResultDesc);
+              toast.error(response.data.ResultDesc);
+            }
             setTimeout(() => {
               window.location.reload();
             }, 10000);
@@ -277,7 +326,6 @@ const PaymentInfo = ({
         });
     }, 30000);
   };
-
   const formik = useFormik({
     initialValues: {
       phone: `${user && user.phoneNumber ? user && user.phoneNumber : ""}`,
@@ -328,6 +376,27 @@ const PaymentInfo = ({
       e.stopPropagation();
     }
   };
+
+  const [seconds, setSeconds] = useState(31);
+  const [counting, setCounting] = useState(false);
+  useEffect(() => {
+    let interval;
+
+    if (counting) {
+      interval = setInterval(() => {
+        if (seconds > 0) {
+          setSeconds(seconds - 1);
+        } else {
+          clearInterval(interval);
+          setCounting(false);
+        }
+      }, 1000);
+    } else {
+      clearInterval(interval);
+    }
+
+    return () => clearInterval(interval);
+  }, [seconds, counting]);
 
   return (
     <div className="w-full 800px:w-[95%] bg-[#fff] rounded-md p-5 pb-8">
@@ -418,6 +487,7 @@ const PaymentInfo = ({
                   <button
                     disabled={
                       loading ||
+                      counting ||
                       success ||
                       validating ||
                       error ||
@@ -431,16 +501,31 @@ const PaymentInfo = ({
                         <Spinner /> Processing...
                       </p>
                     ) : (
-                      <p className="">
-                        {success
-                          ? "Put PIN on your Phone"
-                          : validating
-                          ? "Validating Payment..."
-                          : error
-                          ? `${errorMessage}`
-                          : amount1 > 150000
-                          ? "Amout exceed Mpesa limt"
-                          : "Pay Now"}
+                      <p>
+                        {counting ? (
+                          <div class="text-center flex w-full items-center justify-center">
+                            <div class="mr-1 font-extralight">
+                              contacting Mpesa in
+                            </div>
+                            <div class="w-24 flex mx-1 p-2  text-yellow-500 rounded-lg">
+                              <div
+                                class="font-mono mr-2 leading-none"
+                                x-text="seconds"
+                              >
+                                {seconds}
+                              </div>
+                              <div class="font-mono leading-none">Seconds</div>
+                            </div>
+                          </div>
+                        ) : validating ? (
+                          "Validating Payment..."
+                        ) : error ? (
+                          `${errorMessage}`
+                        ) : amount1 > 150000 ? (
+                          "Amout exceed Mpesa limt"
+                        ) : (
+                          "Pay Now"
+                        )}
                       </p>
                     )}
                   </button>

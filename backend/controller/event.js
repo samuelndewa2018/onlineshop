@@ -91,12 +91,12 @@ router.delete(
     try {
       const event = await Event.findById(req.params.id);
 
-      for (let i = 0; 1 < product.images.length; i++) {
+      for (let i = 0; 1 < event?.images.length; i++) {
         const result = await cloudinary.v2.uploader.destroy(
-          event.images[i].public_id
+          event?.images[i].public_id
         );
       }
-      await event.remove();
+      await event.deleteOne({ _id: req.params.id });
 
       res.status(201).json({
         success: true,
