@@ -238,19 +238,6 @@ const PaymentInfo = ({
   const stkPushQuery = async (checkOutRequestID) => {
     await setCounting(true);
     const timer = setInterval(async () => {
-      reqcount += 1;
-      if (reqcount === 1) {
-        clearInterval(timer);
-        setLoading(false);
-        toast.error("You took too long to pay");
-        setSuccess(false);
-        setError(true);
-        setErrorMessage("You took too long to pay");
-        setTimeout(() => {
-          window.location.reload();
-        }, 10000);
-        return;
-      }
       await axios
         .post(`${server}/pesa/stkpushquery`, {
           CheckoutRequestID: checkOutRequestID,
@@ -315,18 +302,32 @@ const PaymentInfo = ({
             ) {
               setErrorMessage("You entered the wrong PIN");
               toast.error("You entered the wrong PIN");
+            } else if (
+              response.data.ResultDesc === "DS timeout user cannot be reached"
+            ) {
+              setErrorMessage(
+                "Sorry, we couldn't reach your number. Try Again"
+              );
+              toast.error("Sorry, we couldn't reach your number");
             } else {
               setErrorMessage(response.data.ResultDesc);
               toast.error(response.data.ResultDesc);
             }
-            setTimeout(() => {
-              window.location.reload();
-            }, 10000);
           }
         })
         .catch((err) => {
           console.log(err.message);
         });
+      reqcount += 1;
+      if (reqcount === 1 && errorMessage === "") {
+        clearInterval(timer);
+        setLoading(false);
+        toast.error("You took too long to pay");
+        setSuccess(false);
+        setError(true);
+        setErrorMessage("You took too long to pay");
+        return;
+      }
     }, 30000);
   };
   const formik = useFormik({
@@ -430,12 +431,14 @@ const PaymentInfo = ({
                   role="alert"
                 >
                   <p>{errorMessage}</p>
-                  {errorMessage === "You took too long to pay" && (
-                    <p className="text-xs text-gray-900 dark:text-white">
-                      If your account has been debited please call or live chat
-                      us 0712012113
-                    </p>
-                  )}
+                  <p className="text-xs text-gray-900 dark:text-white">
+                    If your account has been debited please call or live chat us
+                    0712012113
+                  </p>
+
+                  <p className="text-xs text-gray-900 dark:text-white">
+                    (Refresh this page to send stk push again)
+                  </p>
                 </div>
               )}
               {success && (
