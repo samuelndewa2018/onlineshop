@@ -239,13 +239,16 @@ const PaymentInfo = ({
     await setCounting(true);
     const timer = setInterval(async () => {
       reqcount += 1;
-      if (reqcount === 30) {
+      if (reqcount === 1) {
         clearInterval(timer);
         setLoading(false);
         toast.error("You took too long to pay");
         setSuccess(false);
         setError(true);
         setErrorMessage("You took too long to pay");
+        setTimeout(() => {
+          window.location.reload();
+        }, 10000);
         return;
       }
       await axios
@@ -423,20 +426,26 @@ const PaymentInfo = ({
             <div className="">
               {error && (
                 <div
-                  className="bg-red-100 border border-red-400 text-red-700 px-1 py-1 text-center mb-2 rounded relative"
+                  className="bg-red-100 border block border-red-400 text-red-700 px-1 py-1 text-center mb-2 rounded relative"
                   role="alert"
                 >
                   <p>{errorMessage}</p>
+                  {errorMessage === "You took too long to pay" && (
+                    <p className="text-xs text-gray-900 dark:text-white">
+                      If your account has been debited please call or live chat
+                      us 0712012113
+                    </p>
+                  )}
                 </div>
               )}
-              {/* {success && (
+              {success && (
                 <div
                   className="bg-green-100 border border-green-400 text-green-700 px-1 py-1 text-center mb-2 rounded relative"
                   role="alert"
                 >
                   <p>{successMessage}</p>
                 </div>
-              )} */}
+              )}
             </div>
             <div className=" w-ful lg:flex sm:block border-b appear__smoothly">
               <div className="items-center">
