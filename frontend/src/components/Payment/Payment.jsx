@@ -294,8 +294,10 @@ const PaymentInfo = ({
             setSuccess(false);
             setCounting(false);
             if (response.data.ResultDesc === "Request cancelled by user") {
-              setErrorMessage("You cancelled the transaction");
-              toast.error("You cancelled the transaction");
+              setErrorMessage(
+                "You cancelled the transaction or took too long to pay"
+              );
+              toast.error("Transaction not completed");
             } else if (
               response.data.ResultDesc ===
               "The initiator information is invalid."
@@ -318,16 +320,16 @@ const PaymentInfo = ({
         .catch((err) => {
           console.log(err.message);
         });
-      reqcount += 1;
-      if (reqcount === 1 && errorMessage === "") {
-        clearInterval(timer);
-        setLoading(false);
-        toast.error("You took too long to pay");
-        setSuccess(false);
-        setError(true);
-        setErrorMessage("You took too long to pay");
-        return;
-      }
+      // reqcount += 1;
+      // if (reqcount === 1 && errorMessage === "") {
+      //   clearInterval(timer);
+      //   setLoading(false);
+      //   toast.error("You took too long to pay");
+      //   setSuccess(false);
+      //   setError(true);
+      //   setErrorMessage("You took too long to pay");
+      //   return;
+      // }
     }, 30000);
   };
   const formik = useFormik({
