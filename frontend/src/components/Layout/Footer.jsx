@@ -116,8 +116,8 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:gird-cols-3 lg:grid-cols-4 gap-6 sm:px-8 px-5 py-4 lg:py-8 sm:text-center">
           <ul className="text-center sm:text-start flex sm:block flex-col items-center">
             <img
-              src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
-              className="w-28 h-28 m-auto"
+              src="https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png"
+              className="w-40 h-28 m-auto"
               alt=""
               style={{ filter: "brightness(0) invert(1)" }}
             />

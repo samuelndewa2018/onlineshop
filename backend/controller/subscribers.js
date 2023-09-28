@@ -1437,7 +1437,7 @@ router.post("/send-emails", async (req, res) => {
       attachments: [
         {
           filename: "logo.png",
-          path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
+          path: "https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png",
           cid: "logo", //same cid value as in the html img src
         },
       ],
@@ -1933,7 +1933,7 @@ router.delete("/delete-subscribe", async (req, res) => {
       attachments: [
         {
           filename: "logo.png",
-          path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
+          path: "https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png",
           cid: "logo",
         },
       ],

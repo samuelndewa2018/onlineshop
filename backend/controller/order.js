@@ -110,7 +110,7 @@ router.post(
         }));
         attachments.push({
           filename: "logo.png",
-          path: `https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png`,
+          path: `https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png`,
           cid: "logo",
         });
 

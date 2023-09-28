@@ -216,8 +216,8 @@ const Header = ({ activeHeading, activeItem }) => {
           <div>
             <Link to="/">
               <img
-                src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
-                className="w-28 h-28"
+                src="https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png"
+                className="w-40 h-28"
                 alt=""
               />
             </Link>
@@ -241,11 +241,13 @@ const Header = ({ activeHeading, activeItem }) => {
               <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
                 <div className="w-full flex items-start-py-3">
                   <img
-                    src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
+                    src="https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png"
                     alt=""
-                    className="w-[40px] h-[40px] mr-[10px]"
+                    className="w-[70px] h-[60px] mr-[10px]"
                   />
-                  <h1>We are sorry, No such Product in our store</h1>
+                  <h1 className="mt-3">
+                    We are sorry, No such Product in our store
+                  </h1>
                 </div>
               </div>
             ) : searchData && searchData.length !== 0 && searchTerm !== "" ? (
@@ -408,9 +410,9 @@ const Header = ({ activeHeading, activeItem }) => {
           <div>
             <Link to="/">
               <img
-                src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
+                src="https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png"
                 alt=""
-                className="cursor-pointer h-20 w-20"
+                className="cursor-pointer h-20 w-30"
               />
             </Link>
           </div>
@@ -498,9 +500,9 @@ const Header = ({ activeHeading, activeItem }) => {
                   <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4">
                     <div className="w-full flex items-start-py-3">
                       <img
-                        src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
+                        src="https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png"
                         alt=""
-                        className="w-[40px] h-[40px] mr-[10px]"
+                        className="w-[70px] h-[60px] mr-[10px]"
                       />
                       <h1>We are sorry, No such Product in our store</h1>
                     </div>
@@ -603,9 +605,9 @@ const Header = ({ activeHeading, activeItem }) => {
                 <div className="absolute min-h-[30vh] bg-slate-50 shadow-sm-2 z-[9] p-4 rounded-md">
                   <div className="w-full flex items-start-py-3">
                     <img
-                      src="https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png"
+                      src="https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png"
                       alt=""
-                      className="w-[40px] h-[40px] mr-[10px]"
+                      className="w-[70px] h-[60px] mr-[10px]"
                     />
                     <h1>We are sorry, No such Product in our store</h1>
                   </div>

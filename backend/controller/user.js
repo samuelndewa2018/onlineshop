@@ -530,7 +530,7 @@ router.post("/create-user", async (req, res, next) => {
         attachments: [
           {
             filename: "logo.png",
-            path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
+            path: "https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png",
             cid: "logo",
           },
         ],
@@ -830,7 +830,7 @@ router.post(
                                 valign="top"
                               >
                               <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 25px;">
-                              <img src="https://res.cloudinary.com/bramuels/image/upload/v1686982779/logo_kp04bo.svg" alt="eShoplogo"/>
+                              <img src="htpps://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png" alt="eShoplogo"/>
                             </div>
                                 <p
                                   style="
@@ -1058,7 +1058,7 @@ router.post(
         attachments: [
           {
             filename: "logo.png",
-            path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
+            path: "https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png",
             cid: "logo",
           },
         ],
@@ -1800,7 +1800,7 @@ router.post(
         attachments: [
           {
             filename: "logo.png",
-            path: "https://res.cloudinary.com/bramuels/image/upload/v1690362886/logo/logo_kfbukz.png",
+            path: "https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png",
             cid: "logo",
           },
         ],
@@ -2172,7 +2172,7 @@ router.post(
                                 valign="top"
                               >
                               <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 25px;">
-                              <img src="https://res.cloudinary.com/bramuels/image/upload/v1686982779/logo_kp04bo.svg" alt="eShoplogo"/>
+                              <img src="https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png" alt="eShoplogo"/>
                             </div>
                                 <p
                                   style="
@@ -2650,7 +2650,7 @@ router.post(
                                 valign="top"
                               >
                               <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 25px;">
-                              <img src="https://res.cloudinary.com/bramuels/image/upload/v1686982779/logo_kp04bo.svg" alt="eShoplogo"/>
+                              <img src="https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png" alt="eShoplogo"/>
                             </div>
                                 <p
                                   style="
