@@ -11,6 +11,7 @@ app.use(
       "https://onlineshop-2xjp.vercel.app",
       "https://onlineshop-delta.vercel.app",
       "https://ninetyone.co.ke",
+      "https://www.ninetyone.co.ke/",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
