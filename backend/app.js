@@ -8,6 +8,7 @@ const cors = require("cors");
 app.use(
   cors({
     origin: [
+      "https://www.ninetyone.co.ke",
       "https://onlineshop-2xjp.vercel.app",
       "https://onlineshop-delta.vercel.app",
       "https://ninetyone.co.ke",
