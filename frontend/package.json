@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "version": "0.1.0",
+  "homepage": "https://ninetyone.co.ke/",
   "private": true,
   "proxy": "https://onlineshop-delta.vercel.app/api/v2",
   "dependencies": {
