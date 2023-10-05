@@ -10,6 +10,7 @@ app.use(
     origin: [
       "https://www.ninetyone.co.ke",
       "https://ninetyone.co.ke",
+      "www.ninetyone.co.ke",
       "https://onlineshop-2xjp.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
