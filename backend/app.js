@@ -12,6 +12,7 @@ app.use(
       "https://www.ninetyone.co.ke",
       "https://ninetyone.co.ke/",
       "https://ninetyone.co.ke",
+      "ninetyone.co.ke",
       "www.ninetyone.co.ke",
       "https://onlineshop-2xjp.vercel.app",
       "https://www.ninetyone.co.ke/payment",
