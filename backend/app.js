@@ -7,7 +7,7 @@ const cors = require("cors");
 
 app.use(
   cors({
-    origin: ["ninetyone.co.ke"],
+    origin: ["https://www.ninetyone.co.ke", "https://ninetyone.co.ke"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
       "Content-Type",
