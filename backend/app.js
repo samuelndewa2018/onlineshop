@@ -7,7 +7,15 @@ const cors = require("cors");
 
 app.use(
   cors({
-    origin: "https://www.ninetyone.co.ke",
+    origin: [
+      "https://www.ninetyone.co.ke/",
+      "https://www.ninetyone.co.ke",
+      "https://ninetyone.co.ke/",
+      "https://ninetyone.co.ke",
+      "www.ninetyone.co.ke",
+      "https://onlineshop-2xjp.vercel.app",
+      "https://www.ninetyone.co.ke/payment",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
       "Content-Type",
