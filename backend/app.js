@@ -5,25 +5,25 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
-app.use(
-  cors({
-    origin: [
-      "https://www.ninetyone.co.ke/",
-      "https://www.ninetyone.co.ke",
-      "https://ninetyone.co.ke/",
-      "https://ninetyone.co.ke",
-      "www.ninetyone.co.ke",
-      "https://onlineshop-2xjp.vercel.app",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "Access-Control-Allow-Credentials",
-    ],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: [
+//       "https://www.ninetyone.co.ke/",
+//       "https://www.ninetyone.co.ke",
+//       "https://ninetyone.co.ke/",
+//       "https://ninetyone.co.ke",
+//       "www.ninetyone.co.ke",
+//       "https://onlineshop-2xjp.vercel.app",
+//     ],
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//     allowedHeaders: [
+//       "Content-Type",
+//       "Authorization",
+//       "Access-Control-Allow-Credentials",
+//     ],
+//     credentials: true,
+//   })
+// );
 
 app.use(
   express.json({
