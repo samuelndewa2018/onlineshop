@@ -230,57 +230,52 @@ router.post(
 );
 
 //withdrawal for seller
-router.get(
-  "/withdral",
+router.post(
+  "/withdrawal",
   catchAsyncErrors(async (req, res) => {
+    const { phoneNumber, amount } = req.body;
+    console.log(phoneNumber);
     getAccessToken()
       .then((accessToken) => {
         const securityCredential = process.env.SECURITY_CREDENTIAL;
         const url =
-            "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest",
-          auth = "Bearer " + accessToken;
+          "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest";
+        const auth = "Bearer " + accessToken;
         request(
           {
             url: url,
-
             method: "POST",
-
             headers: {
               Authorization: auth,
             },
-
             json: {
               InitiatorName: "testapi",
-
               SecurityCredential: securityCredential,
-
               CommandID: "PromotionPayment",
-
-              Amount: "1",
-
+              Amount: amount,
               PartyA: "600998",
-
-              PartyB: "254712012113",
-
+              PartyB: `254${phoneNumber}`,
               Remarks: "Withdrawal",
-
               QueueTimeOutURL: `${callbackurl}/b2c/queue`,
-
               ResultURL: `${callbackurl}/b2c/result`,
-
               Occasion: "Withdrawal",
             },
           },
           function (error, response, body) {
             if (error) {
               console.log(error);
+              res.status(500).json({ error: "Failed to initiate withdrawal" });
+            } else {
+              res.status(200).json(body);
+              console.log(body);
             }
-            res.status(200).json(body);
-            console.log(body);
           }
         );
       })
-      .catch(console.log);
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({ error: "Failed to get access token" });
+      });
   })
 );
 
