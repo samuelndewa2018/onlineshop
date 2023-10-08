@@ -7,14 +7,14 @@ const cors = require("cors");
 
 app.use(
   cors({
-    origin: ["https://www.ninetyone.co.ke", "https://ninetyone.co.ke"],
+    origin: ["https://www.ninetyone.co.ke", "https://ninetyone.co.ke"], //this one
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
       "Content-Type",
       "Authorization",
       "Access-Control-Allow-Credentials",
     ],
-    credentials: true,
+    credentials: true, // email data change
   })
 );
 
