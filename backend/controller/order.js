@@ -1162,11 +1162,14 @@ router.put(
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
         if (order.paymentInfo.status !== "succeeded") {
-          const seller = await Shop.findById(req.seller.id);
+          const seller = await Shop.findById(req.body.sellerId);
 
-          const realTotalPrice = order.totalPrice - order.shippingPrice;
+          const realTotalPrice = parseFloat(req.body.totalPricee);
+
           const amountToAdd = (realTotalPrice * 0.9).toFixed(2);
-          seller.availableBalance += parseInt(amountToAdd);
+
+          seller.availableBalance += parseFloat(amountToAdd);
+
           await seller.save();
         }
         order.paymentInfo.status = "succeeded";
@@ -1194,6 +1197,14 @@ router.put(
 
         await product.save({ validateBeforeSave: false });
       }
+
+      // async function updateSellerInfo(amount) {
+      //   const seller = await Shop.findById(req.seller.id);
+
+      //   seller.availableBalance = amount;
+
+      //   await seller.save();
+      // }
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
