@@ -7,6 +7,7 @@ const axios = require("axios");
 const request = require("request");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
+const Shop = require("../model/shop");
 
 const pass_key =
   "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919";
@@ -233,10 +234,13 @@ router.post(
 router.post(
   "/withdrawal",
   catchAsyncErrors(async (req, res) => {
-    const { phoneNumber, amount } = req.body;
+    const { phoneNumber, amount, sellerId, updatedBalance } = req.body;
+
+    const seller = await Shop.findById(sellerId);
+
     console.log(phoneNumber);
     getAccessToken()
-      .then((accessToken) => {
+      .then(async (accessToken) => {
         const securityCredential = process.env.SECURITY_CREDENTIAL;
         const url =
           "https://sandbox.safaricom.co.ke/mpesa/b2c/v1/paymentrequest";
@@ -271,6 +275,8 @@ router.post(
             }
           }
         );
+        seller.availableBalance = updatedBalance;
+        await seller.save();
       })
       .catch((err) => {
         console.log(err);
