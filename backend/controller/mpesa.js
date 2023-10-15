@@ -234,9 +234,14 @@ router.post(
 router.post(
   "/withdrawal",
   catchAsyncErrors(async (req, res) => {
-    const { phoneNumber, amount, sellerId, updatedBalance } = req.body;
+    const { phoneNumber, amount, sellerId } = req.body;
+    const transferFee = amount <= 1000 ? 15 : 22;
+
+    console.log("updated balance is", transferFee);
+    console.log("seller id is", sellerId);
 
     const seller = await Shop.findById(sellerId);
+    console.log("seller is", seller.availableBalance);
 
     console.log(phoneNumber);
     getAccessToken()
@@ -265,18 +270,19 @@ router.post(
               Occasion: "Withdrawal",
             },
           },
-          function (error, response, body) {
+          async function (error, response, body) {
             if (error) {
               console.log(error);
               res.status(500).json({ error: "Failed to initiate withdrawal" });
             } else {
+              seller.availableBalance -= amount + transferFee;
+              await seller.save();
+
               res.status(200).json(body);
               console.log(body);
             }
           }
         );
-        seller.availableBalance = updatedBalance;
-        await seller.save();
       })
       .catch((err) => {
         console.log(err);
