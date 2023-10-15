@@ -276,18 +276,25 @@ router.post(
               console.log(error);
               res.status(500).json({ error: "Failed to initiate withdrawal" });
             } else {
-              seller.availableBalance -= amountToAdd;
+              seller.availableBalance -= parseFloat(amountToAdd);
 
-              await seller.save();
-
-              res.status(200).json(body);
-              console.log(body);
+              // Handle the save operation and send a response accordingly
+              try {
+                await seller.save();
+                res.status(200).json(body);
+                console.log(body);
+              } catch (saveError) {
+                console.error("Failed to save seller data:", saveError);
+                res
+                  .status(500)
+                  .json({ error: "Failed to update seller's balance" });
+              }
             }
           }
         );
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
         res.status(500).json({ error: "Failed to get access token" });
       });
   })
