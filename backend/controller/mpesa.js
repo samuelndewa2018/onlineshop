@@ -236,6 +236,7 @@ router.post(
   catchAsyncErrors(async (req, res) => {
     const { phoneNumber, amount, sellerId } = req.body;
     const transferFee = amount <= 1000 ? 15 : 22;
+    const amountToAdd = amount + transferFee;
 
     console.log("updated balance is", transferFee);
     console.log("seller id is", sellerId);
@@ -277,7 +278,7 @@ router.post(
             } else {
               seller.availableBalance = Math.max(
                 0,
-                seller.availableBalance - (amount + transferFee)
+                seller.availableBalance - amountToAdd
               );
               await seller.save();
 
