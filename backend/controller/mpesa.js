@@ -235,7 +235,7 @@ router.post(
   "/withdrawal",
   catchAsyncErrors(async (req, res) => {
     const { phoneNumber, amount, sellerId } = req.body;
-    const transferFee = 22;
+    const transferFee = amount <= 1000 ? 22 : 22;
     const amountToAdd = amount + transferFee;
 
     console.log("updated balance is", transferFee);
