@@ -275,7 +275,10 @@ router.post(
               console.log(error);
               res.status(500).json({ error: "Failed to initiate withdrawal" });
             } else {
-              seller.availableBalance -= amount + transferFee;
+              seller.availableBalance = Math.max(
+                0,
+                seller.availableBalance - (amount + transferFee)
+              );
               await seller.save();
 
               res.status(200).json(body);
