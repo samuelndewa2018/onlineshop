@@ -235,7 +235,7 @@ router.post(
   "/withdrawal",
   catchAsyncErrors(async (req, res) => {
     const { phoneNumber, amount, sellerId } = req.body;
-    const transferFee = amount <= 1000 ? 22 : 22;
+    const transferFee = 22;
     const amountToAdd = amount + transferFee;
 
     console.log("updated balance is", transferFee);
@@ -276,10 +276,8 @@ router.post(
               console.log(error);
               res.status(500).json({ error: "Failed to initiate withdrawal" });
             } else {
-              seller.availableBalance = Math.max(
-                0,
-                seller.availableBalance - amountToAdd
-              );
+              seller.availableBalance -= amountToAdd;
+
               await seller.save();
 
               res.status(200).json(body);
