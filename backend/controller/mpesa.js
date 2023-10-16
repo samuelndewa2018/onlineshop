@@ -234,12 +234,7 @@ router.post(
 router.post(
   "/withdrawal",
   catchAsyncErrors(async (req, res) => {
-    const { phoneNumber, amount, sellerId } = req.body;
-    const transferFee = 22;
-    const amountToAdd = amount + transferFee;
-
-    console.log("updated balance is", transferFee);
-    console.log("seller id is", sellerId);
+    const { phoneNumber, amount, sellerId, updatedBalance } = req.body;
 
     const seller = await Shop.findById(sellerId);
     console.log("seller is", seller.availableBalance);
@@ -276,30 +271,22 @@ router.post(
               console.log(error);
               res.status(500).json({ error: "Failed to initiate withdrawal" });
             } else {
-              seller.availableBalance -= parseFloat(amountToAdd);
+              seller.availableBalance = updatedBalance;
+              await seller.save();
+              console.log(seller.availableBalance);
 
-              // Handle the save operation and send a response accordingly
-              try {
-                await seller.save();
-                res.status(200).json(body);
-                console.log(body);
-              } catch (saveError) {
-                console.error("Failed to save seller data:", saveError);
-                res
-                  .status(500)
-                  .json({ error: "Failed to update seller's balance" });
-              }
+              res.status(200).json(body);
+              console.log(body);
             }
           }
         );
       })
       .catch((err) => {
-        console.error(err);
+        console.log(err);
         res.status(500).json({ error: "Failed to get access token" });
       });
   })
 );
-
 //transactions
 router.get("/transactions", async (req, res) => {
   try {
