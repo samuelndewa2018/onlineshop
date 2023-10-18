@@ -1153,9 +1153,44 @@ router.get(
       );
       doc.pipe(res);
 
-      doc.text(`Receipt for Order ID: ${orderId}`);
-      doc.text("thank you for shopping with us");
-      doc.text("thank you for shopping with us");
+      doc.fontSize(12);
+      doc.text("Invoice", { align: "right" });
+      doc.text("Invoice Date: 2023-10-18", { align: "right" });
+      doc.text("Due Date: 2023-11-18", { align: "right" });
+
+      doc.moveDown();
+      doc.text("Bill To:");
+      doc.text("John Doe");
+      doc.text("123 Main Street");
+      doc.text("City, State, ZIP");
+      doc.moveDown(2); // Add more vertical space to separate the address and the table
+
+      // Create the table header row on the same line
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(12)
+        .text("Description", 50, doc.y)
+        .text("Qty", 200, doc.y)
+        .text("Price", 300, doc.y)
+        .text("Total", 400, doc.y);
+
+      doc
+        .font("Helvetica")
+        .fontSize(12)
+        .text("Item 1", 50, doc.y)
+        .text("2", 200, doc.y)
+        .text("$50", 300, doc.y)
+        .text("$100", 400, doc.y)
+
+        .text("Item 2", 50, doc.y)
+        .text("1", 200, doc.y)
+        .text("$75", 300, doc.y)
+        .text("$75", 400, doc.y);
+
+      // Calculate and display the total
+      const total = 100 + 75;
+      doc.text("Total: $" + total, { align: "right" });
+
       doc.end();
 
       // Stream the PDF to Cloudinary
