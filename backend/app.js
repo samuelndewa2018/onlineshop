@@ -33,6 +33,7 @@ app.use("/test", (req, res) => {
 });
 
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
+app.use(express.static("public"));
 
 // config
 if (process.env.NODE_ENV !== "PRODUCTION") {
