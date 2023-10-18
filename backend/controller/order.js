@@ -1144,13 +1144,13 @@ router.get("/generate-receipt/:orderId", (req, res) => {
 
   const tempReceiptsDir = path.join(__dirname, "..", "public", "receipts");
 
+  // Check if the directory exists, and if not, create it recursively.
   if (!fs.existsSync(tempReceiptsDir)) {
     fs.mkdirSync(tempReceiptsDir, { recursive: true });
   }
 
   const doc = new pdf();
   res.setHeader("Content-Disposition", `attachment; filename="${pdfFileName}"`);
-
   doc.pipe(res);
 
   doc.text(`Receipt for Order ID: ${orderId}`);
