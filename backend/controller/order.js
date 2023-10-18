@@ -9,7 +9,7 @@ const Product = require("../model/product");
 const sendMail = require("../utils/sendMail");
 const pdf = require("pdfkit");
 const fs = require("fs");
-const path = require("path");
+const path = require("path"); //
 
 // create new order
 router.post(
