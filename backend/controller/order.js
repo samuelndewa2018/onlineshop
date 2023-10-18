@@ -7,6 +7,9 @@ const Order = require("../model/order");
 const Shop = require("../model/shop");
 const Product = require("../model/product");
 const sendMail = require("../utils/sendMail");
+const pdf = require("pdfkit");
+const fs = require("fs");
+const path = require("path");
 
 // create new order
 router.post(
@@ -1133,6 +1136,39 @@ router.get(
     }
   })
 );
+
+//generate receipt
+router.get("/generate-receipt/:orderId", (req, res) => {
+  const orderId = req.params.orderId;
+  const pdfFileName = `receipt_${orderId}.pdf`;
+
+  const tempReceiptsDir = path.join(__dirname, "..", "public", "receipts");
+
+  if (!fs.existsSync(tempReceiptsDir)) {
+    fs.mkdirSync(tempReceiptsDir, { recursive: true });
+  }
+
+  const doc = new pdf();
+  res.setHeader("Content-Disposition", `attachment; filename="${pdfFileName}"`);
+
+  doc.pipe(res);
+
+  doc.text(`Receipt for Order ID: ${orderId}`);
+  doc.text("thank you for shopping with us");
+  doc.text("thank you for shopping with us");
+  doc.end();
+
+  const tempPdfPath = path.join(tempReceiptsDir, pdfFileName);
+  res.on("finish", () => {
+    if (fs.existsSync(tempPdfPath)) {
+      fs.unlinkSync(tempPdfPath, (err) => {
+        if (err) {
+          console.error("Error while deleting the temporary file:", err);
+        }
+      });
+    }
+  });
+});
 
 // update order status for seller
 router.put(
