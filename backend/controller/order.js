@@ -1170,27 +1170,35 @@ router.get(
         .font("Helvetica-Bold")
         .fontSize(12)
         .text("Description", 50, doc.y)
+        .moveUp(1) // Adjust the vertical position
         .text("Qty", 200, doc.y)
+        .moveUp(1) // Adjust the vertical position
         .text("Price", 300, doc.y)
+        .moveUp(1) // Adjust the vertical position
         .text("Total", 400, doc.y);
 
       doc
         .font("Helvetica")
         .fontSize(12)
-        .text("Item 1", 50, doc.y)
+        .text("Item 1", 50, doc.y + 30)
+        .moveUp(1)
         .text("2", 200, doc.y)
+        .moveUp(1)
         .text("$50", 300, doc.y)
+        .moveUp(1)
         .text("$100", 400, doc.y)
 
-        .text("Item 2", 50, doc.y)
+        .text("Item 2", 50, doc.y + 30)
+        .moveUp(1)
         .text("1", 200, doc.y)
+        .moveUp(1)
         .text("$75", 300, doc.y)
+        .moveUp(1)
         .text("$75", 400, doc.y);
 
       // Calculate and display the total
       const total = 100 + 75;
       doc.text("Total: $" + total, { align: "right" });
-
       doc.end();
 
       // Stream the PDF to Cloudinary
