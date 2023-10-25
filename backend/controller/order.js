@@ -19,9 +19,9 @@ router.post(
     try {
       const {
         cart,
-        orderNo,
         shippingAddress,
         user,
+        orderNo,
         totalPrice,
         paymentInfo,
         shippingPrice,
@@ -55,14 +55,13 @@ router.post(
         const order = await Order.create({
           cart: items,
           shippingAddress,
-          orderNo,
           user,
+          orderNo,
           totalPrice,
           paymentInfo,
           shippingPrice,
           discount,
         });
-
         const subTotals = order?.cart.reduce(
           (acc, item) => acc + item.qty * item.discountPrice,
           0
@@ -114,50 +113,6 @@ router.post(
         }
       }
 
-      const combinedAttachments = [];
-      for (const order of orders) {
-        combinedAttachments.push(
-          ...order.cart.map((item) => ({
-            filename: item.images[0].url,
-            path: item.images[0].url,
-            cid: item.images[0].url,
-          }))
-        );
-      }
-      combinedAttachments.push({
-        filename: "logo.png",
-        path: `https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png`,
-        cid: "logo",
-      });
-
-      // Send a single email to the user with combined order details
-      // await sendMail({
-      //   email: user.email,
-      //   subject: "Order Confirmation",
-      //   attachments: combinedAttachments,
-      // });
-
-      // Send individual emails to each shop
-      // for (const [shopId, shopEmail] of shopEmailsMap.entries()) {
-      //   const shopAttachments = shopItemsMap.get(shopId).map((item) => ({
-      //     filename: item.images[0].url,
-      //     path: item.images[0].url,
-      //     cid: item.images[0].url,
-      //   }));
-      //   shopAttachments.push({
-      //     filename: "logo.png",
-      //     path: `https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png`,
-      //     cid: "logo",
-      //   });
-
-      //   await sendMail({
-      //     email: shopEmail,
-      //     subject: "Order Confirmation for Your Shop",
-
-      //     attachments: shopAttachments,
-      //   });
-      // }
-
       res.status(201).json({
         success: true,
         orders,
@@ -172,7 +127,7 @@ router.post(
 //send emails
 router.post(
   "/sendmyorder",
-  catchAsyncErrors(async (req, res) => {
+  catchAsyncErrors(async (req, res, next) => {
     try {
       const {
         cart,
