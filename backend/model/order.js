@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema({
+  orderNo: {
+    type: String,
+    required: true,
+  },
   cart: {
     type: Array,
     required: true,

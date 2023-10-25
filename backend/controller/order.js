@@ -19,6 +19,7 @@ router.post(
     try {
       const {
         cart,
+        orderNo,
         shippingAddress,
         user,
         totalPrice,
@@ -54,6 +55,7 @@ router.post(
         const order = await Order.create({
           cart: items,
           shippingAddress,
+          orderNo,
           user,
           totalPrice,
           paymentInfo,
