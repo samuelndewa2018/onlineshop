@@ -10,9 +10,12 @@ router.post(
       const url = "https://tinypesa.com/api/v1/express/initialize";
       const apiKey = "BVf5CweiOBs";
 
+      const phone = req.body.phone;
+      const amount = req.body.amount;
+
       const formData = new URLSearchParams();
-      formData.append("amount", "1");
-      formData.append("msisdn", "0712012113");
+      formData.append("amount", `${amount}`);
+      formData.append("msisdn", `${phone}`);
 
       const options = {
         method: "POST",
