@@ -39,29 +39,45 @@ router.post(
 
 router.post("/callback", async (req, res) => {
   const stkCallbackResponse = req.body;
+  console.log("this is", stkCallbackResponse);
 
   const code = stkCallbackResponse.Body.stkCallback.ResultCode;
   const CheckoutRequestID =
     stkCallbackResponse.Body.stkCallback.CheckoutRequestID;
-  const amount =
-    stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item[0].Value;
-  const phone1 =
-    stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item[1].Value;
-  const phone =
-    stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item[4].Value;
 
-  if (code === 0) {
-    const transaction = new TinyTransaction();
-    transaction.customer_number = phone;
-    transaction.mpesa_ref = code;
-    transaction.amount = amount;
+  if (
+    stkCallbackResponse.Body.stkCallback.CallbackMetadata &&
+    stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item
+  ) {
+    const metadataItems =
+      stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item;
 
-    await transaction
-      .save()
-      .then((data) => {
-        console.log({ message: "transaction saved successfully", data });
-      })
-      .catch((err) => console.log(err.message));
+    if (metadataItems.length > 0) {
+      const amount = metadataItems[0].Value;
+      const ref = metadataItems[1].Value;
+      const phone = metadataItems[4].Value;
+
+      if (code === 0) {
+        try {
+          const transaction = new TinyTransaction();
+          transaction.customer_number = phone;
+          transaction.mpesa_ref = ref;
+          transaction.amount = amount;
+
+          const savedTransaction = await transaction.save();
+          console.log({
+            message: "transaction saved successfully",
+            data: savedTransaction,
+          });
+        } catch (err) {
+          console.error(err.message);
+        }
+      }
+    } else {
+      console.error("Metadata items are empty or not structured as expected");
+    }
+  } else {
+    console.error(stkCallbackResponse.Body.stkCallback.ResultDesc);
   }
 
   res.json({ message: "Callback processed successfully" });
