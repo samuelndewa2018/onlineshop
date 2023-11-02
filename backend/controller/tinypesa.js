@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
-const bodyParser = require("body-parser");
-const mysql = require("mysql");
 const TinyTransaction = require("../model/tinytransactions");
 
 router.post(
