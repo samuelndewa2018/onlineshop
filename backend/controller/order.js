@@ -1183,63 +1183,231 @@ router.get(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const orderId = req.params.orderId;
+      const order = await Order.findById(orderId);
+      const orderTime = order.createdAt.toLocaleTimeString("en-US", {
+        timeStyle: "short",
+      });
+
+      console.log(order);
+      const footerText =
+        "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
+
       const pdfFileName = `receipt_${orderId}.pdf`;
 
-      const doc = new pdf();
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${pdfFileName}"`
-      );
-      doc.pipe(res);
+      const doc = new pdf({
+        size: "A4",
+      });
+      const pageHeight = doc.page.height;
 
-      doc.fontSize(12);
-      doc.text("Invoice", { align: "right" });
-      doc.text("Invoice Date: 2023-10-18", { align: "right" });
-      doc.text("Due Date: 2023-11-18", { align: "right" });
+      const fontSize = 10;
+
+      const yCoordinate = pageHeight - fontSize - 10;
+
+      // Replace with your image URL
+
+      doc.image(
+        "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBwgHBgkIBwgKCgkLDRYPDQwMDRsUFRAWIB0iIiAdHx8kKDQsJCYxJx8fLT0tMTU3Ojo6Iys/RD84QzQ5OjcBCgoKDQwNGg8PGjclHyU3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3Nzc3N//AABEIAHgAtAMBEQACEQEDEQH/xAAbAAACAwEBAQAAAAAAAAAAAAACAwEEBQYAB//EAEMQAAIBAwIEAwUFBQYDCQAAAAECAwAEERIhBRMxQSJRcQYUYYGRI6GxwdEyQlJi8BUzU5Ki4SRUggcWJUNEY3ODk//EABoBAAMBAQEBAAAAAAAAAAAAAAECAwAEBQb/xAA2EQACAgEEAAMFBwMDBQAAAAAAAQIRAwQSITETQVEiYYGRoQUUMlJxsfBCwdEVI1MzQ+Hi8f/aAAwDAQACEQMRAD8A+bDFemeMxg0+Y+ta0Ltk+kGN+mKbsRquxgU0RSQH/hX60QcBBHP72PlWoXckNSMjq2aNCuQ0JRJ2EqUaF3BiOiDcEI6wu4IRisCzxjrG3E8sUKBuFm33/vGHpWofxOOieV/Ma1A3HuWfM0Dbj2itRrI0VqDZ7RWNZ7RQNZBSsGwCgrDbjIVV/hH0qZ37mMVR2A+lakLvl6jFWmSEbYxRREsaq0RGwwh+NGhLDCHyz9K1GtDFiz1o0I5DFj9aIm4IJ61gWFt5GiKeymehz6VjVIkkdlJ+VA21gl/NMerCgHb7wean8SD1YVtyH8KXoyM6v2ZB9RWtB2SX9LJA/n/1VgU12idNYSzxWsYjTQDZ7FYx7TWMDpoBsyltPgfrXKqPpdkvRfIL3bT5/QmipxROWDJIkRfyuPRTTLJEg9Jm9wagD/E/ytTrJD1Jz0mf0HKyjrqH/SaZZIEHo8/oMWaJd2bA+INNviSekz/l+qGrNARkSLR3x9Sf3TUflYfPgHWQUVNCvSZ12vqgw8LgYlx6HFN2RcMke0EIkYY57nPlJWoG6S/p+hPuURHiMjf/AGGs0Dx5LyXyFvwy2fciT/8AU0NqCtVkX/wU3A7Njn7X/OaGxFVr8q9PkU+JcKjtoNVtoDZwWml0gelRzR2xuJ6Gi1ks2RQyN/BFJbOUW/PHFeE9/szP4xj4Y715X3zJf4PofSy0EGuZmrwpJJLfVI0Or+KEhs+u1ethblG3XwPk9dNY8m2Lk/1tF4Qkfvt91VODxL8iClEF2QUPlQsZJ+h7QfI/ShaNtl6ENCzfxj0oNopFT/KeW3cDo59TmlUorzHljyS/pJ5En8BrbkDwMv5QEhHkK83cfY7RqwgdAPpR3B2hBH/5ckfBhRU2BwT8hyQ6hvAy+mDTLK0B4YvyGraZ/wDLP3VRZmRlposYLIf4f4U/jHO9FXQLWQB2jk+VOsyOaX2fJ+b+ZPuJxkKw9RTLPE55/ZWR9MBrVhuVPzWnWeJzy+ydQuhfLGcaf9B/Sm8aBJ/Zeq9BiRZ2AP8Akb9KHjw9Qf6Tqn5fUalm7dCB8jQ8eA/+j6nzoYOHv3YfKleoiGP2Pm8zK9o+GSvY6VI1FwFJON965tVmjLGel9naDLp8259UcobWS1ucM9m5XfLOrDO/UZ/GvPjJSVo9xwl5nXezFiLrh4lBUanbIQYGenTtXdgzKEKZ5Ws+zvHy7r8jcXhYUbgN6071Nk4fZUI9qzxsEXooBpfHfqXWgxrqIPuo+FL4xVaWIJtcdxQeYK00SPdz2waXxWUWCKPe7nuB9f8Aah4ofBQXIpXlD4SMaISMAw5RU9CpNSsvtZbjQ/vAZrWHYywka1tzDtLEcS1txqLEcS+VHcahyxL5CtuBQ1Y1/hFHcCgsKBk7DvntW3BpHm0IPtNK+WT1rbgUUODcUtOLpK1sjgR6dWtcdc4/CjuYKTNZUUbYFLuDtJ0r8PpW3M21EFEPUCtvZqOc9uEWDgcksX2bCVMuh0nGd9+u9BvcqY0VyfOVWK5ukXRJ/PpYyOx+ZFI90YlIxTZ9G9jIRJwKNtbKOY4Az03oxk6FlGnSNhrFT1mlP/URR3i0yvLZRINbTzafjKQPxrb2Hazm4ONW78ePDfdjp5hQTG6Zs46bdO1a3QrXNHRGCIYOlR8sml3D+GyGYKM9hQ3B8IyLn2k4XDke8iQjqIgWx9KemTexeYuH2m4XKgf3nl5/dcMD+FZpmTg12YvsvLM8ssBZjHGnhU7gb1OzqUeWdEAwrWNsGoTWs2wsIzUbFcR6MaJNxHoTWFocuaxqPnfG4pLnil0080j6ZXRASPCuTsKO4dYk+bL15zpPZizeeeWZ/fT43bxbDsa0ZWTy49vRgwcyNWMbumW/dYjt8KWUuS+LFcLPp/CmY8LsyzFiYEJJOd8CtZPYWtdazbCQ1awbDI9qo5ZuFFIFRpDIuA7BR37kilk7Q8I07Pn9xHdW9y9i05eJPsyQAV0/LtQk12XxRdnfeykfK4HEqvrGpjnBHf40Iu0DLH2zUOaaxNpxv/aIisLInBIWTr2/ZxTRYmWPBz1ky299aT6C6RyhiE+ApU6ux5xvbt9Tf/7y4mZzbnksSQDNl13GdtOMdcb0FT8zSk481Zo/2vw2UaRdqNS9HBGPu61tsrH3w82fPtGI3ZQTHkqGxtXUmujyqe3d5C44w8aEj90VmBdHSW19Bw43MkKwiZlCiF2Zd875z9a5IqV0z1ZZIKNxfNmlD7QWEkTuW0si5IyPEc4ON/6yKfaxVmhRK+0fDHtnkWcoRthlwc4zsPSlmpJeyuR8eXE37T4Fz8YhsD4ZUlY7Okk5zvuMD5nNJglKS9pDavw4S9hjbC/4lM0lwXiaEOfsgM7Y7NVJ5YxdCYtPPIm9x1EYYorAdQDiqLkg+HQ5VetwA4u/gY3l265OJnLZH81Tb5OlQ4RZuIed7PW0KkBmuW8OcbEYrRfAs43NmVFahkOCD4+2/aozn6ndjxLakjsmuWsOCQzaGcRxINK4z2FV3xo4/ByOToox+1FuWRGtrkMcbYX9aO6IkoTj2ad3e2FrvcXMa/DXk/SqKXoT2yKvtKi3HAC0bKUdkZSehHapzaRXApORzKusNu1pDFBHICQ88TgFsdDsMn1zXNknHhu/3OzFglK6r9P8j+Fcdn/syexd40nc6YZP2N2ON/1HnXTOOzHuicOPJ4mfZN/4spzxcVtJOWbtxtqwsjY3P65qWPVY5LhHTPQ5k+0L44TepJd3MMcUkkqhtHwT57ZFOp3mSXVHNPE44XJrm/7GPYzt7yIxFK8anVpUbkfl3quSKceyODLJSSaNNoBLCWTKqVJGR0FcsXU0v5+x6GVXjbRn3cJS1bqcAb/Ou2L5PKyRaQHB7E3iTRvcNGqHIAjZgfpU9Rm8Kntu/ePpNN94tOVV7rN624Lawwqr3Ic+ZQiuOWqyydpfVHo49Jgxx2ybb/RnFyvM5PPLOMABnYt6bmvQtHj01xXBICLICh1KMHB65wM/fnFHs1JPg6fhzWrQC5kit7aJSsQZgSWCjduhJO4+GQNq5Mqk1S5PSwZMS7SiUp+HIzXz2GoWMcepSU3Y7AZzv1708ZyUV4nbITxQlOXhfhRWtb29BRI551KnIAc/cveqtR7ZJZMqdJs6DjNzxVr23Th013y5FXQI5SVZ+42+mKfDsyXtd0S1OSeJpz4v9zoHvOJwApcwyPri0liSEVtO5Bx28q4tU6aSlR6uikpRbcbOJt7riF1xGFFlYkvgoB4fmPzqzlBR5JqOSc/ZOsvLTlRvzVaIsulcbtn0G9crzLhRO5YlbcuqOd9lIJhfSAxgRhTzMg+HHSralbocHN9nvZkaZ9BluIRwP3aa3/4jqJC+Bp8sV83LM5Sq/Pv3elHtQxPxN6fs+hxl0kgkCqiktsoGWJr1sOoio8kc2Bt8CuKW1wWXnBGlxvobGBjG9Uw6yMvcQy6No0Y+PXk/DGs5I4HSMIFZAQTjpv0/Cq5Myqq7IY9O1PxL6+vRmT8UeS4y9tCuXJLhNxkY86hDTJQpSZaetl4nMeBFzNFcjll1jRTqD8rGfkK6dPB4nuq3+pzazNj1C2XSXN0anCne9imQyC4WABRI2QSN/PeuTWRUJppbbOrQZnLHJN7kvMHjA9ztCRG8sa3OoCVNS409wDVtPLfki3+X+/wOTUrZjkveZtle2HLmkfWsxQkRjTpByegO4GMV0zx5G0kuP57zlx58UVdv+fAsLJDyIybm18aElUkGY+3i22oeE1JMstTGcGnwNsbODiF3BaSSfZysFZlbGB51ScpRi2jnioSlUuUBDBw6E3Gh5NSYULhZCdz2xkDY1zyWSdbv59TqvFib2d11d/2LvI4SoX3i5ZJCoYqLMHGRkdvKt4Ul03/PiT+97uWl8/8A1MzinBhBZwSvLbSltQeO3OcdBnc9TnP1qOHUbpNL6nZm0y2W119e+jD/ALNlDhZFMeQHQkdQa9DxFR5Hgu2gTCwblbEZ6gU8HxbJZI80jY4beSWutWiW5Eq6NMni3/OufOvErmqO/TQ8Nuub4I4ck1texywKokBLoGXKjYg9eu34Ud0GrZOWKadRXZ1fCfaeSG5juZbG2aVDty1C74xnSds79qslV7HTar3Hm5cjaSyx3RTvvku8XvjLJbf2nHdLHgcpXVWwnbGOnp6V5Grw6i7crR7f2brcEotQhTB4XwThLT3d21wERTriBHiY99Px61wTzy4i5Ul9T2Huilthbl9DA9pLiO74gXgndMYVBjdttzkfpXpaXq6OTUQlFbWP4FxYWdoluE1yvPgxlB4RgbjvnauvV3k0rxp0eRp8UYax5XHv38l67mW41PzwzAnxbgfhXh48EcfDPf8AvSr2UBNaSwrBPCzDXuojbUWXJHYd8VfwW+GuH7hPvsH01aCJnuInWTh06YYDnGP9rf4jb5Uq0c4vdF8E/wDU4W0/pyVOMWMdraK9qLhJS32gZRoB8h91dmmxqbqZw6jW5E3tqjKht2dW52AMZ1aRkfCu9aWLlw6POl9ptJ7lYxeFxyuVllVkHRlZR+fxreHkhLgeOpxZ4cr5NfLsOytbrhk/MhMZibBIL+Fx5H7t6OXDDNFb+0DDmy4J/wC3whPH7szRhIpZlbIZ1I1KNsZ2qen0+x3Kq/8AJbUaqU41HvujnUhMis0mgMB5kE112l0cLjKXItIYjMFlkCoD4mU01k9vPJrpDHwy5Yx28tyr+KMFWXCnvjO/+1TWTczKPDrku3N3wV4/s4xby46KgOW26k5pnFyYqcoJpPllMG2bdXGP/iH6UHfoNFccsx5b2bVs52/d6YpY4oo6suqnLgVNf3M5UyysxChQ2d8CqKEUqRy75epFszySJGhwSeorSpRchsacpKKNPaI6Gcsc+mKh+JXR2r/be2+QmvAHVWJJGclmJ3NNDH2Ty5uUv7lZJi393kY6gH76t0c17uEWYrl00kSsGU5G/Q1GcFJNUdunmsbN/hHGWLNbXLsI3UgMv8RPU/13rzNRorVw7PX+9tpUWeIzRcPvkguXfU8euTQqgqc7fcM/OrYcbS4JzzrJHlfsZ8fFraNmkmtnmJYkLzcDO3kBVpYskqSfB52SatyX7GW920mACyp2UGr+H+YSWfyhwi7w3ictvLGskr8rUCDrwy43Gk9vOhlx7lwQU5LmLpnSXvtBw9IAI7+SS4ZCsjlVx07dd+nlnFefHRzUtyj8ynj5I8N38Tk7m+0KyWs0oUnLAHAbHfGa9KGKnclyQlkbTM+W8udI1Stpz510xgiEpNc2atr7Qf8Ahful9HqhUERmJQCW7an/ACpZ4bdok8+WqUivbcelsrhmsH+xxjRKNQI/hxnGKHhR+Iu+U47ZPgOLj0qiXnW0EnNIIwukqB0AHlU5RXReGN8ST9xj3EplOc+IHamUaK7m++wDKqudbHIOxHWhEEuJFhOJScnQZA6jYahlseWfKtsV2BTSuhTXhnuWmn04LZ0DpTULfkOaa2BP/CN8pWxTU/US/cUZm1PnOcrvSQujoyVYoLg4Ygb0xOvUt2oSNTKMawNj2pH7Tploewt3mQ9w5JUOcGsoILyyfCYZjV0UjILdzRsXZdMIaY/CO/fzom66HRBQBnqd6AVwOtjGZiJ9ekeQoOI8ZsfxDijzzsylmjA0Lr3bT23rRx0B5ZepWMuS4OM52zTqIm5k8qWJVkeLKdcE9fpRrgHQp5eYw5cIRemkE4J+ZrVS5Yt30gXbL6OXjHUZrcIFi4ZTEWJGQNiD3p63ITftYyG6gkuTJdW0brg4XLAA+exyfTNBxdcMVyTftIO+eK90+6W0FukZwRGzHI8zqJocwVydmjHxHUUKh5EAk5tsbjpg8wpj6Um+T6dFXigm+LIueIQOCsNqbdcfsKxYffQak+2aOxO6ZTZwqgqp38zRo1pcpC5GXOQOvfzooDFhsH4eVEUJJCpyKxjzTMxySfrWMOtYnmcqukkKT4mA2HqaAyGqP2WMinUTsCCc+lYa0XbThs93p91EchkDEKJADheux6daHNhVbRtzwq5sFha9twnNzoR8q23mMZprVOwbXuVCL+3mtwgkg5OR0ByB0qcFxfZfNcXtaqg+HWpuEZm8KrjLk7D4U/BOKs0/dYUJOtSyqfCwPlttRSsaS28eaGcO4aeJ3LQR3Fvb56NN4VPkM4NZJXRpXW5rgRdcLlguZo+ekpicLqX949ds4OBijJbexYf7j9kVhYHCjlsWY5Lp9dzU1O+h5R2dhe8Raw6qVR9guc6vjS3KS2tmlsi1NR7FGHm7s0q9iPCMn8hRVsVuPvDmtFiyJCCOXqOCGCjtv2qu/bwR8K1uT9Ql4ajQTPFzXGkGRwmQKoska7FnpnadFR+HJMDokQaTuAmCvrWlKCYI4p7bRABhTkw20mXfTq66jvj0rlnWRnXjfg3Fc2+wWsXULquYm1AalVslf96W0Zx75FS25LPoySAPDjp08qe2yTqKZmyFj4WOWHanJsDxMMYNEwOD5H6VgHqxicHyNYxsC3hP/p3x2ByB+dN4eR+QFqNOu5WNjtbUnx2xx5rn9aV4svoUjqtIu3+5seysXDU4oVvSLaJkbTKWAC+urI3GRRitn4wSmsqfg8r4g8R43zb+7lu3kuFjkfkxjGAurbfyxio5Ib33wdenzrCr2u/l9f8ABlHj7XDMt1EvLY9E7fKr4ZRhSOTUPLlblffw+QR5jxD3O2uJE1hjyoGxt9xquXJiapI5dPi1UZbufmx68SvBcSz3NmYwyGPSUI0rjzP1+Vc0J7PZiehlvK3PI68iuLt+dm3RpDJu4A1D1wKeeTfzXJLFF4fZUuH6sfNxC5lWFbu2kycFSFYM/wDQxSuT6oeKXad/z9SlPf6jplUsR2PbHakSSRskpSkmxK3IZsqAGAwMbUzjaEjPax8LkRvrUkk4Gxzq8qMVTEyNuqDeW6gXWYJNBUMWeMgEevrtRTp7vMMk5Q2PoNZXiXVDDImwzuSoOM9PStOakk0bDDJjbTfwEPfSSM3MZiTkZxvjzqUrfL5KQ2RtJUBHdqCQ7nwjOotuPSnok777BLFkR4/CTvq1439KHC4HuTdj7W9nhAKrAHUghhGCSQcjOfjQcfNGU/Ufc8UtZi7X1rG8pGXIXDfI9frXVHNGqlE82WlyRk3jnV/qyvq4c4DQXYiHlMNx+tVvE1wwbtVF+1G/0GSNbAKRf2pbH+EPyFI4Y/zFI6jU+eMEG1H97xGHp0KUNuP8wXnz/wDEQf7P/wCch+cdbbj/ADA8bUf8RYsJorRJTeJJMEYF114JGQDg+e9cbcpef1PYShii6ivkjoOBJ7O8c5qo93ZyJuRLMmCPgcUVjv8AqfzE+8pf9uPyLsns1w+S5EdreyzHQGxC8ZY7nz9BR8FXy2zPWvb7MVH9CnxW14Tw1lt7qy4opbu06EOvcjcjt99Goxf4RFLNlj/1FXxOWFrZ3F3IrzGGIOdGvJwMZ3wDSXKuC2zHzvvj0/RHYcB9peHcPs+SJyzx7AFT4vu6VJQlds6nqMWzbGyj7S+1EfEmlETaUeFk5aqcZ3G5+dOotM555vZaRhcLv2tZFZZXUqAFCDGc7bmmnurgTFsb9pWWZvae/wBTZnl0FdKgsSFHTz8iaG1yXLD4kIytRXyMSV1ZTqwxY5z379aKROUl0etsB1LKrKGBIKjpnfr+FMKqLE93BOVEMIi09guCTgZzuR2Pl1rcivYraQDFiuHJcsOmSMeVDt0FpJC7q4kkYO27YAwowBt0+6jGKjwacnPl9+4VGHkQlzgdNvzot+SAoLzBAc5GFyB1z1o2Kl5HlYkgnDH49PSgZ+vmPUmNvD4xpBJ8tqwZRr3g3CE6ZChIfO/nTKVCeHJroqkvuNhttsM0bBtoibcA7HA33oLlm8uDZSLhMfEbmPigmSNRiIw5Jz8fu+lNicXFOXohNVHLGbjh8m+xF3DwZpibW7mSLsGiYmmax32Si9RXtJWWXzzXJUZJPVFOPrXDus96KfP6vyTHxT8sYCq2f/YjrJ+8Zq++fgi/wrjS8JvluJ0OkoUASNUO+N9qpgmruzl1eJKCTVWTx7jg43JDPaq0YjGkh3XxE75qzyLdyvI54YZLH7MvMx0VwZC58BbGcrjp6fCoqUOvM6ZY8j9p9CpRzJTygqoNtOoD6f1mhHjgEk5OwGyEXTjRg4bHU/T1plXZPlpKhLTOsYwxAJx6U3fAltK0ASTKvMyQdzjrvW6F7YTKVhQKRpPQkYOc1g1wKMjAnbIHaiJzYQ1GMyggLnHXesNboHWz58e3xNER8nlmI2ztRB0honBDI5JAOR/RrUjbpfAnkIZM6woPbUAfrikb5orCKlz0Nk0rGFCoQpGHwDv5GkTplZR44RCqjljnBGB1AyMfGm95JRV0BGGiYqFcoc4dNzWfPQyWx+10DM0qDUgcr5stFKx55dv4WKDo6HXgMfhW5T4FUlJe0+R9/LFc3UkynSGxtjehFNJIORwlJy9WVfs/P7jTck/YP//Z",
+        50,
+        20,
+        { width: 90, height: 100 }
+      );
+
+      doc.moveTo(50, 395);
+      doc.dash(3);
+      doc.lineTo(520, 395);
+
+      doc.lineWidth(0.5);
+
+      doc.stroke("#184ca0");
+
+      doc.rect(0, 140, 350, 40).fill("#f3782f");
+      doc.rect(520, 140, 620, 40).fill("#f3782f");
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(18)
+        .fillColor("#1e4598")
+        .text("Payment Receipt", 360, 153);
+
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveDown(2);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(12)
+        .fillColor("#1e4598")
+        .text(`Date: ${order.createdAt.toDateString()}`, { align: "right" });
+      doc.moveUp(1);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Customer Details:", 50, doc.y);
+
+      doc.fill("black").font("Helvetica").fontSize(11);
+      doc.moveDown();
+      doc.font("Helvetica").fontSize(10);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Name:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.fontSize(10).text(`${order.user.name}`, 150, doc.y);
+      doc.moveDown();
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Email:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.fontSize(10).text(`${order.user.email}`, 150, doc.y);
+      doc.moveDown();
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Phone No:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.fontSize(10).text(`${order.user.phoneNumber}`, 150, doc.y);
 
       doc.moveDown();
-      doc.text("Bill To:");
-      doc.text("John Doe");
-      doc.text("123 Main Street");
-      doc.text("City, State, ZIP");
-      doc.moveDown(2); // Add more vertical space to separate the address and the table
+      doc.font("Helvetica").fontSize(10);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Payment Method:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.fontSize(10).text(`${order.paymentInfo.type}`, 150, doc.y);
+      doc.moveDown();
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Payment Status:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.text(
+        `${order.paymentInfo.status === "succeeded" ? "Paid" : "Not Paid"}`,
+        150,
+        doc.y
+      );
+      doc.moveDown();
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Order No:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.text(`${orderTime}`, 150, doc.y);
+      doc.moveDown();
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Shipping Address: ", 50, doc.y);
+
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.text(
+        `${order.shippingAddress.address1}, ${order.shippingAddress.zipCode}, ${order.shippingAddress.country}`,
+        150,
+        doc.y
+      );
+
+      doc.moveDown(2);
 
       // Create the table header row on the same line
       doc
         .font("Helvetica-Bold")
-        .fontSize(12)
-        .text("Description", 50, doc.y)
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Items", 50, doc.y)
         .moveUp(1) // Adjust the vertical position
-        .text("Qty", 200, doc.y)
+        .text("Qty", 280, doc.y)
         .moveUp(1) // Adjust the vertical position
-        .text("Price", 300, doc.y)
+        .text("Price", 380, doc.y)
         .moveUp(1) // Adjust the vertical position
-        .text("Total", 400, doc.y);
+        .text("Total", 480, doc.y);
 
-      doc
-        .font("Helvetica")
-        .fontSize(12)
-        .text("Item 1", 50, doc.y + 30)
-        .moveUp(1)
-        .text("2", 200, doc.y)
-        .moveUp(1)
-        .text("$50", 300, doc.y)
-        .moveUp(1)
-        .text("$100", 400, doc.y)
-
-        .text("Item 2", 50, doc.y + 30)
-        .moveUp(1)
-        .text("1", 200, doc.y)
-        .moveUp(1)
-        .text("$75", 300, doc.y)
-        .moveUp(1)
-        .text("$75", 400, doc.y);
+      order.cart.forEach((item) => {
+        const truncatedName =
+          item.name.length > 25
+            ? item.name.substring(0, 25) + "..."
+            : item.name;
+        doc
+          .font("Helvetica")
+          .fillColor("black")
+          .fontSize(10)
+          .text(truncatedName, 50, doc.y + 30)
+          .moveUp(1)
+          .text(item.qty, 280, doc.y)
+          .font("Helvetica")
+          .fillColor("black")
+          .fontSize(10)
+          .moveUp(1)
+          .text(item.discountPrice, 380, doc.y)
+          .font("Helvetica")
+          .fillColor("black")
+          .fontSize(10)
+          .moveUp(1)
+          .text(item.discountPrice * item.qty, 480, doc.y)
+          .font("Helvetica")
+          .fillColor("black")
+          .fontSize(10);
+      });
 
       // Calculate and display the total
-      const total = 100 + 75;
-      doc.text("Total: $" + total, { align: "right" });
-      doc.end();
+      const total = order.cart.reduce(
+        (acc, item) => acc + item.discountPrice * item.qty,
+        0
+      );
 
+      doc.moveDown(3);
+      doc
+        .font("Helvetica-Bold")
+        .fillColor("#1e4598")
+        .fontSize(12)
+        .text("Total", 380, doc.y);
+
+      doc.moveUp(1);
+      doc.fontSize(12).text("Ksh " + total, { align: "right" });
+
+      doc.moveDown(1);
+      doc
+        .font("Helvetica-Bold")
+        .fillColor("#1e4598")
+        .fontSize(12)
+        .text("Discount:", 380);
+
+      doc.moveUp(1);
+      doc
+        .fontSize(10)
+        .text(`Ksh ${order.discount === null ? 0 : order.discount}`, {
+          align: "right",
+        });
+
+      // Set the response headers for the PDF
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${pdfFileName}"`
+      );
+      res.setHeader("Content-Type", "application/pdf");
+
+      doc.pipe(res);
+
+      const pageCount = doc.bufferedPageRange().count;
+      for (let i = 0; i < pageCount; i++) {
+        doc.switchToPage(i);
+        doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, 750);
+      }
+
+      doc.end();
       // Stream the PDF to Cloudinary
       const stream = cloudinary.v2.uploader.upload_stream((result) => {
         if (result && result.secure_url) {
@@ -1447,6 +1615,24 @@ router.get(
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
+  })
+);
+
+//admin orderdetails
+router.get(
+  "/get-order-details/:id",
+  catchAsyncErrors(async (req, res, next) => {
+    const orderId = req.params.id;
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return next(new ErrorHandler("Order not found with this ID", 404));
+    }
+
+    res.status(200).json({
+      success: true,
+      order,
+    });
   })
 );
 
