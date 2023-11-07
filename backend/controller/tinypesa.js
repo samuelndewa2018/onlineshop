@@ -3,6 +3,8 @@ const router = express.Router();
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const TinyTransaction = require("../model/tinytransactions");
 
+let successfulCallbackData = null;
+
 router.post(
   "/tinystk",
   catchAsyncErrors(async (req, res, next) => {

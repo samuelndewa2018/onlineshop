@@ -1456,7 +1456,7 @@ router.get(
 // update order status for seller
 router.put(
   "/update-order-status/:id",
-  isSeller,
+
   catchAsyncErrors(async (req, res, next) => {
     try {
       const order = await Order.findById(req.params.id);
