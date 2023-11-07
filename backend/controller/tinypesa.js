@@ -42,26 +42,26 @@ router.post(
 
 router.post("/callback", async (req, res) => {
   const stkCallbackResponse = req.body;
+
   console.log("this is", stkCallbackResponse);
 
   const code = stkCallbackResponse.Body.stkCallback.ResultCode;
-  const CheckoutRequestID =
-    stkCallbackResponse.Body.stkCallback.CheckoutRequestID;
+  successfulCallbackData = stkCallbackResponse.Body.stkCallback;
 
-  if (
-    stkCallbackResponse.Body.stkCallback.CallbackMetadata &&
-    stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item
-  ) {
-    const metadataItems =
-      stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item;
+  try {
+    if (
+      stkCallbackResponse.Body.stkCallback.CallbackMetadata &&
+      stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item
+    ) {
+      const metadataItems =
+        stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item;
 
-    if (metadataItems.length > 0) {
-      const amount = metadataItems[0].Value;
-      const ref = metadataItems[1].Value;
-      const phone = metadataItems[4].Value;
+      if (metadataItems.length > 0) {
+        const amount = metadataItems[0].Value;
+        const ref = metadataItems[1].Value;
+        const phone = metadataItems[4].Value;
 
-      if (code === 0) {
-        try {
+        if (code === 0) {
           const transaction = new TinyTransaction();
           transaction.customer_number = phone;
           transaction.mpesa_ref = ref;
@@ -72,18 +72,27 @@ router.post("/callback", async (req, res) => {
             message: "transaction saved successfully",
             data: savedTransaction,
           });
-        } catch (err) {
-          console.error(err.message);
         }
       }
-    } else {
-      console.error("Metadata items are empty or not structured as expected");
     }
-  } else {
-    console.error(stkCallbackResponse.Body.stkCallback.ResultDesc);
+    return res.json({
+      message: "Callback processed successfully",
+    });
+  } catch (err) {
+    console.error(err.message);
+    return res.json({
+      message: "Callback processed with error",
+      error: err.message,
+    });
   }
+});
 
-  res.json({ message: "Callback processed successfully" });
+router.get("/get-callback-status", async (req, res) => {
+  if (successfulCallbackData) {
+    res.json(successfulCallbackData);
+  } else {
+    res.status(404).json({ message: "Callback data not found" });
+  }
 });
 
 module.exports = router;
