@@ -16,7 +16,6 @@ router.post(
       const formData = new URLSearchParams();
       formData.append("amount", amount); // Use the amount received from the frontend
       formData.append("msisdn", phone); // Use the phone number received from the frontend
-      formData.append("account_no", "2045499475");
 
       const options = {
         method: "POST",
