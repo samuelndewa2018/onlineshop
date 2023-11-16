@@ -1635,5 +1635,25 @@ router.get(
     });
   })
 );
+// Get a specific order by order number
+router.get(
+  "/specific-order",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { orderNo } = req.query;
+      const order = await Order.findOne({ orderNo });
+      if (!order) {
+        return next(new ErrorHandler("Order not found", 404));
+      }
+      res.status(200).json({
+        success: true,
+        message: "i found this order for sure!!!",
+        order,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 module.exports = router;
