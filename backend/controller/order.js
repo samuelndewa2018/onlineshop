@@ -1229,11 +1229,12 @@ router.get(
 
       // Replace with your image URL
 
-      const logoPath = path.join(__dirname, "logo.png");
-
-      // Replace with your image URL
-
-      doc.image(logoPath, 50, 20, { width: 150, height: 100 });
+      try {
+        const logoPath = path.join(__dirname, "logo.png");
+        doc.image(logoPath, 50, 20, { width: 150, height: 100 });
+      } catch (error) {
+        console.error("Error loading image:", error);
+      }
 
       doc.moveTo(50, 395);
       doc.dash(3);
