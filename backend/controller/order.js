@@ -1219,7 +1219,7 @@ router.get(
       const pdfFileName = `receipt_${orderId}.pdf`;
 
       const doc = new pdf({
-        size: "A4",
+        size: "Letter",
       });
       const pageHeight = doc.page.height;
 
@@ -1416,9 +1416,14 @@ router.get(
       doc.moveUp(1);
       doc
         .fontSize(10)
-        .text(`Ksh ${order.discount === null ? 0 : order.discount}`, {
-          align: "right",
-        });
+        .text(
+          `Ksh ${
+            order.discount && order.discount === null ? 0 : order.discount
+          }`,
+          {
+            align: "right",
+          }
+        );
 
       // Set the response headers for the PDF
       res.setHeader(
