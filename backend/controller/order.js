@@ -1335,7 +1335,11 @@ router.get(
       order.cart.forEach((item) => {
         const truncatedName =
           item.name.length > 25
-            ? item.name.substring(0, 25) + "..."
+            ? item.name.substring(0, 40) +
+              "...\n" +
+              item.name.substring(40, 80) +
+              "...\n" +
+              item.name.substring(80, 120)
             : item.name;
         doc
           .font("Helvetica")
