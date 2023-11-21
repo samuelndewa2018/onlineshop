@@ -1204,15 +1204,13 @@ router.get(
 );
 
 //generate receipt
+
 router.get(
   "/generate-receipt/:orderId",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const orderId = req.params.orderId;
       const order = await Order.findById(orderId);
-      const orderTime = order.createdAt.toLocaleTimeString("en-US", {
-        timeStyle: "short",
-      });
 
       console.log(order);
       const footerText =
@@ -1228,6 +1226,8 @@ router.get(
       const fontSize = 10;
 
       const yCoordinate = pageHeight - fontSize - 10;
+
+      // Replace with your image URL
 
       const logoPath = path.join(__dirname, "logo.png");
 
@@ -1435,46 +1435,6 @@ router.get(
       }
 
       doc.end();
-      // Stream the PDF to Cloudinary
-      // const stream = cloudinary.v2.uploader.upload_stream((result) => {
-      //   if (result && result.secure_url) {
-      //     // The result variable contains the public URL of the uploaded PDF
-      //     const pdfUrl = result.secure_url;
-
-      //     // Send the URL to the client for download
-      //     res.json({
-      //       success: true,
-      //       message: "PDF generated successfully",
-      //       pdfUrl,
-      //     });
-
-      //     if (result.public_id) {
-      //       // Delete the PDF from Cloudinary after sending the response
-      //       cloudinary.v2.uploader.destroy(
-      //         result.public_id,
-      //         (error, deleteResult) => {
-      //           if (error) {
-      //             console.error("Error deleting PDF from Cloudinary:", error);
-      //           } else {
-      //             console.log(
-      //               "PDF deleted from Cloudinary:",
-      //               deleteResult.result
-      //             );
-      //           }
-      //         }
-      //       );
-      //     }
-      //   } else {
-      //     console.error("Cloudinary upload failed: ", result);
-      //     res.json({
-      //       success: false,
-      //       message: "PDF upload to Cloudinary failed",
-      //     });
-      //   }
-      // });
-
-      // // Pipe the PDF content to Cloudinary
-      // doc.pipe(stream);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
