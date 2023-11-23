@@ -17,6 +17,7 @@ app.use(
       "Content-Type",
       "Authorization",
       "Access-Control-Allow-Credentials",
+      "Access-Control-Allow-Origin",
     ],
     credentials: true, // email data change
   })
