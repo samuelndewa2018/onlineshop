@@ -1435,11 +1435,7 @@ router.get(
 
       doc.pipe(res);
 
-      const pageCount = doc.bufferedPageRange().count;
-      for (let i = 1; i <= pageCount; i++) {
-        doc.switchToPage(i);
-        doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, 750);
-      }
+      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, 750);
 
       doc.end();
     } catch (error) {
