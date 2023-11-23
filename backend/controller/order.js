@@ -397,7 +397,7 @@ router.post(
                     <img
                       src="cid:logo"
                       alt="3 dolts logo"
-                      style="height: 80px; width: 80px;"
+                      style="height: 80px; width: 100px;"
                     />
                   </div>
                  
@@ -576,7 +576,7 @@ router.post(
                                     }
                                     ${
                                       shippingAddress.zipCode &&
-                                      shippingAddress.zipCode + `,`
+                                      shippingAddress.zipCode + `, <br/>`
                                     }
                                     ${
                                       shippingAddress.city &&
@@ -881,7 +881,7 @@ router.post(
                   <img
                     src="cid:logo"
                     alt="3 dolts logo"
-                    style="height: 80px; width: 80px;"
+                    style="height: 80px; width: 100px;"
                   />
                 </div>
                
@@ -1052,7 +1052,7 @@ router.post(
                                 }
                                 ${
                                   shippingAddress.zipCode &&
-                                  shippingAddress.zipCode + `,`
+                                  shippingAddress.zipCode + `, <br />`
                                 }
                                 ${
                                   shippingAddress.city &&
