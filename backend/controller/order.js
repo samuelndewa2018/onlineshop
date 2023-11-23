@@ -936,7 +936,7 @@ router.post(
                                   ${order.orderNo}
                                 </h2>
 
-                              <p>Ordered on: ${order.createdAt.toDateString()} </p>
+                              <p>Ordered on: ${order.createdAt} </p>
                                 <h4>
                                 <table>
                                   <thead>
