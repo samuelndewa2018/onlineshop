@@ -455,7 +455,7 @@ router.post(
                                   </h2>
 
                                   <h4>
-                                 Placed on: ${orderTime} ${order.date.toDateString()}
+                                 Placed on:  ${order.date.toDateString()} ${orderTime}
                                   </h4>
                                   <table>
                                     <thead>
@@ -941,7 +941,7 @@ router.post(
                                   ${order.orderNo}
                                 </h2>
                                 <h4>
-                                Placed on: ${orderTime} ${order.date.toDateString()} 
+                                Placed on:  ${order.date.toDateString()}  ${orderTime}
                                 <h4>
                                 <table>
                                   <thead>
