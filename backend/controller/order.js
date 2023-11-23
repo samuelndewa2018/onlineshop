@@ -189,10 +189,6 @@ router.post(
         (acc, item) => acc + item.qty * item.discountPrice,
         0
       );
-
-      // const orderTime = order?.date?.toLocaleTimeString("en-US", {
-      //   timeStyle: "short",
-      // });
       const currentDate = Date.now();
       const options = {
         weekday: "long",
@@ -463,10 +459,9 @@ router.post(
                                     Order No.
                                     ${order.orderNo}
                                   </h2>
-
                                   <h4>
-                                 Placed on: 
-                                  </h4>
+                                Placed on: ${date}
+                                <h4>
                                   <table>
                                     <thead>
                                       <tr>
@@ -573,20 +568,20 @@ router.post(
                                   <p>
                                     ${
                                       shippingAddress.address1 &&
-                                      shippingAddress.address1 + `,`
-                                    }<br />
+                                      shippingAddress.address1 + `, <br />`
+                                    }
                                     ${
                                       shippingAddress.address2 &&
-                                      shippingAddress.address2 + `,`
-                                    }<br />
+                                      shippingAddress.address2 + `, <br />`
+                                    }
                                     ${
                                       shippingAddress.zipCode &&
                                       shippingAddress.zipCode + `,`
-                                    }<br />
+                                    }
                                     ${
                                       shippingAddress.city &&
-                                      shippingAddress.city + `,`
-                                    }<br />
+                                      shippingAddress.city + `, <br />`
+                                    }
                                     ${
                                       shippingAddress.country &&
                                       shippingAddress.country
@@ -1047,27 +1042,27 @@ router.post(
         
                                 <h2>Shipping address</h2>
                                 <p>
-                                    ${
-                                      shippingAddress.address1 &&
-                                      shippingAddress.address1 + `,`
-                                    }<br />
-                                    ${
-                                      shippingAddress.address2 &&
-                                      shippingAddress.address2 + `,`
-                                    }<br />
-                                    ${
-                                      shippingAddress.zipCode &&
-                                      shippingAddress.zipCode + `,`
-                                    }<br />
-                                    ${
-                                      shippingAddress.city &&
-                                      shippingAddress.city + `,`
-                                    }<br />
-                                    ${
-                                      shippingAddress.country &&
-                                      shippingAddress.country
-                                    }<br />
-                                  </p>
+                                ${
+                                  shippingAddress.address1 &&
+                                  shippingAddress.address1 + `, <br />`
+                                }
+                                ${
+                                  shippingAddress.address2 &&
+                                  shippingAddress.address2 + `, <br />`
+                                }
+                                ${
+                                  shippingAddress.zipCode &&
+                                  shippingAddress.zipCode + `,`
+                                }
+                                ${
+                                  shippingAddress.city &&
+                                  shippingAddress.city + `, <br />`
+                                }
+                                ${
+                                  shippingAddress.country &&
+                                  shippingAddress.country
+                                }<br />
+                              </p>
                                 <hr />
                                 <p>Thanks for shopping with us.</p>
                               </td>
