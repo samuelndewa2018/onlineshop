@@ -187,9 +187,7 @@ router.post(
         (acc, item) => acc + item.qty * item.discountPrice,
         0
       );
-      const orderTime = order.createdAt.toLocaleTimeString("en-US", {
-        timeStyle: "short",
-      });
+      //yt
       const attachments = order.cart.map((item) => ({
         filename: item.images[0].url,
         path: item.images[0].url,
@@ -452,7 +450,7 @@ router.post(
                                     ${order.orderNo}
                                   </h2>
                                   <h4>
-                                   Ordered on: ${order.createdAt.toDateString()} ${orderTime}</h4>
+                                 
                                   </h4>
                                   <table>
                                     <thead>
@@ -938,7 +936,6 @@ router.post(
                                   ${order.orderNo}
                                 </h2>
                                 <h4>
-                                Ordered on: ${order.createdAt.toDateString()} ${orderTime}</h4>
                                 <table>
                                   <thead>
                                     <tr>
