@@ -187,6 +187,9 @@ router.post(
         (acc, item) => acc + item.qty * item.discountPrice,
         0
       );
+      const orderTime = order.createdAt.toLocaleTimeString("en-US", {
+        timeStyle: "short",
+      });
       const attachments = order.cart.map((item) => ({
         filename: item.images[0].url,
         path: item.images[0].url,
@@ -440,18 +443,17 @@ router.post(
                                   valign="top"
                                 >
                                   <h2>Thanks for shopping with us</h2>
-                                  <p>Hello ${
-                                    user.name || user.guestName
-                                  }---- for seller,</p>
+                                  <p>Hello ${shopEmail},</p>
                                   <p>
-                                    We have received your order and it's being processed.
+                                    You have a new order
                                   </p>
                                   <h2>
                                     Order No.
                                     ${order.orderNo}
                                   </h2>
                                   <h4>
-                                  Ordered on: (to do)</h4>
+                                   Ordered on: ${order.createdAt.toDateString()} ${orderTime}</h4>
+                                  </h4>
                                   <table>
                                     <thead>
                                       <tr>
@@ -556,11 +558,26 @@ router.post(
           
                                   <h2>Shipping address</h2>
                                   <p>
-                                    ${shippingAddress.address1},<br />
-                                    ${shippingAddress.address2},<br />
-                                    ${shippingAddress.zipCode},<br />
-                                    ${shippingAddress.city},<br />
-                                    ${shippingAddress.country}<br />
+                                    ${
+                                      shippingAddress.address1 &&
+                                      shippingAddress.address1
+                                    },<br />
+                                    ${
+                                      shippingAddress.address2 &&
+                                      shippingAddress.address2
+                                    },<br />
+                                    ${
+                                      shippingAddress.zipCode &&
+                                      shippingAddress.zipCode
+                                    },<br />
+                                    ${
+                                      shippingAddress.city &&
+                                      shippingAddress.city
+                                    },<br />
+                                    ${
+                                      shippingAddress.country &&
+                                      shippingAddress.country
+                                    }<br />
                                   </p>
                                   <hr />
                                   <p>Thanks for shopping with us.</p>
@@ -622,17 +639,6 @@ router.post(
                                 >eShop Online Shop, Kahawa Shukari, Baringo Road</span
                               >
                               <br />
-                              Don't like receiving <b>eShop</b> emails?
-                              <a
-                                href="http://localhost:3000/unsubscribe"
-                                style="
-                                  text-decoration: underline;
-                                  color: #999999;
-                                  font-size: 12px;
-                                  text-align: center;
-                                "
-                                >Unsubscribe</a
-                              >.
                             </td>
                           </tr>
                           <tr>
@@ -923,7 +929,7 @@ router.post(
                                 <h2>Thanks for shopping with us</h2>
                                 <p>Hello ${
                                   order.user.name || order.user.guestName
-                                }, --- for user</p>
+                                },</p>
                                 <p>
                                   We have received your order and it's being processed.
                                 </p>
@@ -932,7 +938,7 @@ router.post(
                                   ${order.orderNo}
                                 </h2>
                                 <h4>
-                                Ordered on: (to do)</h4>
+                                Ordered on: ${order.createdAt.toDateString()} ${orderTime}</h4>
                                 <table>
                                   <thead>
                                     <tr>
@@ -1027,12 +1033,27 @@ router.post(
         
                                 <h2>Shipping address</h2>
                                 <p>
-                                  ${shippingAddress.address1},<br />
-                                  ${shippingAddress.address2},<br />
-                                  ${shippingAddress.zipCode},<br />
-                                  ${shippingAddress.city},<br />
-                                  ${shippingAddress.country}<br />
-                                </p>
+                                    ${
+                                      shippingAddress.address1 &&
+                                      shippingAddress.address1
+                                    },<br />
+                                    ${
+                                      shippingAddress.address2 &&
+                                      shippingAddress.address2
+                                    },<br />
+                                    ${
+                                      shippingAddress.zipCode &&
+                                      shippingAddress.zipCode
+                                    },<br />
+                                    ${
+                                      shippingAddress.city &&
+                                      shippingAddress.city
+                                    },<br />
+                                    ${
+                                      shippingAddress.country &&
+                                      shippingAddress.country
+                                    }<br />
+                                  </p>
                                 <hr />
                                 <p>Thanks for shopping with us.</p>
                               </td>
@@ -1093,17 +1114,6 @@ router.post(
                               >eShop Online Shop, Kahawa Shukari, Baringo Road</span
                             >
                             <br />
-                            Don't like receiving <b>eShop</b> emails?
-                            <a
-                              href="http://localhost:3000/unsubscribe"
-                              style="
-                                text-decoration: underline;
-                                color: #999999;
-                                font-size: 12px;
-                                text-align: center;
-                              "
-                              >Unsubscribe</a
-                            >.
                           </td>
                         </tr>
                         <tr>
@@ -1204,7 +1214,6 @@ router.get(
 );
 
 //generate receipt
-
 router.get(
   "/generate-receipt/:orderId",
 
