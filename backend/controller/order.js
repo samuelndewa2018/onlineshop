@@ -193,6 +193,14 @@ router.post(
       // const orderTime = order?.date?.toLocaleTimeString("en-US", {
       //   timeStyle: "short",
       // });
+      const currentDate = Date.now();
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
+      const date = new Date(currentDate).toLocaleString("en-US", options);
 
       const attachments = order.cart.map((item) => ({
         filename: item.images[0].url,
@@ -943,7 +951,7 @@ router.post(
                                   ${order.orderNo}
                                 </h2>
                                 <h4>
-                                Placed on: ${Date.now()}
+                                Placed on: ${date}
                                 <h4>
                                 <table>
                                   <thead>
