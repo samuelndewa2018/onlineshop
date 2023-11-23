@@ -558,20 +558,20 @@ router.post(
                                   <p>
                                     ${
                                       shippingAddress.address1 &&
-                                      shippingAddress.address1
-                                    },<br />
+                                      shippingAddress.address1 + `,`
+                                    }<br />
                                     ${
                                       shippingAddress.address2 &&
-                                      shippingAddress.address2
-                                    },<br />
+                                      shippingAddress.address2 + `,`
+                                    }<br />
                                     ${
                                       shippingAddress.zipCode &&
-                                      shippingAddress.zipCode
-                                    },<br />
+                                      shippingAddress.zipCode + `,`
+                                    }<br />
                                     ${
                                       shippingAddress.city &&
-                                      shippingAddress.city
-                                    },<br />
+                                      shippingAddress.city + `,`
+                                    }<br />
                                     ${
                                       shippingAddress.country &&
                                       shippingAddress.country
@@ -935,6 +935,8 @@ router.post(
                                   Order No.
                                   ${order.orderNo}
                                 </h2>
+
+                              <p>Ordered on: ${order.createdAt.toDateString()} </p>
                                 <h4>
                                 <table>
                                   <thead>
@@ -1032,20 +1034,20 @@ router.post(
                                 <p>
                                     ${
                                       shippingAddress.address1 &&
-                                      shippingAddress.address1
-                                    },<br />
+                                      shippingAddress.address1 + `,`
+                                    }<br />
                                     ${
                                       shippingAddress.address2 &&
-                                      shippingAddress.address2
-                                    },<br />
+                                      shippingAddress.address2 + `,`
+                                    }<br />
                                     ${
                                       shippingAddress.zipCode &&
-                                      shippingAddress.zipCode
-                                    },<br />
+                                      shippingAddress.zipCode + `,`
+                                    }<br />
                                     ${
                                       shippingAddress.city &&
-                                      shippingAddress.city
-                                    },<br />
+                                      shippingAddress.city + `,`
+                                    }<br />
                                     ${
                                       shippingAddress.country &&
                                       shippingAddress.country
