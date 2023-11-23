@@ -188,7 +188,7 @@ router.post(
         0
       );
 
-      const orderTime = order.date.toLocaleTimeString("en-US", {
+      const orderTime = order?.date?.toLocaleTimeString("en-US", {
         timeStyle: "short",
       });
 
@@ -455,7 +455,7 @@ router.post(
                                   </h2>
 
                                   <h4>
-                                 Placed on:  ${order.date.toDateString()} ${orderTime}
+                                 Placed on:  ${order?.date?.toDateString()} ${orderTime}
                                   </h4>
                                   <table>
                                     <thead>
@@ -941,7 +941,7 @@ router.post(
                                   ${order.orderNo}
                                 </h2>
                                 <h4>
-                                Placed on:  ${order.date.toDateString()}  ${orderTime}
+                                Placed on:  ${order?.date?.toDateString()}  ${orderTime}
                                 <h4>
                                 <table>
                                   <thead>
