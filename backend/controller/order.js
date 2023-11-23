@@ -11,6 +11,8 @@ const pdf = require("pdfkit");
 const fs = require("fs");
 const path = require("path"); //
 const cloudinary = require("cloudinary");
+// const moment = require("moment")
+// import moment from "moment";
 
 function sendSMS(phoneNumber, message) {
   const url = "https://api.umeskiasoftwares.com/api/v1/sms";
@@ -188,9 +190,9 @@ router.post(
         0
       );
 
-      const orderTime = order?.date?.toLocaleTimeString("en-US", {
-        timeStyle: "short",
-      });
+      // const orderTime = order?.date?.toLocaleTimeString("en-US", {
+      //   timeStyle: "short",
+      // });
 
       const attachments = order.cart.map((item) => ({
         filename: item.images[0].url,
@@ -455,7 +457,7 @@ router.post(
                                   </h2>
 
                                   <h4>
-                                 Placed on:  ${order?.date?.toDateString()} ${orderTime}
+                                 Placed on: 
                                   </h4>
                                   <table>
                                     <thead>
@@ -941,7 +943,7 @@ router.post(
                                   ${order.orderNo}
                                 </h2>
                                 <h4>
-                                Placed on:  ${order?.date?.toDateString()}  ${orderTime}
+                                Placed on: 
                                 <h4>
                                 <table>
                                   <thead>
