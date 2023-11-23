@@ -943,7 +943,7 @@ router.post(
                                   ${order.orderNo}
                                 </h2>
                                 <h4>
-                                Placed on: 
+                                Placed on: ${Date.now()}
                                 <h4>
                                 <table>
                                   <thead>
