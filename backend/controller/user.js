@@ -37,7 +37,7 @@ router.post("/create-user", async (req, res, next) => {
 
     const activationToken = createActivationToken(user);
 
-    const activationUrl = `https://onlineshop-2xjp.vercel.app/activation/${activationToken}`;
+    const activationUrl = `https://ninetyone.co.ke/activation/${activationToken}`;
 
     try {
       await sendMail({
@@ -1001,7 +1001,7 @@ router.post(
                             <br />
                             Don't like receiving <b>eShop</b> emails?
                             <a
-                              href="https://onlineshop-2xjp.vercel.app/unsubscribe"
+                              href="https://ninetyone.co.ke/unsubscribe"
                               style="
                                 text-decoration: underline;
                                 color: #999999;
@@ -1307,7 +1307,7 @@ router.post(
     try {
       const token = await user.createPasswordResetToken();
       await user.save();
-      const resetURL = `https://onlineshop-2xjp.vercel.app/reset-password/${token}`;
+      const resetURL = `https://ninetyone.co.ke/reset-password/${token}`;
       sendMail({
         email: user.email,
         subject: "Forgot Password Link",
@@ -2256,7 +2256,7 @@ router.post(
                                                 bgcolor="#3498db"
                                               >
                                                 <a
-                                                  href="https://onlineshop-2xjp.vercel.app/"
+                                                  href="https://ninetyone.co.ke/"
                                                   target="_blank"
                                                   style="
                                                     border: solid 1px #3126c9;

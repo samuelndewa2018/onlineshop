@@ -44,7 +44,7 @@ router.post(
 
       const activationToken = createActivationToken(seller);
 
-      const activationUrl = `https://onlineshop-2xjp.vercel.app//seller/activation/${activationToken}`;
+      const activationUrl = `https://ninetyone.co.ke//seller/activation/${activationToken}`;
 
       try {
         await sendMail({
