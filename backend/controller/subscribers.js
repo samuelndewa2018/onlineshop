@@ -124,7 +124,7 @@ router.post("/subscribe", async (req, res) => {
                <img
                  src="cid:logo"
                  alt="3 dolts logo"
-                 style="height: 80px; width: 80px;"
+                 style="height: 80px; width: 100px;"
                />
              </div>
                  <!-- START CENTERED WHITE CONTAINER -->
@@ -376,7 +376,7 @@ router.post("/subscribe", async (req, res) => {
                          <br />
                          Don't like receiving <b>eShop</b> emails?
                          <a
-                           href="http://localhost:3000/unsubscribe"
+                           href="https://ninetyone.co.ke/unsubscribe"
                            style="
                              text-decoration: underline;
                              color: #999999;
@@ -632,7 +632,7 @@ router.post("/subscribe", async (req, res) => {
                   <img
                     src="cid:logo"
                     alt="3 dolts logo"
-                    style="height: 80px; width: 80px;"
+                    style="height: 80px; width: 100px;"
                   />
                 </div>
                     <!-- START CENTERED WHITE CONTAINER -->
@@ -866,7 +866,7 @@ router.post("/subscribe", async (req, res) => {
                             <br />
                             Don't like receiving <b>eShop</b> emails?
                             <a
-                              href="http://localhost:3000/unsubscribe"
+                              href="https://ninetyone.co.ke/unsubscribe"
                               style="
                                 text-decoration: underline;
                                 color: #999999;
@@ -1179,7 +1179,7 @@ router.post("/send-emails", async (req, res) => {
                   <img
                     src="cid:logo"
                     alt="eShoplogo"
-                    style="height: 150px; width: 150px"
+                    style="height: 80px; width: 100px"
                   />
                   <p style="color: #999999; font-size: 12px; text-align: center">
                     We are here to serve
@@ -1380,7 +1380,7 @@ router.post("/send-emails", async (req, res) => {
                           <br />
                           Like receive <b>eShop</b> emails Again?
                           <a
-                            href="http://localhost:3000/"
+                            href="https://ninetyone.co.ke/"
                             style="
                               text-decoration: underline;
                               color: #999999;
@@ -1662,7 +1662,7 @@ router.delete("/delete-subscribe", async (req, res) => {
                       <img
                         src="cid:logo"
                         alt="eShoplogo"
-                        style="height: 150px; width: 150px"
+                        style="height: 80px; width: 100px"
                       />
                       <p style="color: #999999; font-size: 12px; text-align: center">
                         We are here to serve
@@ -1876,7 +1876,7 @@ router.delete("/delete-subscribe", async (req, res) => {
                               <br />
                               Like receive <b>eShop</b> emails Again?
                               <a
-                                href="http://localhost:3000/"
+                                href="https://ninetyone.co.ke/"
                                 style="
                                   text-decoration: underline;
                                   color: #999999;

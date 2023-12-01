@@ -282,7 +282,7 @@ router.post("/create-user", async (req, res, next) => {
                     <img
                       src="cid:logo"
                       alt="3 dolts logo"
-                      style="height: 80px; width: 80px;"
+                      style="height: 80px; width: 100px;"
                     />
                   </div>
                                 <p
@@ -305,7 +305,7 @@ router.post("/create-user", async (req, res, next) => {
                                     margin-bottom: 15px;
                                   "
                                 >
-                                  Welcome to <b>eShop</b>. Click the button below to activate your account.<br />
+                                  Welcome to <b>Ninety One</b>. Click the button below to activate your account.<br />
                                   <br/>
                                 </p>
                                 <table
@@ -473,7 +473,7 @@ router.post("/create-user", async (req, res, next) => {
                             <br />
                             Don't like receiving <b>eShop</b> emails?
                             <a
-                              href="http://localhost:3000/unsubscribe"
+                              href="https://ninetyone.co.ke/unsubscribe"
                               style="
                                 text-decoration: underline;
                                 color: #999999;
@@ -1550,7 +1550,7 @@ router.post(
                     <img
                       src="cid:logo"
                       alt="3 dolts logo"
-                      style="height: 80px; width: 80px;"
+                      style="height: 80px; width: 100px;"
                     />
                   </div>
                                 <p
@@ -1743,7 +1743,7 @@ router.post(
                             <br />
                             Don't like receiving <b>eShop</b> emails?
                             <a
-                              href="http://localhost:3000/unsubscribe"
+                              href="https://ninetyone.co.ke/unsubscribe"
                               style="
                                 text-decoration: underline;
                                 color: #999999;
@@ -2366,7 +2366,7 @@ router.post(
                             <br />
                             Don't like receiving <b>eShop</b> emails?
                             <a
-                              href="http://localhost:3000/unsubscribe"
+                              href="https://ninetyone.co.ke/unsubscribe"
                               style="
                                 text-decoration: underline;
                                 color: #999999;
@@ -2734,7 +2734,7 @@ router.post(
                                                 bgcolor="#3498db"
                                               >
                                                 <a
-                                                  href="http://localhost:3000"
+                                                  href="https://ninetyone.co.ke"
                                                   target="_blank"
                                                   style="
                                                     border: solid 1px #3126c9;
@@ -2844,7 +2844,7 @@ router.post(
                             <br />
                             Don't like receiving <b>eShop</b> emails?
                             <a
-                              href="http://localhost:3000/unsubscribe"
+                              href="https://ninetyone.co.ke/unsubscribe"
                               style="
                                 text-decoration: underline;
                                 color: #999999;
