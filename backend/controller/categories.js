@@ -2,7 +2,7 @@ const express = require("express");
 const Category = require("../model/categories");
 const router = express.Router();
 const cloudinary = require("cloudinary");
-
+// changed mongo db
 //create category
 router.post("/create-category", async (req, res, next) => {
   try {
