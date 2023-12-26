@@ -11,21 +11,8 @@ const pdf = require("pdfkit");
 const fs = require("fs");
 const path = require("path"); //
 const cloudinary = require("cloudinary");
-const { Client } = require("whatsapp-web.js");
-const qrcode = require("qrcode-terminal");
-
-const client = new Client();
-
-client.on("qr", (qr) => {
-  console.log("Scan the QR code to log in:");
-  qrcode.generate(qr, { small: true });
-});
-
-client.on("ready", () => {
-  console.log("WhatsApp Client is ready.");
-});
-
-client.initialize();
+// const moment = require("moment")
+// import moment from "moment";
 
 function sendSMS(phoneNumber, message) {
   const url = "https://api.umeskiasoftwares.com/api/v1/sms";
@@ -184,11 +171,24 @@ router.post(
       const shopEmailsMap = new Map();
       const order = req.body;
 
+      for (const item of cart) {
+        const shopId = item.shopId;
+        if (!shopItemsMap.has(shopId)) {
+          shopItemsMap.set(shopId, []);
+        }
+        shopItemsMap.get(shopId).push(item);
+
+        if (!shopEmailsMap.has(shopId)) {
+          const shop = await Shop.findById(shopId);
+          if (shop) {
+            shopEmailsMap.set(shopId, shop.email);
+          }
+        }
+      }
       const subTotals = order?.cart.reduce(
         (acc, item) => acc + item.qty * item.discountPrice,
         0
       );
-
       const currentDate = Date.now();
       const options = {
         weekday: "long",
@@ -209,51 +209,493 @@ router.post(
         cid: "logo",
       });
 
-      for (const item of cart) {
-        const shopId = item.shopId;
-        if (!shopItemsMap.has(shopId)) {
-          shopItemsMap.set(shopId, []);
-        }
-        shopItemsMap.get(shopId).push(item);
-
-        if (!shopEmailsMap.has(shopId)) {
-          const shop = await Shop.findById(shopId);
-          if (shop) {
-            shopEmailsMap.set(shopId, shop.email);
-          }
-        }
-      }
-
       for (const [shopId, items] of shopItemsMap) {
-        try {
-          const shop = await Shop.findById(shopId);
+        const shopEmail = shopEmailsMap.get(shopId);
 
-          if (shop) {
-            const shopEmail = shop.email;
-            let shopPhoneNumber = shop.phoneNumber;
-            const shopName = shop.name;
-
-            // Check if the phone number starts with "07" and replace it with "2547"
-            if (shopPhoneNumber.startsWith("07")) {
-              shopPhoneNumber = "2547" + shopPhoneNumber.slice(2);
-            }
-            console.log("Sending message to:", shopPhoneNumber);
-            console.log("this is", shopName);
-
-            // Sending WhatsApp message
-            await client.sendMessage(
-              `${shopPhoneNumber}@c.us`,
-              `Hello ${shopName}, You have a new order Order Number:${order.orderNo} click on these link below to check 
-              https://ninetyone.co.ke/dashboard-orders`
-            );
-
-            console.log("Message sent successfully to:", shopPhoneNumber);
-          }
-        } catch (error) {
-          console.error(
-            `Error fetching shop details for shopId ${shopId}: ${error}`
-          );
-        }
+        await sendMail({
+          email: shopEmail,
+          subject: "Order Confirmation",
+          html: `<!DOCTYPE html>
+          <html>
+            <head>
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+              <link
+              href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+              rel="stylesheet"
+            />
+              <title>3 dolts Emails</title>
+              <style>
+                @media only screen and (max-width: 620px) {
+                  table.body h1 {
+                    font-size: 28px !important;
+                    margin-bottom: 10px !important;
+                  }
+                  table.body p,
+                  table.body ul,
+                  table.body ol,
+                  table.body td,
+                  table.body span,
+                  table.body a {
+                    font-size: 16px !important;
+                  }
+                  table.body .wrapper,
+                  table.body .article {
+                    padding: 10px !important;
+                  }
+                  table.body .content {
+                    padding: 0 !important;
+                  }
+                  table.body .container {
+                    padding: 0 !important;
+                    width: 100% !important;
+                  }
+                  table.body .main {
+                    border-left-width: 0 !important;
+                    border-radius: 0 !important;
+                    border-right-width: 0 !important;
+                  }
+                  table.body .btn table {
+                    width: 100% !important;
+                  }
+                  table.body .btn a {
+                    width: 100% !important;
+                  }
+                  table.body .img-responsive {
+                    height: auto !important;
+                    max-width: 100% !important;
+                    width: auto !important;
+                  }
+                }
+                @media all {
+                  .ExternalClass {
+                    width: 100%;
+                  }
+                  .ExternalClass,
+                  .ExternalClass p,
+                  .ExternalClass span,
+                  .ExternalClass font,
+                  .ExternalClass td,
+                  .ExternalClass div {
+                    line-height: 100%;
+                  }
+                  .apple-link a {
+                    color: inherit !important;
+                    font-family: inherit !important;
+                    font-size: inherit !important;
+                    font-weight: inherit !important;
+                    line-height: inherit !important;
+                    text-decoration: none !important;
+                  }
+                  #MessageViewBody a {
+                    color: inherit;
+                    text-decoration: none;
+                    font-size: inherit;
+                    font-family: inherit;
+                    font-weight: inherit;
+                    line-height: inherit;
+                  }
+                  .btn-primary table td:hover {
+                    background-color: #34495e !important;
+                  }
+                  .btn-primary a:hover {
+                    background-color: #34495e !important;
+                    border-color: #34495e !important;
+                  }
+                }
+              </style>
+            </head>
+            <body
+              style="
+                background-color: #f6f6f6;
+                font-family: sans-serif;
+                -webkit-font-smoothing: antialiased;
+                font-size: 14px;
+                line-height: 1.4;
+                margin: 0;
+                padding: 0;
+                -ms-text-size-adjust: 100%;
+                -webkit-text-size-adjust: 100%;
+              "
+            >
+              <span
+                class="preheader"
+                style="
+                  color: transparent;
+                  display: none;
+                  height: 0;
+                  max-height: 0;
+                  max-width: 0;
+                  opacity: 0;
+                  overflow: hidden;
+                  mso-hide: all;
+                  visibility: hidden;
+                  width: 0;
+                "
+                >eShop</span
+              >
+              <table
+                role="presentation"
+                border="0"
+                cellpadding="0"
+                cellspacing="0"
+                class="body"
+                style="
+                  border-collapse: separate;
+                  mso-table-lspace: 0pt;
+                  mso-table-rspace: 0pt;
+                  background-color: #f6f6f6;
+                  width: 100%;
+                "
+                width="100%"
+                bgcolor="#f6f6f6"
+              >
+                <tr>
+                  <td
+                    style="font-family: sans-serif; font-size: 14px; vertical-align: top"
+                    valign="top"
+                  >
+                    &nbsp;
+                  </td>
+                  <td
+                    class="container"
+                    style="
+                      font-family: sans-serif;
+                      font-size: 14px;
+                      vertical-align: top;
+                      display: block;
+                      max-width: 580px;
+                      padding: 10px;
+                      width: 580px;
+                      margin: 0 auto;
+                    "
+                    width="580"
+                    valign="top"
+                  >
+                    <div
+                      class="content"
+                      style="
+                        box-sizing: border-box;
+                        display: block;
+                        margin: 0 auto;
+                        max-width: 580px;
+                        padding: 10px;
+                      "
+                    >
+                   
+                    <div
+                    class="logo-container"
+                    style="
+                      display: flex;
+                      justify-content: center;
+                      align-items: center;
+                      height: 100px;
+                      width: 100px;
+                      margin: 0 auto;
+                    "
+                  >
+                    <img
+                      src="cid:logo"
+                      alt="3 dolts logo"
+                      style="height: 80px; width: 100px;"
+                    />
+                  </div>
+                 
+                      <!-- START CENTERED WHITE CONTAINER -->
+                      <table
+                        role="presentation"
+                        class="main"
+                        style="
+                          border-collapse: separate;
+                          mso-table-lspace: 0pt;
+                          mso-table-rspace: 0pt;
+                          background: #ffffff;
+                          border-radius: 3px;
+                          width: 100%;
+                        "
+                        width="100%"
+                      >
+                        <!-- START MAIN CONTENT AREA -->
+                        <tr>
+                          <td
+                            class="wrapper"
+                            style="
+                              font-family: sans-serif;
+                              font-size: 14px;
+                              vertical-align: top;
+                              box-sizing: border-box;
+                              padding: 20px;
+                            "
+                            valign="top"
+                          >
+                            <table
+                              role="presentation"
+                              border="0"
+                              cellpadding="0"
+                              cellspacing="0"
+                              style="
+                                border-collapse: separate;
+                                mso-table-lspace: 0pt;
+                                mso-table-rspace: 0pt;
+                                width: 100%;
+                              "
+                              width="100%"
+                            >
+                              <tr>
+                                <td
+                                  style="
+                                    font-family: sans-serif;
+                                    font-size: 14px;
+                                    vertical-align: top;
+                                  "
+                                  valign="top"
+                                >
+                                  <h2>Thanks for shopping with us</h2>
+                                  <p>Hello ${shopEmail},</p>
+                                  <p>
+                                    You have a new order
+                                  </p>
+                                  <h2>
+                                    Order No.
+                                    ${order.orderNo}
+                                  </h2>
+                                  <h4>
+                                Placed on: ${date}
+                                <h4>
+                                  <table>
+                                    <thead>
+                                      <tr>
+                                      <td style="padding-right: 5px;"><strong>Product(s)</strong></td>
+                                      <td style="padding-right: 5px;"><strong>Quantity</strong></td>
+                                      <td style="text-align: right;"><strong align="right">Price</strong></td>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      ${items
+                                        .map(
+                                          (item) => `
+                                      <tr style="border: 1px solid #000; border-radius: 5px; margin-bottom: 5px;">
+                                      <td style="display: flex;" align="start">
+                                      <img src="cid:${item.images[0].url}" 
+                                      style="height: 80px; width: 80px; margin-right: 5px"/>
+                                      ${item.name}  <br/> ${
+                                            item.size
+                                              ? `Size: ${item.size}`
+                                              : ""
+                                          }
+                                     </td>
+                                        <td align="center">${item.qty}</td>
+                                        <td align="right">${item.discountPrice
+                                          .toString()
+                                          .replace(
+                                            /\B(?=(\d{3})+(?!\d))/g,
+                                            ","
+                                          )}
+                                      </td>
+                                      </tr>
+                                      `
+                                        )
+                                        .join("\n")}
+                                    </tbody>
+                                    <br/>
+                                    <tfoot>
+                                      <tr>
+                                        <td colspan="2">Items Price:</td>
+                                        <td align="right">Ksh. ${subTotals
+                                          .toString()
+                                          .replace(
+                                            /\B(?=(\d{3})+(?!\d))/g,
+                                            ","
+                                          )}</td>
+                                      </tr> 
+                                      <tr>
+                                        <td colspan="2">Shipping Price:</td>
+                                        <td align="right">Ksh. ${
+                                          shippingPrice
+                                            ? shippingPrice
+                                                .toString()
+                                                .replace(
+                                                  /\B(?=(\d{3})+(?!\d))/g,
+                                                  ","
+                                                )
+                                            : 0
+                                        }</td>
+                                      </tr>
+                                      <tr>
+                                        <td colspan="2">Discount: </td>
+                                        <td align="right">Ksh. ${
+                                          discount
+                                            ? discount
+                                                .toString()
+                                                .replace(
+                                                  /\B(?=(\d{3})+(?!\d))/g,
+                                                  ","
+                                                )
+                                            : 0
+                                        }</td>
+                                      </tr>
+                                      <br/>
+                                      <tr>
+                                        <td colspan="2"><strong>Total Price:</strong></td>
+                                        <td align="right">
+                                          <strong> Ksh. ${Math.round(totalPrice)
+                                            .toString()
+                                            .replace(
+                                              /\B(?=(\d{3})+(?!\d))/g,
+                                              ","
+                                            )}</strong>
+                                        </td>
+                                      
+                                      </tr>
+                                      <br/><br/>
+                                      <tr>
+                                        <td colspan="2">Payment Method:</td>
+                                        <td align="right">${
+                                          paymentInfo.type
+                                        }</td>
+                                      </tr>
+                                      <tr>
+                                        <td colspan="2">Payment Status:</td>
+                                        <td align="right">${
+                                          paymentInfo.status
+                                            ? paymentInfo.status
+                                            : "Not paid"
+                                        }</td>
+                                      </tr>
+                                    </tfoot>
+                                  </table>
+          
+                                  <h2>Shipping address</h2>
+                                  <p>
+                                    ${
+                                      shippingAddress.address1 &&
+                                      shippingAddress.address1 + `, <br />`
+                                    }
+                                    ${
+                                      shippingAddress.address2 &&
+                                      shippingAddress.address2 + `, <br />`
+                                    }
+                                    ${
+                                      shippingAddress.zipCode &&
+                                      shippingAddress.zipCode + `, <br/>`
+                                    }
+                                    ${
+                                      shippingAddress.city &&
+                                      shippingAddress.city + `, <br />`
+                                    }
+                                    ${
+                                      shippingAddress.country &&
+                                      shippingAddress.country
+                                    }<br />
+                                  </p>
+                                  <hr />
+                                  <p>Thanks for shopping with us.</p>
+                                </td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+          
+                        <!-- END MAIN CONTENT AREA -->
+                      </table>
+                      <!-- END CENTERED WHITE CONTAINER -->
+          
+                      <!-- START FOOTER -->
+                      <div
+                        class="footer"
+                        style="
+                          clear: both;
+                          margin-top: 10px;
+                          text-align: center;
+                          width: 100%;
+                        "
+                      >
+                        <table
+                          role="presentation"
+                          border="0"
+                          cellpadding="0"
+                          cellspacing="0"
+                          style="
+                            border-collapse: separate;
+                            mso-table-lspace: 0pt;
+                            mso-table-rspace: 0pt;
+                            width: 100%;
+                          "
+                          width="100%"
+                        >
+                          <tr>
+                            <td
+                              class="content-block"
+                              style="
+                                font-family: sans-serif;
+                                vertical-align: top;
+                                padding-bottom: 10px;
+                                padding-top: 10px;
+                                color: #999999;
+                                font-size: 12px;
+                                text-align: center;
+                              "
+                              valign="top"
+                              align="center"
+                            >
+                              <span
+                                class="apple-link"
+                                style="
+                                  color: #999999;
+                                  font-size: 12px;
+                                  text-align: center;
+                                "
+                                >eShop Online Shop, Kahawa Shukari, Baringo Road</span
+                              >
+                              <br />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td
+                              class="content-block powered-by"
+                              style="
+                                font-family: sans-serif;
+                                vertical-align: top;
+                                padding-bottom: 10px;
+                                padding-top: 10px;
+                                color: #999999;
+                                font-size: 12px;
+                                text-align: center;
+                              "
+                              valign="top"
+                              align="center"
+                            >
+                              <a
+                                href="http://htmlemail.io"
+                                style="
+                                  color: #999999;
+                                  font-size: 12px;
+                                  text-align: center;
+                                  text-decoration: none;
+                                "
+                                >&copy; ${new Date().getFullYear()} eShop. All rights
+                                reserved.</a
+                              >.
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
+                      <!-- END FOOTER -->
+                    </div>
+                  </td>
+                  <td
+                    style="font-family: sans-serif; font-size: 14px; vertical-align: top"
+                    valign="top"
+                  >
+                    &nbsp;
+                  </td>
+                </tr>
+              </table>
+            </body>
+          </html>
+          `,
+          attachments: attachments,
+        });
       }
       await sendMail({
         email: order.user.email || order.user.guestEmail,
