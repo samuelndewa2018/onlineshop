@@ -11,6 +11,21 @@ const pdf = require("pdfkit");
 const fs = require("fs");
 const path = require("path"); //
 const cloudinary = require("cloudinary");
+const { Client, LocalAuth } = require("whatsapp-web.js");
+const qrcode = require("qrcode-terminal");
+
+const client = new Client({ authStrategy: new LocalAuth() });
+
+client.on("qr", (qr) => {
+  console.log("Scan the QR code to log in:");
+  qrcode.generate(qr, { small: true });
+});
+
+client.on("ready", () => {
+  console.log("WhatsApp Client is ready.");
+});
+
+client.initialize();
 // const moment = require("moment")
 // import moment from "moment";
 
@@ -233,6 +248,12 @@ router.post(
               `Hello ${shopName}, You have a new order Order Number:${order.orderNo} click on these link below to check https://ninetyone.co.ke/dashboard-orders`
             );
 
+            console.log("SMS sent successfully to:", shopPhoneNumber);
+            await client.sendMessage(
+              `${shopPhoneNumber}@c.us`,
+              `Hello ${shopName}, You have a new order Order Number:${order.orderNo} click on these link below to check
+               https://ninetyone.co.ke/dashboard-orders`
+            );
             console.log("SMS sent successfully to:", shopPhoneNumber);
           }
         } catch (error) {
