@@ -1199,14 +1199,30 @@ router.get(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { orderNo } = req.query;
-      const order = await Order.findOne({ orderNo });
-      if (!order) {
+      const orders = await Order.find({ orderNo });
+
+      if (orders.length === 0) {
         return next(new ErrorHandler("Order not found", 404));
       }
+
+      if (orders.length === 1) {
+        // Only one order found
+        const order = orders[0];
+        console.log("order", order);
+
+        return res.status(200).json({
+          success: true,
+          message: "I found this order for sure!!!",
+          order,
+        });
+      }
+      console.log("orders", orders);
+
+      // More than one order found
       res.status(200).json({
         success: true,
-        message: "i found this order for sure!!!",
-        order,
+        message: "Multiple orders found",
+        orders,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
