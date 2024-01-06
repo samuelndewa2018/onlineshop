@@ -11,26 +11,6 @@ const pdf = require("pdfkit");
 const fs = require("fs");
 const path = require("path"); //
 const cloudinary = require("cloudinary");
-// const moment = require("moment")
-// import moment from "moment";
-
-function sendSMS(phoneNumber, message) {
-  const url = "https://api.umeskiasoftwares.com/api/v1/sms";
-  const data = {
-    api_key: "SDlTWDE0V0Y6dmZxY21tM2s=", // Replace with your API key
-    email: "cornecraig26@gmail.com", // Replace with your email
-    Sender_Id: "23107", // If you have a custom sender id, use it here OR Use the default sender id: 23107
-    message: message,
-    phone: phoneNumber, // Phone number should be in the format: 0768XXXXX60 OR 254768XXXXX60 OR 254168XXXXX60
-  };
-
-  return axios.post(url, data, {
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  });
-}
 
 // create new order
 router.post(
@@ -124,14 +104,6 @@ router.post(
 
               await product.save({ validateBeforeSave: false });
             }
-            const userPhoneNumber = user.phoneNumber; // Replace with the actual path to the user's phone number
-            const userSMSMessage = `Hello $(order.user.name || order.user.guestName) your order!`; // Customize the message
-            await sendSMS(userPhoneNumber, userSMSMessage);
-
-            // Send SMS to the seller
-            const sellerPhoneNumber = shop.phoneNumber; // Replace with the actual path to the seller's phone number
-            const sellerSMSMessage = "You have a new order!"; // Customize the message
-            await sendSMS(sellerPhoneNumber, sellerSMSMessage);
           } catch (error) {
             console.error(
               `Error updating availableBalance for shop ${shopId}: ${error}`
@@ -140,6 +112,27 @@ router.post(
           orders.push(order);
         }
       }
+      // send email starts here
+      const attachments = cart.map((item) => ({
+        filename: item.images[0].url,
+        path: item.images[0].url,
+        cid: item.images[0].url,
+      }));
+
+      attachments.push({
+        filename: "logo.png",
+        path: `https://res.cloudinary.com/bramuels/image/upload/v1695878268/logo/LOGO-01_moo9oc.png`,
+        cid: "logo",
+      });
+      await sendMail({
+        email: user.email || user.guestEmail,
+        subject: "Order Confirmation",
+        html: `Hello ${
+          user.name || user.guestName
+        }, <br/> Your order number is ${orderNo} <br/> Use it to track order.......... advance email coming soon`,
+        attachments: attachments,
+      });
+      // send email ends here
 
       res.status(201).json({
         success: true,
@@ -189,15 +182,6 @@ router.post(
         (acc, item) => acc + item.qty * item.discountPrice,
         0
       );
-      const currentDate = Date.now();
-      const options = {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      };
-      const date = new Date(currentDate).toLocaleString("en-US", options);
-
       const attachments = order.cart.map((item) => ({
         filename: item.images[0].url,
         path: item.images[0].url,
@@ -397,7 +381,7 @@ router.post(
                     <img
                       src="cid:logo"
                       alt="3 dolts logo"
-                      style="height: 80px; width: 100px;"
+                      style="height: 80px; width: 80px;"
                     />
                   </div>
                  
@@ -451,17 +435,18 @@ router.post(
                                   valign="top"
                                 >
                                   <h2>Thanks for shopping with us</h2>
-                                  <p>Hello ${shopEmail},</p>
+                                  <p>Hello ${
+                                    user.name || user.guestName
+                                  }---- for seller,</p>
                                   <p>
-                                    You have a new order
+                                    We have received your order and it's being processed.
                                   </p>
                                   <h2>
                                     Order No.
                                     ${order.orderNo}
                                   </h2>
                                   <h4>
-                                Placed on: ${date}
-                                <h4>
+                                  Ordered on: (to do)</h4>
                                   <table>
                                     <thead>
                                       <tr>
@@ -511,21 +496,20 @@ router.post(
                                       <tr>
                                         <td colspan="2">Shipping Price:</td>
                                         <td align="right">Ksh. ${
-                                          shippingPrice
-                                            ? shippingPrice
-                                                .toString()
-                                                .replace(
-                                                  /\B(?=(\d{3})+(?!\d))/g,
-                                                  ","
-                                                )
-                                            : 0
+                                          order?.shippingPrice &&
+                                          order?.shippingPrice
+                                            .toString()
+                                            .replace(
+                                              /\B(?=(\d{3})+(?!\d))/g,
+                                              ","
+                                            )
                                         }</td>
                                       </tr>
                                       <tr>
                                         <td colspan="2">Discount: </td>
                                         <td align="right">Ksh. ${
-                                          discount
-                                            ? discount
+                                          order?.discount
+                                            ? order?.discount
                                                 .toString()
                                                 .replace(
                                                   /\B(?=(\d{3})+(?!\d))/g,
@@ -567,26 +551,11 @@ router.post(
           
                                   <h2>Shipping address</h2>
                                   <p>
-                                    ${
-                                      shippingAddress.address1 &&
-                                      shippingAddress.address1 + `, <br />`
-                                    }
-                                    ${
-                                      shippingAddress.address2 &&
-                                      shippingAddress.address2 + `, <br />`
-                                    }
-                                    ${
-                                      shippingAddress.zipCode &&
-                                      shippingAddress.zipCode + `, <br/>`
-                                    }
-                                    ${
-                                      shippingAddress.city &&
-                                      shippingAddress.city + `, <br />`
-                                    }
-                                    ${
-                                      shippingAddress.country &&
-                                      shippingAddress.country
-                                    }<br />
+                                    ${shippingAddress.address1},<br />
+                                    ${shippingAddress.address2},<br />
+                                    ${shippingAddress.zipCode},<br />
+                                    ${shippingAddress.city},<br />
+                                    ${shippingAddress.country}<br />
                                   </p>
                                   <hr />
                                   <p>Thanks for shopping with us.</p>
@@ -648,6 +617,17 @@ router.post(
                                 >eShop Online Shop, Kahawa Shukari, Baringo Road</span
                               >
                               <br />
+                              Don't like receiving <b>eShop</b> emails?
+                              <a
+                                href="http://localhost:3000/unsubscribe"
+                                style="
+                                  text-decoration: underline;
+                                  color: #999999;
+                                  font-size: 12px;
+                                  text-align: center;
+                                "
+                                >Unsubscribe</a
+                              >.
                             </td>
                           </tr>
                           <tr>
@@ -882,7 +862,7 @@ router.post(
                   <img
                     src="cid:logo"
                     alt="3 dolts logo"
-                    style="height: 80px; width: 100px;"
+                    style="height: 80px; width: 80px;"
                   />
                 </div>
                
@@ -938,7 +918,7 @@ router.post(
                                 <h2>Thanks for shopping with us</h2>
                                 <p>Hello ${
                                   order.user.name || order.user.guestName
-                                },</p>
+                                }, --- for user</p>
                                 <p>
                                   We have received your order and it's being processed.
                                 </p>
@@ -947,8 +927,7 @@ router.post(
                                   ${order.orderNo}
                                 </h2>
                                 <h4>
-                                Placed on: ${date}
-                                <h4>
+                                Ordered on: (to do)</h4>
                                 <table>
                                   <thead>
                                     <tr>
@@ -993,21 +972,17 @@ router.post(
                                     <tr>
                                       <td colspan="2">Shipping Price:</td>
                                       <td align="right">Ksh. ${
-                                        shippingPrice
-                                          ? shippingPrice
-                                              .toString()
-                                              .replace(
-                                                /\B(?=(\d{3})+(?!\d))/g,
-                                                ","
-                                              )
-                                          : 0
+                                        order?.shippingPrice &&
+                                        order?.shippingPrice
+                                          .toString()
+                                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                                       }</td>
                                     </tr>
                                     <tr>
                                       <td colspan="2">Discount: </td>
                                       <td align="right">Ksh. ${
-                                        discount
-                                          ? discount
+                                        order?.discount
+                                          ? order?.discount
                                               .toString()
                                               .replace(
                                                 /\B(?=(\d{3})+(?!\d))/g,
@@ -1047,27 +1022,12 @@ router.post(
         
                                 <h2>Shipping address</h2>
                                 <p>
-                                ${
-                                  shippingAddress.address1 &&
-                                  shippingAddress.address1 + `, <br />`
-                                }
-                                ${
-                                  shippingAddress.address2 &&
-                                  shippingAddress.address2 + `, <br />`
-                                }
-                                ${
-                                  shippingAddress.zipCode &&
-                                  shippingAddress.zipCode + `, <br />`
-                                }
-                                ${
-                                  shippingAddress.city &&
-                                  shippingAddress.city + `, <br />`
-                                }
-                                ${
-                                  shippingAddress.country &&
-                                  shippingAddress.country
-                                }<br />
-                              </p>
+                                  ${shippingAddress.address1},<br />
+                                  ${shippingAddress.address2},<br />
+                                  ${shippingAddress.zipCode},<br />
+                                  ${shippingAddress.city},<br />
+                                  ${shippingAddress.country}<br />
+                                </p>
                                 <hr />
                                 <p>Thanks for shopping with us.</p>
                               </td>
@@ -1128,6 +1088,17 @@ router.post(
                               >eShop Online Shop, Kahawa Shukari, Baringo Road</span
                             >
                             <br />
+                            Don't like receiving <b>eShop</b> emails?
+                            <a
+                              href="http://localhost:3000/unsubscribe"
+                              style="
+                                text-decoration: underline;
+                                color: #999999;
+                                font-size: 12px;
+                                text-align: center;
+                              "
+                              >Unsubscribe</a
+                            >.
                           </td>
                         </tr>
                         <tr>
@@ -1230,11 +1201,13 @@ router.get(
 //generate receipt
 router.get(
   "/generate-receipt/:orderId",
-
   catchAsyncErrors(async (req, res, next) => {
     try {
       const orderId = req.params.orderId;
       const order = await Order.findById(orderId);
+      const orderTime = order.createdAt.toLocaleTimeString("en-US", {
+        timeStyle: "short",
+      });
 
       console.log(order);
       const footerText =
@@ -1243,7 +1216,7 @@ router.get(
       const pdfFileName = `receipt_${orderId}.pdf`;
 
       const doc = new pdf({
-        size: "Letter",
+        size: "A4",
       });
       const pageHeight = doc.page.height;
 
@@ -1251,14 +1224,11 @@ router.get(
 
       const yCoordinate = pageHeight - fontSize - 10;
 
+      const logoPath = path.join(__dirname, "logo.png");
+
       // Replace with your image URL
 
-      try {
-        const logoPath = path.join(__dirname, "logo.png");
-        doc.image(logoPath, 50, 20, { width: 150, height: 100 });
-      } catch (error) {
-        console.error("Error loading image:", error);
-      }
+      doc.image(logoPath, 50, 20, { width: 150, height: 100 });
 
       doc.moveTo(50, 395);
       doc.dash(3);
@@ -1440,14 +1410,9 @@ router.get(
       doc.moveUp(1);
       doc
         .fontSize(10)
-        .text(
-          `Ksh ${
-            order.discount && order.discount === null ? 0 : order.discount
-          }`,
-          {
-            align: "right",
-          }
-        );
+        .text(`Ksh ${order.discount === null ? 0 : order.discount}`, {
+          align: "right",
+        });
 
       // Set the response headers for the PDF
       res.setHeader(
@@ -1461,6 +1426,46 @@ router.get(
       doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, 750);
 
       doc.end();
+      // Stream the PDF to Cloudinary
+      const stream = cloudinary.v2.uploader.upload_stream((result) => {
+        if (result && result.secure_url) {
+          // The result variable contains the public URL of the uploaded PDF
+          const pdfUrl = result.secure_url;
+
+          // Send the URL to the client for download
+          res.json({
+            success: true,
+            message: "PDF generated successfully",
+            pdfUrl,
+          });
+
+          if (result.public_id) {
+            // Delete the PDF from Cloudinary after sending the response
+            cloudinary.v2.uploader.destroy(
+              result.public_id,
+              (error, deleteResult) => {
+                if (error) {
+                  console.error("Error deleting PDF from Cloudinary:", error);
+                } else {
+                  console.log(
+                    "PDF deleted from Cloudinary:",
+                    deleteResult.result
+                  );
+                }
+              }
+            );
+          }
+        } else {
+          console.error("Cloudinary upload failed: ", result);
+          res.json({
+            success: false,
+            message: "PDF upload to Cloudinary failed",
+          });
+        }
+      });
+
+      // Pipe the PDF content to Cloudinary
+      doc.pipe(stream);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
@@ -1648,20 +1653,56 @@ router.get(
     });
   })
 );
+
 // Get a specific order by order number
+// router.get(
+//   "/specific-order",
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       const { orderNo } = req.query;
+//       const order = await Order.findOne({ orderNo });
+//       if (!order) {
+//         return next(new ErrorHandler("Order not found", 404));
+//       }
+//       res.status(200).json({
+//         success: true,
+//         message: "i found this order for sure!!!",
+//         order,
+//       });
+//     } catch (error) {
+//       return next(new ErrorHandler(error.message, 500));
+//     }
+//   })
+// );
 router.get(
   "/specific-order",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { orderNo } = req.query;
-      const order = await Order.findOne({ orderNo });
-      if (!order) {
+      const orders = await Order.find({ orderNo });
+
+      if (orders.length === 0) {
         return next(new ErrorHandler("Order not found", 404));
       }
+
+      if (orders.length === 1) {
+        // Only one order found
+        const order = orders[0];
+        console.log("order", order);
+
+        return res.status(200).json({
+          success: true,
+          message: "I found this order for sure!!!",
+          order,
+        });
+      }
+      console.log("orders", orders);
+
+      // More than one order found
       res.status(200).json({
         success: true,
-        message: "i found this order for sure!!!",
-        order,
+        message: "Multiple orders found",
+        orders,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
