@@ -11,6 +11,26 @@ const pdf = require("pdfkit");
 const fs = require("fs");
 const path = require("path"); //
 const cloudinary = require("cloudinary");
+// const moment = require("moment")
+// import moment from "moment";
+
+function sendSMS(phoneNumber, message) {
+  const url = "https://api.umeskiasoftwares.com/api/v1/sms";
+  const data = {
+    api_key: "SDlTWDE0V0Y6dmZxY21tM2s=", // Replace with your API key
+    email: "cornecraig26@gmail.com", // Replace with your email
+    Sender_Id: "23107", // If you have a custom sender id, use it here OR Use the default sender id: 23107
+    message: message,
+    phone: phoneNumber, // Phone number should be in the format: 0768XXXXX60 OR 254768XXXXX60 OR 254168XXXXX60
+  };
+
+  return axios.post(url, data, {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  });
+}
 
 // create new order
 router.post(
@@ -164,24 +184,19 @@ router.post(
       const shopEmailsMap = new Map();
       const order = req.body;
 
-      for (const item of cart) {
-        const shopId = item.shopId;
-        if (!shopItemsMap.has(shopId)) {
-          shopItemsMap.set(shopId, []);
-        }
-        shopItemsMap.get(shopId).push(item);
-
-        if (!shopEmailsMap.has(shopId)) {
-          const shop = await Shop.findById(shopId);
-          if (shop) {
-            shopEmailsMap.set(shopId, shop.email);
-          }
-        }
-      }
       const subTotals = order?.cart.reduce(
         (acc, item) => acc + item.qty * item.discountPrice,
         0
       );
+      const currentDate = Date.now();
+      const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      };
+      const date = new Date(currentDate).toLocaleString("en-US", options);
+
       const attachments = order.cart.map((item) => ({
         filename: item.images[0].url,
         path: item.images[0].url,
@@ -381,7 +396,7 @@ router.post(
                     <img
                       src="cid:logo"
                       alt="3 dolts logo"
-                      style="height: 80px; width: 80px;"
+                      style="height: 80px; width: 100px;"
                     />
                   </div>
                  
@@ -435,18 +450,17 @@ router.post(
                                   valign="top"
                                 >
                                   <h2>Thanks for shopping with us</h2>
-                                  <p>Hello ${
-                                    user.name || user.guestName
-                                  }---- for seller,</p>
+                                  <p>Hello ${shopEmail},</p>
                                   <p>
-                                    We have received your order and it's being processed.
+                                    You have a new order
                                   </p>
                                   <h2>
                                     Order No.
                                     ${order.orderNo}
                                   </h2>
                                   <h4>
-                                  Ordered on: (to do)</h4>
+                                Placed on: ${date}
+                                <h4>
                                   <table>
                                     <thead>
                                       <tr>
@@ -496,20 +510,21 @@ router.post(
                                       <tr>
                                         <td colspan="2">Shipping Price:</td>
                                         <td align="right">Ksh. ${
-                                          order?.shippingPrice &&
-                                          order?.shippingPrice
-                                            .toString()
-                                            .replace(
-                                              /\B(?=(\d{3})+(?!\d))/g,
-                                              ","
-                                            )
+                                          shippingPrice
+                                            ? shippingPrice
+                                                .toString()
+                                                .replace(
+                                                  /\B(?=(\d{3})+(?!\d))/g,
+                                                  ","
+                                                )
+                                            : 0
                                         }</td>
                                       </tr>
                                       <tr>
                                         <td colspan="2">Discount: </td>
                                         <td align="right">Ksh. ${
-                                          order?.discount
-                                            ? order?.discount
+                                          discount
+                                            ? discount
                                                 .toString()
                                                 .replace(
                                                   /\B(?=(\d{3})+(?!\d))/g,
@@ -551,11 +566,26 @@ router.post(
           
                                   <h2>Shipping address</h2>
                                   <p>
-                                    ${shippingAddress.address1},<br />
-                                    ${shippingAddress.address2},<br />
-                                    ${shippingAddress.zipCode},<br />
-                                    ${shippingAddress.city},<br />
-                                    ${shippingAddress.country}<br />
+                                    ${
+                                      shippingAddress.address1 &&
+                                      shippingAddress.address1 + `, <br />`
+                                    }
+                                    ${
+                                      shippingAddress.address2 &&
+                                      shippingAddress.address2 + `, <br />`
+                                    }
+                                    ${
+                                      shippingAddress.zipCode &&
+                                      shippingAddress.zipCode + `, <br/>`
+                                    }
+                                    ${
+                                      shippingAddress.city &&
+                                      shippingAddress.city + `, <br />`
+                                    }
+                                    ${
+                                      shippingAddress.country &&
+                                      shippingAddress.country
+                                    }<br />
                                   </p>
                                   <hr />
                                   <p>Thanks for shopping with us.</p>
@@ -617,17 +647,6 @@ router.post(
                                 >eShop Online Shop, Kahawa Shukari, Baringo Road</span
                               >
                               <br />
-                              Don't like receiving <b>eShop</b> emails?
-                              <a
-                                href="http://localhost:3000/unsubscribe"
-                                style="
-                                  text-decoration: underline;
-                                  color: #999999;
-                                  font-size: 12px;
-                                  text-align: center;
-                                "
-                                >Unsubscribe</a
-                              >.
                             </td>
                           </tr>
                           <tr>
