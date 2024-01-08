@@ -164,34 +164,73 @@ router.post(
         discount,
       } = req.body;
 
-      const combinedCart = [];
-      let combinedSubTotal = 0;
-
-      for (const item of cart) {
+      const allItems = cart.reduce((acc, item) => {
         const shopId = item.shopId;
-        const shop = await Shop.findById(shopId);
+        if (!acc[shopId]) {
+          acc[shopId] = [];
+        }
+        acc[shopId].push(item);
+        return acc;
+      }, {});
 
-        if (!shop) {
-          console.error(`Shop with ID ${shopId} not found.`);
-          return next(
-            new ErrorHandler(`Shop with ID ${shopId} not found.`, 404)
+      const orders = [];
+
+      for (const shopId of Object.keys(allItems)) {
+        const items = allItems[shopId];
+        const subTotals = items.reduce(
+          (acc, item) => acc + item.qty * item.discountPrice,
+          0
+        );
+
+        try {
+          const shop = await Shop.findById(shopId);
+
+          if (!shop) {
+            console.error(`Shop with ID ${shopId} not found.`);
+          } else {
+            if (
+              (paymentInfo.type === "Mpesa" || paymentInfo.type === "Paypal") &&
+              paymentInfo.status === "succeeded"
+            ) {
+              const amountToAdd = (subTotals * 0.9).toFixed(2);
+              shop.availableBalance += parseInt(amountToAdd);
+            }
+
+            await shop.save();
+          }
+
+          for (const o of items) {
+            if (o.sizes.length > 0) {
+              await updateOrderWithSizes(o._id, o.qty, o.size);
+            }
+            await updateOrder(o._id, o.qty);
+          }
+
+          async function updateOrder(id, qty) {
+            const product = await Product.findById(id);
+
+            product.stock -= qty;
+            product.sold_out += qty;
+
+            await product.save({ validateBeforeSave: false });
+          }
+
+          async function updateOrderWithSizes(id, qty, size) {
+            const product = await Product.findById(id);
+
+            product.sizes.find((s) => s.name === size).stock -= qty;
+
+            await product.save({ validateBeforeSave: false });
+          }
+        } catch (error) {
+          console.error(
+            `Error updating availableBalance for shop ${shopId}: ${error}`
           );
         }
-
-        combinedCart.push(item);
-        combinedSubTotal += item.qty * item.discountPrice;
-
-        // Update stock for products with sizes
-        if (item.sizes.length > 0) {
-          await updateOrderWithSizes(item._id, item.qty, item.size);
-        }
-
-        // Update stock for products without sizes
-        await updateOrder(item._id, item.qty);
       }
 
-      const newOrder = await Order.create({
-        cart: combinedCart,
+      const order = await Order.create({
+        cart,
         shippingAddress,
         user,
         orderNo,
@@ -201,34 +240,14 @@ router.post(
         discount,
       });
 
-      // Update available balance for the shop
-      if (
-        (paymentInfo.type === "Mpesa" || paymentInfo.type === "Paypal") &&
-        paymentInfo.status === "succeeded"
-      ) {
-        const amountToAdd = (combinedSubTotal * 0.9).toFixed(2);
-        const shop = await Shop.findById(combinedCart[0].shopId);
-
-        if (!shop) {
-          console.error(`Shop with ID ${combinedCart[0].shopId} not found.`);
-          return next(
-            new ErrorHandler(
-              `Shop with ID ${combinedCart[0].shopId} not found.`,
-              404
-            )
-          );
-        }
-
-        shop.availableBalance += parseInt(amountToAdd);
-        await shop.save();
-      }
+      orders.push(order);
 
       res.status(201).json({
         success: true,
-        order: newOrder,
+        orders,
       });
     } catch (error) {
-      console.error(`Error creating order: ${error}`);
+      console.log(error);
       return next(new ErrorHandler(error.message, 500));
     }
   })
