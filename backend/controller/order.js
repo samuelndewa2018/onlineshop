@@ -34,6 +34,121 @@ function sendSMS(phoneNumber, message) {
 }
 
 // create new order
+// router.post(
+//   "/create-order",
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       const {
+//         cart,
+//         shippingAddress,
+//         user,
+//         orderNo,
+//         totalPrice,
+//         paymentInfo,
+//         shippingPrice,
+//         discount,
+//       } = req.body;
+
+//       const shopItemsMap = new Map();
+//       const shopEmailsMap = new Map();
+
+//       for (const item of cart) {
+//         const shopId = item.shopId;
+//         if (!shopItemsMap.has(shopId)) {
+//           shopItemsMap.set(shopId, []);
+//         }
+//         shopItemsMap.get(shopId).push(item);
+
+//         if (!shopEmailsMap.has(shopId)) {
+//           const shop = await Shop.findById(shopId);
+//           if (shop) {
+//             shopEmailsMap.set(shopId, shop.email);
+//           }
+//         }
+//       }
+
+//       const orders = [];
+
+//       for (const [shopId, items] of shopItemsMap) {
+//         const shopEmail = shopEmailsMap.get(shopId);
+
+//         // Create a single order with all items from the same shop
+//         const order = await Order.create({
+//           cart: items,
+//           shippingAddress,
+//           user,
+//           orderNo,
+//           totalPrice,
+//           paymentInfo,
+//           shippingPrice,
+//           discount,
+//         });
+//         const subTotals = order?.cart.reduce(
+//           (acc, item) => acc + item.qty * item.discountPrice,
+//           0
+//         );
+
+//         try {
+//           const shop = await Shop.findById(shopId);
+
+//           if (!shop) {
+//             console.error(`Shop with ID ${shopId} not found.`);
+//           } else {
+//             if (
+//               (paymentInfo.type === "Mpesa" || paymentInfo.type === "Paypal") &&
+//               paymentInfo.status === "succeeded"
+//             ) {
+//               const amountToAdd = (subTotals * 0.9).toFixed(2);
+//               shop.availableBalance += parseInt(amountToAdd);
+//             }
+
+//             await shop.save();
+//           }
+
+//           order.cart.forEach(async (o) => {
+//             if (o.sizes.length > 0) {
+//               await updateOrderWithSizes(o._id, o.qty, o.size);
+//             }
+//             await updateOrder(o._id, o.qty);
+//           });
+
+//           async function updateOrder(id, qty) {
+//             const product = await Product.findById(id);
+
+//             product.stock -= qty;
+//             product.sold_out += qty;
+
+//             await product.save({ validateBeforeSave: false });
+//           }
+
+//           async function updateOrderWithSizes(id, qty, size) {
+//             const product = await Product.findById(id);
+
+//             product.sizes.find((s) => s.name === size).stock -= qty;
+
+//             await product.save({ validateBeforeSave: false });
+//           }
+//         } catch (error) {
+//           console.error(
+//             `Error updating availableBalance for shop ${shopId}: ${error}`
+//           );
+//         }
+
+//         orders.push(order);
+//       }
+
+//       res.status(201).json({
+//         success: true,
+//         orders,
+//       });
+//     } catch (error) {
+//       console.log(error);
+//       return next(new ErrorHandler(error.message, 500));
+//     }
+//   })
+// );
+
+// single order
 router.post(
   "/create-order",
   catchAsyncErrors(async (req, res, next) => {
@@ -49,100 +164,71 @@ router.post(
         discount,
       } = req.body;
 
-      const shopItemsMap = new Map();
-      const shopEmailsMap = new Map();
+      const combinedCart = [];
+      let combinedSubTotal = 0;
 
       for (const item of cart) {
         const shopId = item.shopId;
-        if (!shopItemsMap.has(shopId)) {
-          shopItemsMap.set(shopId, []);
-        }
-        shopItemsMap.get(shopId).push(item);
+        const shop = await Shop.findById(shopId);
 
-        if (!shopEmailsMap.has(shopId)) {
-          const shop = await Shop.findById(shopId);
-          if (shop) {
-            shopEmailsMap.set(shopId, shop.email);
-          }
+        if (!shop) {
+          console.error(`Shop with ID ${shopId} not found.`);
+          return next(
+            new ErrorHandler(`Shop with ID ${shopId} not found.`, 404)
+          );
         }
+
+        combinedCart.push(item);
+        combinedSubTotal += item.qty * item.discountPrice;
+
+        // Update stock for products with sizes
+        if (item.sizes.length > 0) {
+          await updateOrderWithSizes(item._id, item.qty, item.size);
+        }
+
+        // Update stock for products without sizes
+        await updateOrder(item._id, item.qty);
       }
 
-      const orders = [];
+      const newOrder = await Order.create({
+        cart: combinedCart,
+        shippingAddress,
+        user,
+        orderNo,
+        totalPrice,
+        paymentInfo,
+        shippingPrice,
+        discount,
+      });
 
-      for (const [shopId, items] of shopItemsMap) {
-        const shopEmail = shopEmailsMap.get(shopId);
+      // Update available balance for the shop
+      if (
+        (paymentInfo.type === "Mpesa" || paymentInfo.type === "Paypal") &&
+        paymentInfo.status === "succeeded"
+      ) {
+        const amountToAdd = (combinedSubTotal * 0.9).toFixed(2);
+        const shop = await Shop.findById(combinedCart[0].shopId);
 
-        // Create a single order with all items from the same shop
-        const order = await Order.create({
-          cart: items,
-          shippingAddress,
-          user,
-          orderNo,
-          totalPrice,
-          paymentInfo,
-          shippingPrice,
-          discount,
-        });
-        const subTotals = order?.cart.reduce(
-          (acc, item) => acc + item.qty * item.discountPrice,
-          0
-        );
-
-        if (order.paymentInfo.status === "succeeded") {
-          try {
-            const shop = await Shop.findById(shopId);
-
-            if (!shop) {
-              console.error(`Shop with ID ${shopId} not found.`);
-            } else {
-              const amountToAdd = (subTotals * 0.9).toFixed(2);
-              // const amountToAdd2 = (subTotals * 0.1).toFixed(2);
-              shop.availableBalance += parseInt(amountToAdd);
-              // user.admin.availableBalance += parseInt(amountToAdd2);
-
-              await shop.save();
-            }
-            order.cart.forEach(async (o) => {
-              if (o.sizes.length > 0) {
-                await updateOrderWithSizes(o._id, o.qty, o.size);
-              }
-              await updateOrder(o._id, o.qty);
-            });
-
-            async function updateOrder(id, qty) {
-              const product = await Product.findById(id);
-
-              product.stock -= qty;
-              product.sold_out += qty;
-
-              await product.save({ validateBeforeSave: false });
-            }
-
-            async function updateOrderWithSizes(id, qty, size) {
-              const product = await Product.findById(id);
-
-              product.sizes.find((s) => s.name === size).stock -= qty;
-
-              await product.save({ validateBeforeSave: false });
-            }
-          } catch (error) {
-            console.error(
-              `Error updating availableBalance for shop ${shopId}: ${error}`
-            );
-          }
-          orders.push(order);
+        if (!shop) {
+          console.error(`Shop with ID ${combinedCart[0].shopId} not found.`);
+          return next(
+            new ErrorHandler(
+              `Shop with ID ${combinedCart[0].shopId} not found.`,
+              404
+            )
+          );
         }
-      }
-      // send email starts here
 
-      // send email ends here
+        shop.availableBalance += parseInt(amountToAdd);
+        await shop.save();
+      }
 
       res.status(201).json({
         success: true,
-        orders,
+        order: newOrder,
       });
     } catch (error) {
-      console.log(error);
+      console.error(`Error creating order: ${error}`);
       return next(new ErrorHandler(error.message, 500));
     }
   })
