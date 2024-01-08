@@ -194,33 +194,33 @@ router.post(
             ) {
               const amountToAdd = (subTotals * 0.9).toFixed(2);
               shop.availableBalance += parseInt(amountToAdd);
+
+              for (const o of items) {
+                if (o.sizes.length > 0) {
+                  await updateOrderWithSizes(o._id, o.qty, o.size);
+                }
+                await updateOrder(o._id, o.qty);
+              }
+
+              async function updateOrder(id, qty) {
+                const product = await Product.findById(id);
+
+                product.stock -= qty;
+                product.sold_out += qty;
+
+                await product.save({ validateBeforeSave: false });
+              }
+
+              async function updateOrderWithSizes(id, qty, size) {
+                const product = await Product.findById(id);
+
+                product.sizes.find((s) => s.name === size).stock -= qty;
+
+                await product.save({ validateBeforeSave: false });
+              }
             }
 
             await shop.save();
-          }
-
-          for (const o of items) {
-            if (o.sizes.length > 0) {
-              await updateOrderWithSizes(o._id, o.qty, o.size);
-            }
-            await updateOrder(o._id, o.qty);
-          }
-
-          async function updateOrder(id, qty) {
-            const product = await Product.findById(id);
-
-            product.stock -= qty;
-            product.sold_out += qty;
-
-            await product.save({ validateBeforeSave: false });
-          }
-
-          async function updateOrderWithSizes(id, qty, size) {
-            const product = await Product.findById(id);
-
-            product.sizes.find((s) => s.name === size).stock -= qty;
-
-            await product.save({ validateBeforeSave: false });
           }
         } catch (error) {
           console.error(
