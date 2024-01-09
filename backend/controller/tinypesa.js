@@ -59,6 +59,8 @@ router.post("/callback", async (req, res) => {
   const code = stkCallbackResponse.Body.stkCallback.ResultCode;
   successfulCallbackData = stkCallbackResponse.Body.stkCallback;
 
+  const resultId = stkCallbackResponse.Body.stkCallback.TinyPesaID;
+
   try {
     if (
       stkCallbackResponse.Body.stkCallback.CallbackMetadata &&
@@ -77,6 +79,7 @@ router.post("/callback", async (req, res) => {
           transaction.customer_number = phone;
           transaction.mpesa_ref = ref;
           transaction.amount = amount;
+          transaction.resultId = resultId;
 
           const savedTransaction = await transaction.save();
           console.log({

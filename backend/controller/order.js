@@ -70,8 +70,6 @@ router.post(
         return acc;
       }, {});
 
-      const orders = [];
-
       for (const shopId of Object.keys(allItems)) {
         const items = allItems[shopId];
         const subTotals = items.reduce(
@@ -136,8 +134,6 @@ router.post(
         shippingPrice,
         discount,
       });
-
-      orders.push(order);
 
       res.status(201).json({
         success: true,
