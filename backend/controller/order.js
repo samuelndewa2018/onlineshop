@@ -164,6 +164,16 @@ router.post(
         discount,
       } = req.body;
 
+      // Check if order with the same order number already exists
+      const existingOrder = await Order.findOne({ orderNo });
+
+      if (existingOrder) {
+        return res.status(400).json({
+          success: false,
+          message: "Order with the same order number already exists.",
+        });
+      }
+
       const allItems = cart.reduce((acc, item) => {
         const shopId = item.shopId;
         if (!acc[shopId]) {
