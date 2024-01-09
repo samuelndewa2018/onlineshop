@@ -60,7 +60,18 @@ router.post(
           message: "Order with the same order number already exists.",
         });
       }
+      async function updateOrder(id, qty) {
+        const product = await Product.findById(id);
+        product.stock -= qty;
+        product.sold_out += qty;
+        await product.save({ validateBeforeSave: false });
+      }
 
+      async function updateOrderWithSizes(id, qty, size) {
+        const product = await Product.findById(id);
+        product.sizes.find((s) => s.name === size).stock -= qty;
+        await product.save({ validateBeforeSave: false });
+      }
       const allItems = cart.reduce((acc, item) => {
         const shopId = item.shopId;
         if (!acc[shopId]) {
