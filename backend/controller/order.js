@@ -4,6 +4,7 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const { isAuthenticated, isSeller, isAdmin } = require("../middleware/auth");
 const Order = require("../model/order");
+const Aorder = require("../model/aorder");
 const Shop = require("../model/shop");
 const Product = require("../model/product");
 const sendMail = require("../utils/sendMail");
@@ -34,121 +35,7 @@ function sendSMS(phoneNumber, message) {
 }
 
 // create new order
-// router.post(
-//   "/create-order",
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const {
-//         cart,
-//         shippingAddress,
-//         user,
-//         orderNo,
-//         totalPrice,
-//         paymentInfo,
-//         shippingPrice,
-//         discount,
-//       } = req.body;
 
-//       const shopItemsMap = new Map();
-//       const shopEmailsMap = new Map();
-
-//       for (const item of cart) {
-//         const shopId = item.shopId;
-//         if (!shopItemsMap.has(shopId)) {
-//           shopItemsMap.set(shopId, []);
-//         }
-//         shopItemsMap.get(shopId).push(item);
-
-//         if (!shopEmailsMap.has(shopId)) {
-//           const shop = await Shop.findById(shopId);
-//           if (shop) {
-//             shopEmailsMap.set(shopId, shop.email);
-//           }
-//         }
-//       }
-
-//       const orders = [];
-
-//       for (const [shopId, items] of shopItemsMap) {
-//         const shopEmail = shopEmailsMap.get(shopId);
-
-//         // Create a single order with all items from the same shop
-//         const order = await Order.create({
-//           cart: items,
-//           shippingAddress,
-//           user,
-//           orderNo,
-//           totalPrice,
-//           paymentInfo,
-//           shippingPrice,
-//           discount,
-//         });
-//         const subTotals = order?.cart.reduce(
-//           (acc, item) => acc + item.qty * item.discountPrice,
-//           0
-//         );
-
-//         try {
-//           const shop = await Shop.findById(shopId);
-
-//           if (!shop) {
-//             console.error(`Shop with ID ${shopId} not found.`);
-//           } else {
-//             if (
-//               (paymentInfo.type === "Mpesa" || paymentInfo.type === "Paypal") &&
-//               paymentInfo.status === "succeeded"
-//             ) {
-//               const amountToAdd = (subTotals * 0.9).toFixed(2);
-//               shop.availableBalance += parseInt(amountToAdd);
-//             }
-
-//             await shop.save();
-//           }
-
-//           order.cart.forEach(async (o) => {
-//             if (o.sizes.length > 0) {
-//               await updateOrderWithSizes(o._id, o.qty, o.size);
-//             }
-//             await updateOrder(o._id, o.qty);
-//           });
-
-//           async function updateOrder(id, qty) {
-//             const product = await Product.findById(id);
-
-//             product.stock -= qty;
-//             product.sold_out += qty;
-
-//             await product.save({ validateBeforeSave: false });
-//           }
-
-//           async function updateOrderWithSizes(id, qty, size) {
-//             const product = await Product.findById(id);
-
-//             product.sizes.find((s) => s.name === size).stock -= qty;
-
-//             await product.save({ validateBeforeSave: false });
-//           }
-//         } catch (error) {
-//           console.error(
-//             `Error updating availableBalance for shop ${shopId}: ${error}`
-//           );
-//         }
-
-//         orders.push(order);
-//       }
-
-//       res.status(201).json({
-//         success: true,
-//         orders,
-//       });
-//     } catch (error) {
-//       console.log(error);
-//       return next(new ErrorHandler(error.message, 500));
-//     }
-//   })
-// );
-
-// single order
 router.post(
   "/create-order",
   catchAsyncErrors(async (req, res, next) => {
@@ -270,6 +157,7 @@ router.post(
     try {
       const {
         cart,
+        orderNo,
         shippingAddress,
         user,
         totalPrice,
@@ -281,6 +169,8 @@ router.post(
       const shopItemsMap = new Map();
       const shopEmailsMap = new Map();
       const order = req.body;
+
+      const shopOrders = [];
 
       const subTotals = order?.cart.reduce(
         (acc, item) => acc + item.qty * item.discountPrice,
@@ -319,6 +209,32 @@ router.post(
           if (shop) {
             shopEmailsMap.set(shopId, shop.email);
           }
+        }
+      }
+
+      for (const [shopId, items] of shopItemsMap) {
+        try {
+          const shop = await Shop.findById(shopId);
+
+          if (shop) {
+            const shopOrder = await Aorder.create({
+              cart: items,
+              shippingAddress,
+              user,
+              totalPrice: items.reduce(
+                (acc, item) => acc + item.qty * item.discountPrice,
+                0
+              ),
+              paymentInfo,
+              shippingPrice,
+              discount,
+              orderNo,
+            });
+
+            shopOrders.push(shopOrder);
+          }
+        } catch (error) {
+          console.error(error);
         }
       }
 
