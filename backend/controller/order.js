@@ -70,7 +70,7 @@ router.post(
         return acc;
       }, {});
 
-      for (const shopId of Object.keys(allItems)) {
+      const promises = Object.keys(allItems).map(async (shopId) => {
         const items = allItems[shopId];
         const subTotals = items.reduce(
           (acc, item) => acc + item.qty * item.discountPrice,
@@ -96,23 +96,6 @@ router.post(
                 }
                 await updateOrder(o._id, o.qty);
               }
-
-              async function updateOrder(id, qty) {
-                const product = await Product.findById(id);
-
-                product.stock -= qty;
-                product.sold_out += qty;
-
-                await product.save({ validateBeforeSave: false });
-              }
-
-              async function updateOrderWithSizes(id, qty, size) {
-                const product = await Product.findById(id);
-
-                product.sizes.find((s) => s.name === size).stock -= qty;
-
-                await product.save({ validateBeforeSave: false });
-              }
             }
 
             await shop.save();
@@ -122,7 +105,9 @@ router.post(
             `Error updating availableBalance for shop ${shopId}: ${error}`
           );
         }
-      }
+      });
+
+      await Promise.all(promises);
 
       const order = await Order.create({
         cart,
@@ -145,7 +130,6 @@ router.post(
     }
   })
 );
-
 //send emails
 router.post(
   "/sendmyorder",
