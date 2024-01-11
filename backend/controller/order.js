@@ -1139,14 +1139,16 @@ router.put(
         if (order.paymentInfo.status !== "succeeded") {
           const shopTotals = {};
 
-          // Use Promise.all to wait for all updates to finish before moving on
           await Promise.all(
             order.cart.map(async (o) => {
               const seller = await Shop.findById(o.shopId);
 
-              const itemTotal = parseFloat(o.totalPrice);
-
-              shopTotals[o.shopId] = (shopTotals[o.shopId] || 0) + itemTotal;
+              // Calculate itemTotal using discountPrice if available, otherwise use originalPrice
+              const itemTotal =
+                parseFloat(o.discountPrice) || parseFloat(o.originalPrice) || 0;
+              if (!isNaN(itemTotal)) {
+                shopTotals[o.shopId] = (shopTotals[o.shopId] || 0) + itemTotal;
+              }
             })
           );
 
