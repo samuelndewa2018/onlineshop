@@ -1135,16 +1135,20 @@ router.put(
 
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
+
         if (order.paymentInfo.status !== "succeeded") {
           const shopTotals = {};
 
-          order.cart.forEach(async (o) => {
-            const seller = await Shop.findById(o.shopId);
+          // Use Promise.all to wait for all updates to finish before moving on
+          await Promise.all(
+            order.cart.map(async (o) => {
+              const seller = await Shop.findById(o.shopId);
 
-            const itemTotal = parseFloat(o.totalPrice);
+              const itemTotal = parseFloat(o.totalPrice);
 
-            shopTotals[o.shopId] = (shopTotals[o.shopId] || 0) + itemTotal;
-          });
+              shopTotals[o.shopId] = (shopTotals[o.shopId] || 0) + itemTotal;
+            })
+          );
 
           for (const sellerId in shopTotals) {
             console.log("shopTotals", shopTotals);
