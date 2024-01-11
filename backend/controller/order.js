@@ -1147,11 +1147,14 @@ router.put(
           });
 
           for (const sellerId in shopTotals) {
+            console.log("shopTotals", shopTotals);
             const seller = await Shop.findById(sellerId);
 
             const fee = shopTotals[sellerId] * 0.1;
+            console.log("Fees", fee);
 
             seller.availableBalance += shopTotals[sellerId] - fee;
+            console.log("available", seller.availableBalance);
 
             await seller.save();
           }
