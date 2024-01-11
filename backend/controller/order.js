@@ -1016,6 +1016,11 @@ router.get(
         );
 
       // Set the response headers for the PDF
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${pdfFileName}"`
+      );
+      res.setHeader("Content-Type", "application/pdf");
 
       doc.end();
     } catch (error) {
