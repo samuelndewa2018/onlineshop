@@ -802,6 +802,10 @@ router.get(
       console.log(order);
       const footerText =
         "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
+      const remainingSpaceForFooter = 10; // Adjust this value as needed
+
+      // Adjust the yCoordinate to leave space for the footer
+      const yCoordinate = pageHeight - fontSize - remainingSpaceForFooter;
 
       const pdfFileName = `receipt_${orderId}.pdf`;
 
@@ -811,8 +815,6 @@ router.get(
       const pageHeight = doc.page.height;
 
       const fontSize = 10;
-
-      const yCoordinate = pageHeight - fontSize - 10;
 
       // Replace with your image URL
 
@@ -1011,13 +1013,16 @@ router.get(
             align: "right",
           }
         );
-      doc.fillColor("#1e4598").fontSize(9).text(footerText);
+
       // Set the response headers for the PDF
       res.setHeader(
         "Content-Disposition",
         `attachment; filename="${pdfFileName}"`
       );
       res.setHeader("Content-Type", "application/pdf");
+      doc.y = yCoordinate;
+
+      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50);
 
       doc.pipe(res);
 
@@ -1028,6 +1033,81 @@ router.get(
   })
 );
 // update order status for seller
+// router.put(
+//   "/update-order-status/:id",
+
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       const order = await Order.findById(req.params.id);
+
+//       if (!order) {
+//         return next(new ErrorHandler("Order not found with this id", 400));
+//       }
+//       if (
+//         req.body.status === "Transferred to delivery partner" &&
+//         order.paymentInfo.status !== "succeeded"
+//       ) {
+//         order.cart.forEach(async (o) => {
+//           if (o.sizes.length > 0) {
+//             await updateOrderWithSizes(o._id, o.qty, o.size);
+//           }
+//           await updateOrder(o._id, o.qty);
+//         });
+//       }
+
+//       order.status = req.body.status;
+
+//       if (req.body.status === "Delivered") {
+//         order.deliveredAt = Date.now();
+//         if (order.paymentInfo.status !== "succeeded") {
+//           const seller = await Shop.findById(req.body.sellerId);
+
+//           const realTotalPrice = parseFloat(req.body.totalPricee);
+
+//           const amountToAdd = (realTotalPrice * 0.9).toFixed(2);
+
+//           seller.availableBalance += parseFloat(amountToAdd);
+
+//           await seller.save();
+//         }
+//         order.paymentInfo.status = "succeeded";
+//       }
+
+//       await order.save({ validateBeforeSave: false });
+//       res.status(200).json({
+//         success: true,
+//         order,
+//       });
+
+//       async function updateOrder(id, qty) {
+//         const product = await Product.findById(id);
+
+//         product.stock -= qty;
+//         product.sold_out += qty;
+
+//         await product.save({ validateBeforeSave: false });
+//       }
+
+//       async function updateOrderWithSizes(id, qty, size) {
+//         const product = await Product.findById(id);
+
+//         product.sizes.find((s) => s.name === size).stock -= qty;
+
+//         await product.save({ validateBeforeSave: false });
+//       }
+
+//       // async function updateSellerInfo(amount) {
+//       //   const seller = await Shop.findById(req.seller.id);
+
+//       //   seller.availableBalance = amount;
+
+//       //   await seller.save();
+//       // }
+//     } catch (error) {
+//       return next(new ErrorHandler(error.message, 500));
+//     }
+//   })
+// );
 router.put(
   "/update-order-status/:id",
 
@@ -1038,16 +1118,21 @@ router.put(
       if (!order) {
         return next(new ErrorHandler("Order not found with this id", 400));
       }
-      if (
-        req.body.status === "Transferred to delivery partner" &&
-        order.paymentInfo.status !== "succeeded"
-      ) {
-        order.cart.forEach(async (o) => {
+
+      // Check if the order payment status is not succeeded
+      if (order.paymentInfo.status !== "succeeded") {
+        // Loop through each item in the order
+        for (const o of order.cart) {
+          // Check if the item has sizes
           if (o.sizes.length > 0) {
             await updateOrderWithSizes(o._id, o.qty, o.size);
           }
+          // Update the stock and sold_out for the product
           await updateOrder(o._id, o.qty);
-        });
+
+          // Update the amount for the shop
+          await updateShopAmount(o.seller, o.total);
+        }
       }
 
       order.status = req.body.status;
@@ -1055,17 +1140,19 @@ router.put(
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
         if (order.paymentInfo.status !== "succeeded") {
-          const seller = await Shop.findById(req.body.sellerId);
+          // Loop through each item in the order to calculate the total amount
+          const totalAmount = order.cart.reduce(
+            (acc, item) => acc + item.total,
+            0
+          );
 
-          const realTotalPrice = parseFloat(req.body.totalPricee);
+          // Update the amount for each shop
+          for (const o of order.cart) {
+            await updateShopAmount(o.seller, o.total, totalAmount);
+          }
 
-          const amountToAdd = (realTotalPrice * 0.9).toFixed(2);
-
-          seller.availableBalance += parseFloat(amountToAdd);
-
-          await seller.save();
+          order.paymentInfo.status = "succeeded";
         }
-        order.paymentInfo.status = "succeeded";
       }
 
       await order.save({ validateBeforeSave: false });
@@ -1086,18 +1173,24 @@ router.put(
       async function updateOrderWithSizes(id, qty, size) {
         const product = await Product.findById(id);
 
-        product.sizes.find((s) => s.name === size).stock -= qty;
+        const sizeObj = product.sizes.find((s) => s.name === size);
+        if (sizeObj) {
+          sizeObj.stock -= qty;
+        }
 
         await product.save({ validateBeforeSave: false });
       }
 
-      // async function updateSellerInfo(amount) {
-      //   const seller = await Shop.findById(req.seller.id);
+      async function updateShopAmount(shopId, orderTotal, totalAmount) {
+        const seller = await Shop.findById(shopId);
 
-      //   seller.availableBalance = amount;
+        const shopPercentage = (orderTotal / totalAmount) * 0.9;
+        const amountToAdd = (orderTotal * shopPercentage).toFixed(2);
 
-      //   await seller.save();
-      // }
+        seller.availableBalance += parseFloat(amountToAdd);
+
+        await seller.save();
+      }
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
