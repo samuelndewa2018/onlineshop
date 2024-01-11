@@ -1024,8 +1024,6 @@ router.get(
 
       doc.pipe(res);
 
-      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, yCoordinate);
-
       doc.end();
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
