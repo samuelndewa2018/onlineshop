@@ -1016,15 +1016,6 @@ router.get(
         );
 
       // Set the response headers for the PDF
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${pdfFileName}"`
-      );
-      res.setHeader("Content-Type", "application/pdf");
-
-      doc.pipe(res);
-
-      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, 750);
 
       doc.end();
     } catch (error) {
