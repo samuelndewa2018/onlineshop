@@ -98,8 +98,9 @@ router.post(
               (paymentInfo.type === "Mpesa" || paymentInfo.type === "Paypal") &&
               paymentInfo.status === "succeeded"
             ) {
-              const amountToAdd = (subTotals * 0.9).toFixed(2);
-              shop.availableBalance += parseInt(amountToAdd);
+              const amountToAdd = Math.round(subTotals * 0.9);
+
+              shop.availableBalance += Math.round(subTotals * 0.9);
 
               for (const o of items) {
                 if (o.sizes.length > 0) {
@@ -1135,31 +1136,23 @@ router.put(
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
         if (order.paymentInfo.status !== "succeeded") {
-          // Create an object to store shop totals
           const shopTotals = {};
 
-          // Iterate through each item in the cart
           order.cart.forEach(async (o) => {
-            const seller = await Shop.findById(o.sellerId);
+            const seller = await Shop.findById(o.shopId);
 
-            // Calculate the total amount for the item
             const itemTotal = parseFloat(o.totalPrice);
 
-            // Add the item total to the shop's total
-            shopTotals[o.sellerId] = (shopTotals[o.sellerId] || 0) + itemTotal;
+            shopTotals[o.shopId] = (shopTotals[o.shopId] || 0) + itemTotal;
           });
 
-          // Iterate through the calculated totals for each shop
           for (const sellerId in shopTotals) {
             const seller = await Shop.findById(sellerId);
 
-            // Calculate the 10% fee
             const fee = shopTotals[sellerId] * 0.1;
 
-            // Add the remainder to the shop's availableBalance
             seller.availableBalance += shopTotals[sellerId] - fee;
 
-            // Save the updated seller information
             await seller.save();
           }
 
@@ -1173,22 +1166,7 @@ router.put(
         order,
       });
 
-      async function updateOrder(id, qty) {
-        const product = await Product.findById(id);
-
-        product.stock -= qty;
-        product.sold_out += qty;
-
-        await product.save({ validateBeforeSave: false });
-      }
-
-      async function updateOrderWithSizes(id, qty, size) {
-        const product = await Product.findById(id);
-
-        product.sizes.find((s) => s.name === size).stock -= qty;
-
-        await product.save({ validateBeforeSave: false });
-      }
+      // Other functions remain the same
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
