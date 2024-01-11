@@ -1022,8 +1022,6 @@ router.get(
       );
       res.setHeader("Content-Type", "application/pdf");
 
-      doc.pipe(res);
-
       doc.end();
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
