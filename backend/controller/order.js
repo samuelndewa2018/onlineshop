@@ -775,7 +775,7 @@ router.get(
   "/get-seller-all-orders/:shopId",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const orders = await Order.find({
+      const orders = await Aorder.find({
         "cart.shopId": req.params.shopId,
       }).sort({
         createdAt: -1,
