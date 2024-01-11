@@ -804,6 +804,9 @@ router.get(
       const footerText =
         "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
       const remainingSpaceForFooter = 10; // Adjust this value as needed
+      const pageHeight = doc.page.height;
+
+      const fontSize = 10;
 
       // Adjust the yCoordinate to leave space for the footer
       const yCoordinate = pageHeight - fontSize - remainingSpaceForFooter;
@@ -813,9 +816,6 @@ router.get(
       const doc = new pdf({
         size: "Letter",
       });
-      const pageHeight = doc.page.height;
-
-      const fontSize = 10;
 
       // Replace with your image URL
 
@@ -1022,6 +1022,10 @@ router.get(
       );
       res.setHeader("Content-Type", "application/pdf");
 
+      doc.pipe(res);
+
+      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, yCoordinate);
+
       doc.end();
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -1029,81 +1033,7 @@ router.get(
   })
 );
 // update order status for seller
-// router.put(
-//   "/update-order-status/:id",
 
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const order = await Order.findById(req.params.id);
-
-//       if (!order) {
-//         return next(new ErrorHandler("Order not found with this id", 400));
-//       }
-//       if (
-//         req.body.status === "Transferred to delivery partner" &&
-//         order.paymentInfo.status !== "succeeded"
-//       ) {
-//         order.cart.forEach(async (o) => {
-//           if (o.sizes.length > 0) {
-//             await updateOrderWithSizes(o._id, o.qty, o.size);
-//           }
-//           await updateOrder(o._id, o.qty);
-//         });
-//       }
-
-//       order.status = req.body.status;
-
-//       if (req.body.status === "Delivered") {
-//         order.deliveredAt = Date.now();
-//         if (order.paymentInfo.status !== "succeeded") {
-//           const seller = await Shop.findById(req.body.sellerId);
-
-//           const realTotalPrice = parseFloat(req.body.totalPricee);
-
-//           const amountToAdd = (realTotalPrice * 0.9).toFixed(2);
-
-//           seller.availableBalance += parseFloat(amountToAdd);
-
-//           await seller.save();
-//         }
-//         order.paymentInfo.status = "succeeded";
-//       }
-
-//       await order.save({ validateBeforeSave: false });
-//       res.status(200).json({
-//         success: true,
-//         order,
-//       });
-
-//       async function updateOrder(id, qty) {
-//         const product = await Product.findById(id);
-
-//         product.stock -= qty;
-//         product.sold_out += qty;
-
-//         await product.save({ validateBeforeSave: false });
-//       }
-
-//       async function updateOrderWithSizes(id, qty, size) {
-//         const product = await Product.findById(id);
-
-//         product.sizes.find((s) => s.name === size).stock -= qty;
-
-//         await product.save({ validateBeforeSave: false });
-//       }
-
-//       async function updateSellerInfo(amount) {
-//         const seller = await Shop.findById(req.seller.id);
-
-//         seller.availableBalance = amount;
-
-//         await seller.save();
-//       }
-//     } catch (error) {
-//       return next(new ErrorHandler(error.message, 500));
-//     }
-//   })
-// );
 router.put(
   "/update-order-status/:id",
   catchAsyncErrors(async (req, res, next) => {
