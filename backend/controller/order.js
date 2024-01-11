@@ -1021,9 +1021,6 @@ router.get(
         `attachment; filename="${pdfFileName}"`
       );
       res.setHeader("Content-Type", "application/pdf");
-      doc.y = yCoordinate;
-
-      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50);
 
       doc.pipe(res);
 
