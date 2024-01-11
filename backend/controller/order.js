@@ -1096,13 +1096,13 @@ router.get(
 //         await product.save({ validateBeforeSave: false });
 //       }
 
-//       // async function updateSellerInfo(amount) {
-//       //   const seller = await Shop.findById(req.seller.id);
+//       async function updateSellerInfo(amount) {
+//         const seller = await Shop.findById(req.seller.id);
 
-//       //   seller.availableBalance = amount;
+//         seller.availableBalance = amount;
 
-//       //   await seller.save();
-//       // }
+//         await seller.save();
+//       }
 //     } catch (error) {
 //       return next(new ErrorHandler(error.message, 500));
 //     }
@@ -1110,7 +1110,6 @@ router.get(
 // );
 router.put(
   "/update-order-status/:id",
-
   catchAsyncErrors(async (req, res, next) => {
     try {
       const order = await Order.findById(req.params.id);
@@ -1119,20 +1118,16 @@ router.put(
         return next(new ErrorHandler("Order not found with this id", 400));
       }
 
-      // Check if the order payment status is not succeeded
-      if (order.paymentInfo.status !== "succeeded") {
-        // Loop through each item in the order
-        for (const o of order.cart) {
-          // Check if the item has sizes
+      if (
+        req.body.status === "Transferred to delivery partner" &&
+        order.paymentInfo.status !== "succeeded"
+      ) {
+        order.cart.forEach(async (o) => {
           if (o.sizes.length > 0) {
             await updateOrderWithSizes(o._id, o.qty, o.size);
           }
-          // Update the stock and sold_out for the product
           await updateOrder(o._id, o.qty);
-
-          // Update the amount for the shop
-          await updateShopAmount(o.seller, o.total);
-        }
+        });
       }
 
       order.status = req.body.status;
@@ -1140,15 +1135,32 @@ router.put(
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
         if (order.paymentInfo.status !== "succeeded") {
-          // Loop through each item in the order to calculate the total amount
-          const totalAmount = order.cart.reduce(
-            (acc, item) => acc + item.total,
-            0
-          );
+          // Create an object to store shop totals
+          const shopTotals = {};
 
-          // Update the amount for each shop
-          for (const o of order.cart) {
-            await updateShopAmount(o.seller, o.total, totalAmount);
+          // Iterate through each item in the cart
+          order.cart.forEach(async (o) => {
+            const seller = await Shop.findById(o.sellerId);
+
+            // Calculate the total amount for the item
+            const itemTotal = parseFloat(o.totalPrice);
+
+            // Add the item total to the shop's total
+            shopTotals[o.sellerId] = (shopTotals[o.sellerId] || 0) + itemTotal;
+          });
+
+          // Iterate through the calculated totals for each shop
+          for (const sellerId in shopTotals) {
+            const seller = await Shop.findById(sellerId);
+
+            // Calculate the 10% fee
+            const fee = shopTotals[sellerId] * 0.1;
+
+            // Add the remainder to the shop's availableBalance
+            seller.availableBalance += shopTotals[sellerId] - fee;
+
+            // Save the updated seller information
+            await seller.save();
           }
 
           order.paymentInfo.status = "succeeded";
@@ -1173,23 +1185,9 @@ router.put(
       async function updateOrderWithSizes(id, qty, size) {
         const product = await Product.findById(id);
 
-        const sizeObj = product.sizes.find((s) => s.name === size);
-        if (sizeObj) {
-          sizeObj.stock -= qty;
-        }
+        product.sizes.find((s) => s.name === size).stock -= qty;
 
         await product.save({ validateBeforeSave: false });
-      }
-
-      async function updateShopAmount(shopId, orderTotal, totalAmount) {
-        const seller = await Shop.findById(shopId);
-
-        const shopPercentage = (orderTotal / totalAmount) * 0.9;
-        const amountToAdd = (orderTotal * shopPercentage).toFixed(2);
-
-        seller.availableBalance += parseFloat(amountToAdd);
-
-        await seller.save();
       }
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
