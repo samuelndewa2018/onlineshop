@@ -43,6 +43,9 @@ const orderSchema = new mongoose.Schema({
       type: String,
     },
   },
+  discShop: {
+    type: String,
+  },
   paidAt: {
     type: Date,
     default: Date.now(),

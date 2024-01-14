@@ -49,6 +49,7 @@ router.post(
         paymentInfo,
         shippingPrice,
         discount,
+        discShop,
       } = req.body;
 
       // Check if order with the same order number already exists
@@ -71,6 +72,16 @@ router.post(
         const product = await Product.findById(id);
         product.sizes.find((s) => s.name === size).stock -= qty;
         await product.save({ validateBeforeSave: false });
+      }
+      if (discShop && discount) {
+        const shopWithDiscount = await Shop.findById(discShop);
+
+        if (!shopWithDiscount) {
+          console.error(`Shop with ID ${discShop} not found.`);
+        } else {
+          shopWithDiscount.availableBalance -= discount;
+          await shopWithDiscount.save();
+        }
       }
       const allItems = cart.reduce((acc, item) => {
         const shopId = item.shopId;
@@ -130,6 +141,7 @@ router.post(
         paymentInfo,
         shippingPrice,
         discount,
+        discShop,
       });
 
       res.status(201).json({
@@ -1016,10 +1028,7 @@ router.get(
         );
 
       // Set the response headers for the PDF
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${pdfFileName}"`
-      );
+
       res.setHeader("Content-Type", "application/pdf");
 
       doc.pipe(res);
