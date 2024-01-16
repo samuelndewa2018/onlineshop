@@ -1051,6 +1051,19 @@ router.put(
         return next(new ErrorHandler("Order not found with this id", 400));
       }
 
+      async function updateOrder(id, qty) {
+        const product = await Product.findById(id);
+        product.stock -= qty;
+        product.sold_out += qty;
+        await product.save({ validateBeforeSave: false });
+      }
+
+      async function updateOrderWithSizes(id, qty, size) {
+        const product = await Product.findById(id);
+        product.sizes.find((s) => s.name === size).stock -= qty;
+        await product.save({ validateBeforeSave: false });
+      }
+
       if (
         req.body.status === "Transferred to delivery partner" &&
         order.paymentInfo.status !== "succeeded"
