@@ -3,8 +3,10 @@ const mongoose = require("mongoose");
 const subscriberSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: true,
-    unique: true,
+    // required: true,
+  },
+  number: {
+    type: String,
   },
   dateSubscribed: {
     type: Date,
