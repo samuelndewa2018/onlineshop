@@ -2908,5 +2908,40 @@ router.post(
     }
   })
 );
+// update refCode
+router.put("/update-refcode/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const { refCode } = req.body;
 
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
+    }
+
+    const existingUserWithRefCode = await User.findOne({ refCode: refCode });
+    if (
+      existingUserWithRefCode &&
+      existingUserWithRefCode._id.toString() !== userId
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "RefCode already in use by another user.",
+      });
+    }
+
+    user.refCode = refCode;
+    await user.save();
+
+    res
+      .status(200)
+      .json({ success: true, message: "RefCode updated successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error." });
+  }
+});
 module.exports = router;

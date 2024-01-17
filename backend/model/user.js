@@ -21,6 +21,13 @@ const userSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
   },
+  availableBalance: {
+    type: Number,
+    default: 0,
+  },
+  refCode: {
+    type: String,
+  },
   addresses: [
     {
       country: {
