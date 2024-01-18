@@ -126,6 +126,7 @@ router.post(
 
             await shop.save();
             user.availableBalance += Math.round(subTotals * 0.02);
+            console.log(user.availableBalance);
             await user.save();
           }
         } catch (error) {
@@ -1086,10 +1087,11 @@ router.put(
 
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
-        const cash = order.totalPrice - order.discount;
+        const cash = (order.totalPrice - order.discount) * 0.02;
         const user = await User.findById(order.referee);
 
         user.availableBalance += cash;
+        console.log(user.availableBalance);
         await user.save();
 
         if (order.paymentInfo.status !== "succeeded") {
