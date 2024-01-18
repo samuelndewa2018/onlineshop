@@ -67,17 +67,13 @@ router.post(
 
       if (user._id) {
         const userr = await User.findById(user._id);
+        console.log(user._id);
 
         if (userr) {
-          if (typeof balance === "number") {
-            userr.availableBalance -= balance;
-            await userr.save();
-            console.log("Balance updated successfully.");
-          } else {
-            console.log(
-              "Invalid balance value. Please provide a valid number."
-            );
-          }
+          userr.availableBalance -= balance;
+          await userr.save();
+          console.log(userr);
+          console.log("Balance updated successfully.");
         } else {
           console.log("User not found.");
         }
@@ -1129,7 +1125,7 @@ router.put(
           if (order.referee && order.referee.trim() !== "") {
             const user = await User.findById(order.referee);
 
-            const cash = (order.totalPrice - order.discount) * 0.02;
+            const cash = (order.totalPrice - order.discount - order.s) * 0.02;
 
             if (user) {
               user.availableBalance += cash;
