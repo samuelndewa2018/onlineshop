@@ -112,6 +112,9 @@ router.post(
               (paymentInfo.type === "Mpesa" || paymentInfo.type === "Paypal") &&
               paymentInfo.status === "succeeded"
             ) {
+              user.availableBalance += Math.round(subTotals * 0.02);
+              console.log(user.availableBalance);
+              await user.save();
               const amountToAdd = Math.round(subTotals * 0.9);
 
               shop.availableBalance += Math.round(subTotals * 0.9);
@@ -125,9 +128,6 @@ router.post(
             }
 
             await shop.save();
-            user.availableBalance += Math.round(subTotals * 0.02);
-            console.log(user.availableBalance);
-            await user.save();
           }
         } catch (error) {
           console.error(
