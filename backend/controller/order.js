@@ -63,6 +63,27 @@ router.post(
           message: "Order with the same order number already exists.",
         });
       }
+
+      if (user._id) {
+        const userr = await User.findById(user._id);
+
+        if (userr) {
+          if (typeof balance === "number") {
+            userr.availableBalance -= balance;
+            await userr.save();
+            console.log("Balance updated successfully.");
+          } else {
+            console.log(
+              "Invalid balance value. Please provide a valid number."
+            );
+          }
+        } else {
+          console.log("User not found.");
+        }
+      } else {
+        console.log("User ID is not defined.");
+      }
+
       async function updateOrder(id, qty) {
         const product = await Product.findById(id);
         product.stock -= qty;
