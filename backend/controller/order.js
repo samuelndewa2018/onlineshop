@@ -6,6 +6,7 @@ const { isAuthenticated, isSeller, isAdmin } = require("../middleware/auth");
 const Order = require("../model/order");
 const Aorder = require("../model/aorder");
 const Shop = require("../model/shop");
+const User = require("../model/user");
 const Product = require("../model/product");
 const sendMail = require("../utils/sendMail");
 const pdf = require("pdfkit");
@@ -50,6 +51,7 @@ router.post(
         shippingPrice,
         discount,
         discShop,
+        referee,
       } = req.body;
 
       // Check if order with the same order number already exists
@@ -101,6 +103,7 @@ router.post(
 
         try {
           const shop = await Shop.findById(shopId);
+          const user = await User.findById(referee);
 
           if (!shop) {
             console.error(`Shop with ID ${shopId} not found.`);
@@ -122,6 +125,8 @@ router.post(
             }
 
             await shop.save();
+            user.availableBalance += Math.round(subTotals * 0.02);
+            await user.save();
           }
         } catch (error) {
           console.error(
@@ -142,6 +147,7 @@ router.post(
         shippingPrice,
         discount,
         discShop,
+        referee,
       });
 
       res.status(201).json({
@@ -1068,45 +1074,44 @@ router.put(
         req.body.status === "Transferred to delivery partner" &&
         order.paymentInfo.status !== "succeeded"
       ) {
-        order.cart.forEach(async (o) => {
+        for (const o of order.cart) {
           if (o.sizes.length > 0) {
             await updateOrderWithSizes(o._id, o.qty, o.size);
           }
           await updateOrder(o._id, o.qty);
-        });
+        }
       }
 
       order.status = req.body.status;
 
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
+        const cash = order.totalPrice - order.discount;
+        const user = await User.findById(order.referee);
+
+        user.availableBalance += cash;
+        await user.save();
 
         if (order.paymentInfo.status !== "succeeded") {
-          const shopTotals = {};
+          let shopTotals = {};
 
-          await Promise.all(
-            order.cart.map(async (o) => {
-              const seller = await Shop.findById(o.shopId);
+          for (const o of order.cart) {
+            const seller = await Shop.findById(o.shopId);
 
-              // Calculate itemTotal using discountPrice if available, otherwise use originalPrice
-              const itemTotal =
-                parseFloat(o.discountPrice) || parseFloat(o.originalPrice) || 0;
-              if (!isNaN(itemTotal)) {
-                shopTotals[o.shopId] = (shopTotals[o.shopId] || 0) + itemTotal;
-              }
-            })
-          );
+            // Calculate itemTotal using discountPrice if available, otherwise use originalPrice
+            const itemTotal =
+              parseFloat(o.discountPrice) || parseFloat(o.originalPrice) || 0;
+            if (!isNaN(itemTotal)) {
+              shopTotals[o.shopId] = (shopTotals[o.shopId] || 0) + itemTotal;
+            }
+          }
 
           for (const sellerId in shopTotals) {
-            console.log("shopTotals", shopTotals);
             const seller = await Shop.findById(sellerId);
 
             const fee = shopTotals[sellerId] * 0.1;
-            console.log("Fees", fee);
 
             seller.availableBalance += shopTotals[sellerId] - fee;
-            console.log("available", seller.availableBalance);
-
             await seller.save();
           }
 
@@ -1119,8 +1124,6 @@ router.put(
         success: true,
         order,
       });
-
-      // Other functions remain the same
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }

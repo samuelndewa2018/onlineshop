@@ -2944,4 +2944,23 @@ router.put("/update-refcode/:userId", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error." });
   }
 });
+
+// get UserId refcode
+router.get("/get-user-id/:refCode", async (req, res) => {
+  try {
+    const refCode = req.params.refCode;
+
+    const user = await User.findOne({ refCode });
+
+    if (user) {
+      res.status(200).json({ success: true, userId: user._id });
+    } else {
+      res.status(404).json({ success: false, message: "User not found." });
+    }
+  } catch (error) {
+    console.error("Error fetching user by refCode:", error.message);
+    res.status(500).json({ success: false, message: "Internal Server Error." });
+  }
+});
+
 module.exports = router;

@@ -5,6 +5,9 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  referee: {
+    type: String,
+  },
   cart: {
     type: Array,
     required: true,
@@ -26,6 +29,9 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   discount: {
+    type: Number,
+  },
+  balance: {
     type: Number,
   },
   status: {
