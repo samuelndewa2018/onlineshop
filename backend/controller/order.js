@@ -103,28 +103,40 @@ router.post(
 
         try {
           const shop = await Shop.findById(shopId);
-          const user = await User.findById(referee);
 
           if (!shop) {
             console.error(`Shop with ID ${shopId} not found.`);
           } else {
-            if (
-              (paymentInfo.type === "Mpesa" || paymentInfo.type === "Paypal") &&
-              paymentInfo.status === "succeeded"
-            ) {
-              user.availableBalance += Math.round(subTotals * 0.02);
-              console.log(user.availableBalance);
-              await user.save();
-              const amountToAdd = Math.round(subTotals * 0.9);
+            if (referee && referee.trim() !== "") {
+              const user = await User.findById(referee);
 
-              shop.availableBalance += Math.round(subTotals * 0.9);
+              if (user) {
+                if (
+                  (paymentInfo.type === "Mpesa" ||
+                    paymentInfo.type === "Paypal") &&
+                  paymentInfo.status === "succeeded"
+                ) {
+                  user.availableBalance += Math.round(subTotals * 0.02);
+                  console.log(user.availableBalance);
+                  await user.save();
+                  const amountToAdd = Math.round(subTotals * 0.9);
 
-              for (const o of items) {
-                if (o.sizes.length > 0) {
-                  await updateOrderWithSizes(o._id, o.qty, o.size);
+                  shop.availableBalance += Math.round(subTotals * 0.9);
+
+                  for (const o of items) {
+                    if (o.sizes.length > 0) {
+                      await updateOrderWithSizes(o._id, o.qty, o.size);
+                    }
+                    await updateOrder(o._id, o.qty);
+                  }
                 }
-                await updateOrder(o._id, o.qty);
+              } else {
+                console.error(`User with ID ${referee} not found.`);
+                // Handle the case where the user is not found
               }
+            } else {
+              console.error("Referee is an empty string.");
+              // Handle the case where referee is an empty string
             }
 
             await shop.save();
@@ -133,6 +145,7 @@ router.post(
           console.error(
             `Error updating availableBalance for shop ${shopId}: ${error}`
           );
+          // Handle other errors if needed
         }
       });
 
@@ -1089,13 +1102,25 @@ router.put(
 
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
-        const cash = (order.totalPrice - order.discount) * 0.02;
-        const user = await User.findById(order.referee);
+        try {
+          if (order.referee && order.referee.trim() !== "") {
+            const user = await User.findById(order.referee);
 
-        user.availableBalance += cash;
-        console.log(user.availableBalance);
-        await user.save();
-
+            if (user) {
+              user.availableBalance += cash;
+              console.log(user.availableBalance);
+              await user.save();
+            } else {
+              console.error(`User with ID ${order.referee} not found.`);
+            }
+          } else {
+            console.error("Order referee is an empty string.");
+          }
+        } catch (error) {
+          console.error(
+            `Error updating availableBalance for user ${order.referee}: ${error}`
+          );
+        }
         if (order.paymentInfo.status !== "succeeded") {
           let shopTotals = {};
 
