@@ -54,8 +54,6 @@ router.post(
         referee,
       } = req.body;
 
-      console.log(order);
-
       // Check if order with the same order number already exists
       const existingOrder = await Order.findOne({ orderNo });
 
@@ -152,6 +150,8 @@ router.post(
         discShop,
         referee,
       });
+
+      console.log(order);
 
       res.status(201).json({
         success: true,
