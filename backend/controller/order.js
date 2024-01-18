@@ -52,6 +52,7 @@ router.post(
         discount,
         discShop,
         referee,
+        balance,
       } = req.body;
 
       // Check if order with the same order number already exists
@@ -183,6 +184,7 @@ router.post(
         discount,
         discShop,
         referee,
+        balance,
       });
 
       console.log(order);
