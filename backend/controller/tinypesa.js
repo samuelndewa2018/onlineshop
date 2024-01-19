@@ -148,4 +148,21 @@ router.get("/checkResultId/:resultId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+router.get("/checkRefcode/:resultId", async (req, res) => {
+  const { resultId } = req.params;
+  console.log("This is the resultId ", resultId);
+
+  try {
+    const existingTransaction = await TinyTransaction.findOne({ resultId });
+
+    if (existingTransaction) {
+      res.status(200).json({ exists: true });
+    } else {
+      res.status(200).json({ exists: false });
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = router;
