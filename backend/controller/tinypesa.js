@@ -154,23 +154,16 @@ router.get("/checkRefcode/:mpesa_ref/:requestID", async (req, res) => {
   try {
     const existingTransaction = await TinyTransaction.findOne({
       mpesa_ref,
-      requestID,
     });
 
     if (existingTransaction) {
-      res.status(200).json({ exists: true });
-    } else {
-      // Check if either mpesa_ref or resultId exists
-      const mpesaRefExists = await TinyTransaction.findOne({ mpesa_ref });
-      const resultIdExists = await TinyTransaction.findOne({ requestID });
-
-      if (mpesaRefExists || resultIdExists) {
-        res
-          .status(200)
-          .json({ exists: false, error: "Both values must exist together" });
+      if (existingTransaction.requestID === requestID) {
+        res.status(200).json({ exists: true });
       } else {
         res.status(200).json({ exists: false });
       }
+    } else {
+      res.status(200).json({ exists: false });
     }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
