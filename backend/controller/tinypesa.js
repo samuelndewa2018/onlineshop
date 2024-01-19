@@ -148,12 +148,16 @@ router.get("/checkResultId/:resultId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-router.get("/checkRefcode/:mpesa_ref", async (req, res) => {
-  const { mpesa_ref } = req.params;
-  console.log("This is the mpesa_ref ", mpesa_ref);
+router.get("/checkRefcode/:mpesa_ref/:resultId", async (req, res) => {
+  const { mpesa_ref, resultId } = req.params;
+  console.log("Mpesa Reference: ", mpesa_ref);
+  console.log("Result ID: ", resultId);
 
   try {
-    const existingTransaction = await TinyTransaction.findOne({ mpesa_ref });
+    const existingTransaction = await TinyTransaction.findOne({
+      mpesa_ref,
+      resultId,
+    });
 
     if (existingTransaction) {
       res.status(200).json({ exists: true });
