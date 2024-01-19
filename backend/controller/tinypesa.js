@@ -148,21 +148,29 @@ router.get("/checkResultId/:resultId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-router.get("/checkRefcode/:mpesa_ref/:resultId", async (req, res) => {
-  const { mpesa_ref, resultId } = req.params;
-  console.log("Mpesa Reference: ", mpesa_ref);
-  console.log("Result ID: ", resultId);
+router.get("/checkRefcode/:mpesa_ref/:requestID", async (req, res) => {
+  const { mpesa_ref, requestID } = req.params;
 
   try {
     const existingTransaction = await TinyTransaction.findOne({
       mpesa_ref,
-      resultId,
+      requestID,
     });
 
     if (existingTransaction) {
       res.status(200).json({ exists: true });
     } else {
-      res.status(200).json({ exists: false });
+      // Check if either mpesa_ref or resultId exists
+      const mpesaRefExists = await TinyTransaction.findOne({ mpesa_ref });
+      const resultIdExists = await TinyTransaction.findOne({ requestID });
+
+      if (mpesaRefExists || resultIdExists) {
+        res
+          .status(200)
+          .json({ exists: false, error: "Both values must exist together" });
+      } else {
+        res.status(200).json({ exists: false });
+      }
     }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
