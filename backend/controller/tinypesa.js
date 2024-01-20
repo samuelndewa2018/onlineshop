@@ -162,7 +162,7 @@ router.get("/checkRefcode/:mpesa_ref/:requestID", async (req, res) => {
     });
 
     if (existingTransaction) {
-      if (existingTransaction.requestID === requestID) {
+      if (existingTransaction.resultId === requestID) {
         res.status(200).json({ exists: true });
       } else {
         res.status(200).json({ exists: false });
