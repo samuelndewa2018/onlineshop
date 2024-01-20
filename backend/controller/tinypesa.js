@@ -72,7 +72,12 @@ router.post("/callback", async (req, res) => {
       if (metadataItems.length > 0) {
         const amount = metadataItems[0].Value;
         const ref = metadataItems[1].Value;
-        const phone = metadataItems[4].Value;
+        let phone;
+        if (metadataItems.length === 5) {
+          phone = metadataItems[4].Value;
+        } else if (metadataItems.length === 4) {
+          phone = metadataItems[3].Value;
+        }
 
         if (code === 0) {
           const transaction = new TinyTransaction();
