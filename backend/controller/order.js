@@ -862,7 +862,7 @@ router.get(
         "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
       const remainingSpaceForFooter = 10;
       const pageHeight = doc.page.height;
-
+      console.log(pageHeight);
       const fontSize = 10;
 
       // Adjust the yCoordinate to leave space for the footer
