@@ -868,7 +868,7 @@ router.get(
       // Adjust the yCoordinate to leave space for the footer
       const yCoordinate = pageHeight - fontSize - remainingSpaceForFooter;
 
-      const pdfFileName = `receipt_${order.orderNo}.pdf`;
+      const pdfFileName = `receipt_${orderNo}.pdf`;
 
       // Replace with your image URL
 
@@ -1064,7 +1064,7 @@ router.get(
         });
 
       // Set the response headers for the PDF
-      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, yCoordinate);
+      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, 750);
       res.setHeader("Content-Type", "application/pdf");
 
       doc.pipe(res);
