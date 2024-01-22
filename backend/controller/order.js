@@ -859,7 +859,7 @@ router.get(
 
       const footerText =
         "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
-      const remainingSpaceForFooter = 10; // Adjust this value as needed
+      const remainingSpaceForFooter = 10;
       const pageHeight = doc.page.height;
 
       const fontSize = 10;
@@ -867,7 +867,7 @@ router.get(
       // Adjust the yCoordinate to leave space for the footer
       const yCoordinate = pageHeight - fontSize - remainingSpaceForFooter;
 
-      const pdfFileName = `receipt_${orderId}.pdf`;
+      const pdfFileName = `receipt_${order.orderNo}.pdf`;
 
       // Replace with your image URL
 
@@ -1072,6 +1072,7 @@ router.get(
       res.setHeader("Content-Type", "application/pdf");
 
       doc.pipe(res);
+      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, yCoordinate);
 
       doc.end();
     } catch (error) {
