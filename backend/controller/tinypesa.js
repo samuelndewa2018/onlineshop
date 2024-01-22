@@ -137,6 +137,8 @@ router.get("/get-transactions", async (req, res) => {
   }
 });
 
+// //transactions
+
 router.get("/checkResultId/:resultId", async (req, res) => {
   const { resultId } = req.params;
   console.log("This is the resultId ", resultId);
@@ -153,6 +155,8 @@ router.get("/checkResultId/:resultId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+//transactions
 router.get("/checkRefcode/:mpesa_ref/:requestID", async (req, res) => {
   const { mpesa_ref, requestID } = req.params;
 
