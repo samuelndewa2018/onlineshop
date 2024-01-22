@@ -1063,8 +1063,11 @@ router.get(
           align: "right",
         });
 
+      doc.moveDown(2);
+      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, doc.y);
+
       // Set the response headers for the PDF
-      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, 750);
+
       res.setHeader("Content-Type", "application/pdf");
 
       doc.pipe(res);
