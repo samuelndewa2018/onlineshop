@@ -853,7 +853,10 @@ router.get(
       const orderId = req.params.orderId;
       const order = await Order.findById(orderId);
 
-      console.log(order);
+      const doc = new pdf({
+        size: "Letter",
+      });
+
       const footerText =
         "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
       const remainingSpaceForFooter = 10; // Adjust this value as needed
@@ -865,10 +868,6 @@ router.get(
       const yCoordinate = pageHeight - fontSize - remainingSpaceForFooter;
 
       const pdfFileName = `receipt_${orderId}.pdf`;
-
-      const doc = new pdf({
-        size: "Letter",
-      });
 
       // Replace with your image URL
 
