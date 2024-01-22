@@ -852,6 +852,7 @@ router.get(
     try {
       const orderId = req.params.orderId;
       const order = await Order.findById(orderId);
+      const orderNo = order.orderNo;
 
       const doc = new pdf({
         size: "Letter",
@@ -1058,14 +1059,9 @@ router.get(
       doc.moveUp(1);
       doc
         .fontSize(10)
-        .text(
-          `Ksh ${
-            order.discount && order.discount === null ? 0 : order.discount
-          }`,
-          {
-            align: "right",
-          }
-        );
+        .text(`Ksh ${order.discount === null ? 0 : order.discount}`, {
+          align: "right",
+        });
 
       // Set the response headers for the PDF
       doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, yCoordinate);
