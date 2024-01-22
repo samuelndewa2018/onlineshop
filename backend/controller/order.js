@@ -1063,7 +1063,9 @@ router.get(
           align: "right",
         });
 
-      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, 750);
+      doc.moveDown(10);
+
+      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, doc.y);
 
       // Set the response headers for the PDF
 
