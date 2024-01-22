@@ -1070,9 +1070,8 @@ router.get(
       // Set the response headers for the PDF
 
       res.setHeader("Content-Type", "application/pdf");
-
-      doc.pipe(res);
       doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, yCoordinate);
+      doc.pipe(res);
 
       doc.end();
     } catch (error) {
