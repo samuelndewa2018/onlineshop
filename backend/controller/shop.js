@@ -19,12 +19,15 @@ router.post(
   "/create-shop",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { email } = req.body;
+      const { email, name } = req.body;
       const sellerEmail = await Shop.findOne({ email });
       if (sellerEmail) {
         return next(new ErrorHandler("User already exists", 400));
       }
-
+      const existingShop = await Shop.findOne({ name });
+      if (existingShop) {
+        return next(new ErrorHandler("Shop name already exists", 400));
+      }
       const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
         folder: "avatars",
       });
@@ -680,10 +683,10 @@ router.get(
 
 /// get shop info
 router.get(
-  "/get-shop-info/:id",
+  "/get-shop-info/:shopName",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const shop = await Shop.findById(req.params.id);
+      const shop = await Shop.findById(req.params.shopName);
       res.status(201).json({
         success: true,
         shop,
@@ -734,20 +737,27 @@ router.put(
   isSeller,
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { name, description, instaShop, address, phoneNumber, zipCode } =
-        req.body;
+      const { name, description, phoneNumber } = req.body;
 
-      const shop = await Shop.findOne(req.seller._id);
+      const shop = await Shop.findById(req.seller._id);
 
       if (!shop) {
-        return next(new ErrorHandler("User not found", 400));
+        return next(new ErrorHandler("Shop not found", 404));
+      }
+
+      // Check if the new name already exists for another shop
+      if (name && name !== shop.name) {
+        const existingShop = await Shop.findOne({ name });
+        if (existingShop) {
+          return next(new ErrorHandler("Shop name already exists", 400));
+        }
       }
 
       shop.name = name;
       shop.description = description;
       // shop.address = address;
-      // shop.phoneNumber = phoneNumber;
-      shop.instaShop = instaShop;
+      shop.phoneNumber = phoneNumber;
+      // shop.instaShop = instaShop;
 
       await shop.save();
 
