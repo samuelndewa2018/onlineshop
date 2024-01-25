@@ -339,4 +339,26 @@ router.put(
   })
 );
 
+router.get(
+  "/get-all-products-shop-by-name/:shopName",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const shop = await Shop.findOne({ name: req.params.shopName });
+
+      if (!shop) {
+        return next(new ErrorHandler("Shop not found", 404));
+      }
+
+      const products = await Product.find({ shop: shop._id });
+
+      res.status(200).json({
+        success: true,
+        products,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 module.exports = router;
