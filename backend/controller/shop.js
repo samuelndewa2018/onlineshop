@@ -700,9 +700,11 @@ router.get(
 router.get(
   "/get-shop-info-name/:shopName",
   catchAsyncErrors(async (req, res, next) => {
+    console.log(req.params.shopName);
     try {
-      const shop = await Shop.findById(req.params.shopName);
-      res.status(201).json({
+      const shop = await Shop.findOne({ name: req.params.shopName });
+      console.log(shop);
+      res.status(200).json({
         success: true,
         shop,
       });
