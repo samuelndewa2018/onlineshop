@@ -8,27 +8,28 @@ router.post("/carousel", async (req, res) => {
   const { caption } = req.body;
   let image = [];
 
-  if (req.body.image) {
-    const result = await cloudinary.v2.uploader.upload(req.body.image, {
-      folder: "carousel",
-    });
+  if (req.files && req.files.image) {
+    const result = await cloudinary.v2.uploader.upload(
+      req.files.image.tempFilePath,
+      {
+        folder: "carousel",
+      }
+    );
     image.push({
       public_id: result.public_id,
       url: result.secure_url,
     });
   }
+
   const newCarouselItem = new Carousel({ caption, image });
 
-  newCarouselItem
-    .save()
-    .then((savedCarouselItem) => {
-      res.json(savedCarouselItem);
-    })
-    .catch((error) => {
-      res.status(500).json({ error: "Failed to save the carousel" });
-    });
+  try {
+    const savedCarouselItem = await newCarouselItem.save();
+    res.json(savedCarouselItem);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to save the carousel" });
+  }
 });
-
 //get carousels
 router.get("/get-carousel", async (req, res) => {
   try {

@@ -697,23 +697,6 @@ router.get(
   })
 );
 
-router.get(
-  "/get-shop-info-name/:shopName",
-  catchAsyncErrors(async (req, res, next) => {
-    console.log(req.params.shopName);
-    try {
-      const shop = await Shop.findOne({ name: req.params.shopName });
-      console.log(shop);
-      res.status(200).json({
-        success: true,
-        shop,
-      });
-    } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
-    }
-  })
-);
-
 // update shop profile picture
 router.put(
   "/update-shop-avatar",
