@@ -284,84 +284,75 @@ router.put(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const productId = req.params.productId;
-
-      // Check if productId is a valid ObjectId
-      if (!mongoose.Types.ObjectId.isValid(productId)) {
-        return next(new ErrorHandler("Invalid Product Id!", 400));
-      }
-
       const product = await Product.findById(productId);
 
-      // Check if the product is found
       if (!product) {
         return next(new ErrorHandler("Product not found!", 404));
-      }
-
-      const statements = await Statements.find()
-        .sort({ createdAt: -1 })
-        .limit(1);
-
-      if (statements.length === 0) {
-        return next(
-          new ErrorHandler("No statements found in the database!", 400)
-        );
-      }
-
-      const latestStatement = statements[0];
-      const exchangeRate = latestStatement.exchangeRate;
-
-      let images = [];
-
-      if (typeof req.body.images === "string") {
-        images.push(req.body.images);
       } else {
-        images = req.body.images;
-      }
+        let images = [];
 
-      const updatedData = req.body;
-
-      if (images && images.length > 0) {
-        const imagesLinks = [];
-
-        for (let i = 0; i < images.length; i++) {
-          const result = await cloudinary.v2.uploader.upload(images[i], {
-            folder: "products",
-          });
-
-          imagesLinks.push({
-            public_id: result.public_id,
-            url: result.secure_url,
-          });
+        if (typeof req.body.images === "string") {
+          images.push(req.body.images);
+        } else {
+          images = req.body.images;
         }
 
-        const currentImages = product.images;
-        updatedData.images = currentImages.concat(imagesLinks);
-      } else {
-        updatedData.images = product.images;
+        const updatedData = req.body;
+        console.log(updatedData);
+
+        if (images && images.length > 0) {
+          const imagesLinks = [];
+
+          for (let i = 0; i < images.length; i++) {
+            const result = await cloudinary.v2.uploader.upload(images[i], {
+              folder: "products",
+            });
+
+            imagesLinks.push({
+              public_id: result.public_id,
+              url: result.secure_url,
+            });
+          }
+
+          const currentImages = product.images;
+          updatedData.images = currentImages.concat(imagesLinks);
+        } else {
+          updatedData.images = product.images;
+        }
+
+        if (updatedData.discountPrice) {
+          const statements = await Statements.find()
+            .sort({ createdAt: -1 })
+            .limit(1);
+          if (statements.length === 0) {
+            return next(
+              new ErrorHandler("No statements found in the database!", 400)
+            );
+          }
+          const exchangeRate = statements[0].exchangeRate;
+          updatedData.dPrice = Math.round(
+            updatedData.discountPrice / exchangeRate
+          );
+
+          // Calculate dPrice for each size
+          if (updatedData.sizes && Array.isArray(updatedData.sizes)) {
+            updatedData.sizes.forEach((size) => {
+              if (size.price) {
+                size.dPrice = Math.round(size.price / exchangeRate);
+              }
+            });
+          }
+        }
+
+        // Update the product with the new data
+        product.set(updatedData);
+        await product.save();
+
+        res.status(200).json({
+          success: true,
+          product,
+        });
       }
-
-      updatedData.dPrice = Math.round(updatedData.discountPrice / exchangeRate);
-
-      const sizes = req.body.sizes || [];
-
-      // Calculate dPrice for each size
-      const sizesWithDPrice = sizes.map((size) => ({
-        ...size,
-        dPrice: calculateDPrice(size.price, exchangeRate),
-      }));
-      updatedData.sizes = sizesWithDPrice;
-
-      // Use findByIdAndUpdate for atomic updates
-      const updatedProduct = await Product.findByIdAndUpdate(
-        productId,
-        { $set: updatedData },
-        { new: true }
-      );
-
-      res.status(200).json({
-        success: true,
-        product: updatedProduct,
-      });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
     }
