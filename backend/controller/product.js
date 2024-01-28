@@ -61,6 +61,7 @@ router.post(
         const sizes = req.body.sizes || []; // If sizes are not provided, default to an empty array
 
         const exchangeRate = statements.exchangeRate;
+        console.log(exchangeRate);
 
         // Calculate dPrice for each size
         const sizesWithDPrice = sizes.map((size) => ({
