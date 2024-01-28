@@ -7,12 +7,15 @@ const Order = require("../model/order");
 const Shop = require("../model/shop");
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
+const Statements = require("../model/Statements");
 
 // create product
 router.post(
   "/create-product",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const statements = await Statements.find();
+
       const shopId = req.body.shopId;
       const shop = await Shop.findById(shopId);
       if (!shop) {
@@ -38,6 +41,9 @@ router.post(
             url: result.secure_url,
           });
         }
+        const calculateDPrice = (price, exchangeRate) => {
+          return price && exchangeRate ? Math.round(price / exchangeRate) : 0;
+        };
 
         // Extract sizes data from the request body
         const {
@@ -54,6 +60,14 @@ router.post(
         } = req.body;
         const sizes = req.body.sizes || []; // If sizes are not provided, default to an empty array
 
+        const exchangeRate = statements.exchangeRate;
+
+        // Calculate dPrice for each size
+        const sizesWithDPrice = sizes.map((size) => ({
+          ...size,
+          dPrice: calculateDPrice(size.price, exchangeRate),
+        }));
+
         // Validate sizes data (optional step)
         // You may want to perform additional validation on the sizes data here
 
@@ -66,6 +80,11 @@ router.post(
           originalPrice,
           discountPrice,
           stock,
+          dPrice:
+            discountPrice && statements.exchangeRate
+              ? Math.round(discountPrice / statements.exchangeRate)
+              : 0,
+
           condition,
           images: imagesLinks,
           reviews,
@@ -73,7 +92,7 @@ router.post(
           shopId,
           shop,
           sold_out: 0,
-          sizes, // Assign the sizes data to the product
+          sizes,
         };
 
         const product = await Product.create(productData);
@@ -270,6 +289,7 @@ router.put(
         }
 
         const updatedData = req.body;
+        console.log(updatedData);
 
         if (images && images.length > 0) {
           const imagesLinks = [];

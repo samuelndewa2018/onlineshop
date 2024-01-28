@@ -9,6 +9,10 @@ const sizeSchema = new mongoose.Schema({
     type: Number,
     required: false,
   },
+  dPrice: {
+    type: Number,
+    required: false,
+  },
   stock: {
     type: Number,
     required: false,
@@ -38,6 +42,10 @@ const productSchema = new mongoose.Schema({
   discountPrice: {
     type: Number,
     required: [true, "Please enter your product price!"],
+  },
+  dPrice: {
+    type: Number,
+    required: false,
   },
   stock: {
     type: Number,
