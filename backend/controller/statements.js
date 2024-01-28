@@ -51,6 +51,31 @@ router.get("/get-statements", async (req, res) => {
   }
 });
 
+// Backend route
+router.get("/get-first-statements", async (req, res) => {
+  try {
+    const statements = await Statements.find().sort({ createdAt: -1 }).limit(1);
+    if (statements.length === 0) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          error: "No statements found in the database!",
+        });
+    }
+
+    const exchangeRate = statements[0].exchangeRate;
+    res.status(200).json({
+      success: true,
+      exchangeRate, // Include the exchange rate in the response
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to retrieve statements." });
+  }
+});
+
 // Update a statement
 router.put("/update-statement/:id", async (req, res) => {
   try {
