@@ -53,7 +53,9 @@ router.post(
           });
         }
         const calculateDPrice = (price, exchangeRate) => {
-          return price && exchangeRate ? Math.round(price / exchangeRate) : 0;
+          return price && exchangeRate
+            ? parseFloat(price / exchangeRate).toFixed(2)
+            : 0;
         };
 
         // Extract sizes data from the request body
@@ -91,7 +93,7 @@ router.post(
           stock,
           dPrice:
             discountPrice && exchangeRate
-              ? Math.round(discountPrice / exchangeRate)
+              ? parseFloat(discountPrice / exchangeRate).toFixed(2)
               : 0,
 
           condition,
@@ -330,15 +332,14 @@ router.put(
             );
           }
           const exchangeRate = statements[0].exchangeRate;
-          updatedData.dPrice = Math.round(
-            updatedData.discountPrice / exchangeRate
+          updatedData.dPrice = parseFloat(
+            (updatedData.discountPrice / exchangeRate).toFixed(2)
           );
-
           // Calculate dPrice for each size
           if (updatedData.sizes && Array.isArray(updatedData.sizes)) {
             updatedData.sizes.forEach((size) => {
               if (size.price) {
-                size.dPrice = Math.round(size.price / exchangeRate);
+                size.dPrice = parseFloat(size.price / exchangeRate).toFixed(2);
               }
             });
           }
