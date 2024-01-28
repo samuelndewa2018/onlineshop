@@ -284,7 +284,19 @@ router.put(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const productId = req.params.productId;
+
+      // Check if productId is a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(productId)) {
+        return next(new ErrorHandler("Invalid Product Id!", 400));
+      }
+
       const product = await Product.findById(productId);
+
+      // Check if the product is found
+      if (!product) {
+        return next(new ErrorHandler("Product not found!", 404));
+      }
+
       const statements = await Statements.find()
         .sort({ createdAt: -1 })
         .limit(1);
@@ -294,66 +306,62 @@ router.put(
           new ErrorHandler("No statements found in the database!", 400)
         );
       }
-      const latestStatement = statements[0];
 
+      const latestStatement = statements[0];
       const exchangeRate = latestStatement.exchangeRate;
 
-      if (!product) {
-        return next(new ErrorHandler("Product not found!", 404));
+      let images = [];
+
+      if (typeof req.body.images === "string") {
+        images.push(req.body.images);
       } else {
-        let images = [];
-
-        if (typeof req.body.images === "string") {
-          images.push(req.body.images);
-        } else {
-          images = req.body.images;
-        }
-
-        const updatedData = req.body;
-        console.log(updatedData);
-
-        if (images && images.length > 0) {
-          const imagesLinks = [];
-
-          for (let i = 0; i < images.length; i++) {
-            const result = await cloudinary.v2.uploader.upload(images[i], {
-              folder: "products",
-            });
-
-            imagesLinks.push({
-              public_id: result.public_id,
-              url: result.secure_url,
-            });
-          }
-
-          // updatedData.images = imagesLinks.concat(product.images);
-          const currentImages = product.images;
-          updatedData.images = currentImages.concat(imagesLinks);
-        } else {
-          updatedData.images = product.images;
-        }
-        updatedData.dPrice = Math.round(
-          updatedData.discountPrice / exchangeRate
-        );
-        const sizes = req.body.sizes || []; // If sizes are not provided, default to an empty array
-
-        // Calculate dPrice for each size
-        const sizesWithDPrice = sizes.map((size) => ({
-          ...size,
-          dPrice: calculateDPrice(size.price, exchangeRate),
-        }));
-        updatedData.sizes = sizesWithDPrice;
-
-        // Update the product with the new data
-        product.set(updatedData);
-        console.log(updatedData);
-        await product.save();
-
-        res.status(200).json({
-          success: true,
-          product,
-        });
+        images = req.body.images;
       }
+
+      const updatedData = req.body;
+
+      if (images && images.length > 0) {
+        const imagesLinks = [];
+
+        for (let i = 0; i < images.length; i++) {
+          const result = await cloudinary.v2.uploader.upload(images[i], {
+            folder: "products",
+          });
+
+          imagesLinks.push({
+            public_id: result.public_id,
+            url: result.secure_url,
+          });
+        }
+
+        const currentImages = product.images;
+        updatedData.images = currentImages.concat(imagesLinks);
+      } else {
+        updatedData.images = product.images;
+      }
+
+      updatedData.dPrice = Math.round(updatedData.discountPrice / exchangeRate);
+
+      const sizes = req.body.sizes || [];
+
+      // Calculate dPrice for each size
+      const sizesWithDPrice = sizes.map((size) => ({
+        ...size,
+        dPrice: calculateDPrice(size.price, exchangeRate),
+      }));
+      updatedData.sizes = sizesWithDPrice;
+
+      // Use findByIdAndUpdate for atomic updates
+      const updatedProduct = await Product.findByIdAndUpdate(
+        productId,
+        { $set: updatedData },
+        { new: true }
+      );
+
+      res.status(200).json({
+        success: true,
+        product: updatedProduct,
+      });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
     }
