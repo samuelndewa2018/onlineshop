@@ -90,8 +90,8 @@ router.post(
           discountPrice,
           stock,
           dPrice:
-            discountPrice && statements.exchangeRate
-              ? Math.round(discountPrice / statements.exchangeRate)
+            discountPrice && exchangeRate
+              ? Math.round(discountPrice / exchangeRate)
               : 0,
 
           condition,
@@ -285,6 +285,18 @@ router.put(
     try {
       const productId = req.params.productId;
       const product = await Product.findById(productId);
+      const statements = await Statements.find()
+        .sort({ createdAt: -1 })
+        .limit(1);
+
+      if (statements.length === 0) {
+        return next(
+          new ErrorHandler("No statements found in the database!", 400)
+        );
+      }
+      const latestStatement = statements[0];
+
+      const exchangeRate = latestStatement.exchangeRate;
 
       if (!product) {
         return next(new ErrorHandler("Product not found!", 404));
@@ -320,6 +332,17 @@ router.put(
         } else {
           updatedData.images = product.images;
         }
+        updatedData.dPrice = Math.round(
+          updatedData.discountPrice / exchangeRate
+        );
+        const sizes = req.body.sizes || []; // If sizes are not provided, default to an empty array
+
+        // Calculate dPrice for each size
+        const sizesWithDPrice = sizes.map((size) => ({
+          ...size,
+          dPrice: calculateDPrice(size.price, exchangeRate),
+        }));
+        updatedData.sizes = sizesWithDPrice;
 
         // Update the product with the new data
         product.set(updatedData);
