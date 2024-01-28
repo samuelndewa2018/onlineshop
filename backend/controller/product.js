@@ -346,6 +346,7 @@ router.put(
 
         // Update the product with the new data
         product.set(updatedData);
+        console.log(updatedData);
         await product.save();
 
         res.status(200).json({
