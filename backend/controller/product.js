@@ -14,7 +14,18 @@ router.post(
   "/create-product",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const statements = await Statements.find();
+      const statements = await Statements.find()
+        .sort({ createdAt: -1 })
+        .limit(1);
+
+      if (statements.length === 0) {
+        return next(
+          new ErrorHandler("No statements found in the database!", 400)
+        );
+      }
+      const latestStatement = statements[0];
+
+      const exchangeRate = latestStatement.exchangeRate;
 
       const shopId = req.body.shopId;
       const shop = await Shop.findById(shopId);
@@ -60,9 +71,6 @@ router.post(
         } = req.body;
         const sizes = req.body.sizes || []; // If sizes are not provided, default to an empty array
 
-        const exchangeRate = statements.exchangeRate;
-        console.log(exchangeRate);
-
         // Calculate dPrice for each size
         const sizesWithDPrice = sizes.map((size) => ({
           ...size,
@@ -93,7 +101,7 @@ router.post(
           shopId,
           shop,
           sold_out: 0,
-          sizes,
+          sizes: sizesWithDPrice,
         };
 
         const product = await Product.create(productData);
