@@ -56,18 +56,22 @@ router.get("/get-first-statements", async (req, res) => {
   try {
     const statements = await Statements.find().sort({ createdAt: -1 }).limit(1);
     if (statements.length === 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: "No statements found in the database!",
-        });
+      return res.status(400).json({
+        success: false,
+        error: "No statements found in the database!",
+      });
     }
 
     const exchangeRate = statements[0].exchangeRate;
+
+    // Set headers to prevent caching
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+
     res.status(200).json({
       success: true,
-      exchangeRate, // Include the exchange rate in the response
+      exchangeRate,
     });
   } catch (error) {
     res
