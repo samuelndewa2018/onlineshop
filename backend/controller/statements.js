@@ -63,15 +63,9 @@ router.get("/get-first-statements", async (req, res) => {
     }
 
     const exchangeRate = statements[0].exchangeRate;
-
-    // Set headers to prevent caching
-    res.setHeader("Cache-Control", "no-store");
-    res.setHeader("Pragma", "no-cache");
-    res.setHeader("Expires", "0");
-
     res.status(200).json({
       success: true,
-      exchangeRate,
+      exchangeRate, // Include the exchange rate in the response
     });
   } catch (error) {
     res
