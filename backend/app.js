@@ -10,6 +10,8 @@ app.use(
     origin: [
       "https://www.ninetyone.co.ke",
       "https://ninetyone.co.ke",
+      "ninetyone.co.ke",
+      "www.ninetyone.co.ke",
       "http://localhost:3000",
       "https://onlineshop-delta.vercel.app",
     ], //this one
