@@ -7,7 +7,7 @@ router.post("/create", async (req, res) => {
   try {
     const { productId, startingPrice, bidIncrement, duration, shopId } =
       req.body;
-
+    console.log("auction", req.body);
     const startDate = Date.now();
     const endDate = startDate + duration * 24 * 60 * 60 * 1000;
 
@@ -21,6 +21,8 @@ router.post("/create", async (req, res) => {
       endDate,
       highestBidder: null,
     };
+
+    console.log("auction", auctionData);
 
     const newAuction = await Auction.create(auctionData);
     res.status(201).json({ success: true, auction: newAuction });
