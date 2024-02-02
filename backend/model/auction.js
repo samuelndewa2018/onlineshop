@@ -5,6 +5,10 @@ const auctionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  name: {
+    type: String,
+    required: true,
+  },
   startingPrice: {
     type: Number,
     required: true,

@@ -5,7 +5,7 @@ const Auction = require("../model/auction");
 // Route to create a new auction
 router.post("/create", async (req, res) => {
   try {
-    const { productId, startingPrice, bidIncrement, duration, shopId } =
+    const { productId, name, startingPrice, bidIncrement, duration, shopId } =
       req.body;
 
     // Check if an auction with the given productId already exists
@@ -25,6 +25,7 @@ router.post("/create", async (req, res) => {
 
     const auctionData = {
       productId,
+      name,
       startingPrice,
       currentBid: startingPrice,
       bidIncrement,
