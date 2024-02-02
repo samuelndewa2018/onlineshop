@@ -66,6 +66,7 @@ const carousel = require("./controller/carousel");
 const subscribe = require("./controller/subscribers");
 const location = require("./controller/location");
 const flashSale = require("./controller/flashSale");
+const auction = require("./controller/auction");
 
 app.use("/api/v2/user", user);
 app.use("/api/v2/conversation", conversation);
@@ -75,7 +76,7 @@ app.use("/api/v2/shop", shop);
 app.use("/api/v2/product", product);
 app.use("/api/v2/event", event);
 app.use("/api/v2/coupon", coupon);
-
+app.use("/api/v2/auction", auction);
 app.use("/api/v2/withdraw", withdraw);
 app.use("/api/v2/pesa", mpesaRoutes);
 app.use("/api/v2/tiny", tinyRoutes);
