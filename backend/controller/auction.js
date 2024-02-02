@@ -7,7 +7,19 @@ router.post("/create", async (req, res) => {
   try {
     const { productId, startingPrice, bidIncrement, duration, shopId } =
       req.body;
-    console.log("auction", req.body);
+
+    // Check if an auction with the given productId already exists
+    const existingAuction = await Auction.findOne({ productId });
+
+    if (existingAuction) {
+      // Auction for the product already exists, handle accordingly
+      return res.status(400).json({
+        success: false,
+        message: "An auction for this product already exists.",
+      });
+    }
+
+    // Proceed with creating a new auction
     const startDate = Date.now();
     const endDate = startDate + duration * 24 * 60 * 60 * 1000;
 
@@ -22,8 +34,6 @@ router.post("/create", async (req, res) => {
       highestBidder: null,
     };
 
-    console.log("auction", auctionData);
-
     const newAuction = await Auction.create(auctionData);
     res.status(201).json({ success: true, auction: newAuction });
   } catch (error) {
@@ -31,6 +41,7 @@ router.post("/create", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
+
 // Route to get auctions of a shop
 router.get("/shop/:shopId", async (req, res) => {
   try {
