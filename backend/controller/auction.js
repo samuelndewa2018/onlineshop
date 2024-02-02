@@ -5,8 +5,15 @@ const Auction = require("../model/auction");
 // Route to create a new auction
 router.post("/create", async (req, res) => {
   try {
-    const { productId, name, startingPrice, bidIncrement, duration, shopId } =
-      req.body;
+    const {
+      productId,
+      name,
+      startingPrice,
+      size,
+      bidIncrement,
+      duration,
+      shopId,
+    } = req.body;
 
     // Check if an auction with the given productId already exists
     const existingAuction = await Auction.findOne({ productId });
@@ -30,6 +37,7 @@ router.post("/create", async (req, res) => {
       currentBid: startingPrice,
       bidIncrement,
       shopId,
+      size,
       startDate,
       endDate,
       highestBidder: null,

@@ -9,6 +9,9 @@ const auctionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  size: {
+    type: String,
+  },
   startingPrice: {
     type: Number,
     required: true,
