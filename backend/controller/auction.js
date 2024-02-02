@@ -31,6 +31,16 @@ router.post("/create", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 });
+// Route to get auctions of a shop
+router.get("/shop/:shopId", async (req, res) => {
+  try {
+    const shopAuctions = await Auction.find({ shopId: req.params.shopId });
+    res.status(200).json({ success: true, auctions: shopAuctions });
+  } catch (error) {
+    console.error("Error fetching shop auctions:", error.message);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
 
 // Route to get all auctions
 router.get("/all", async (req, res) => {
