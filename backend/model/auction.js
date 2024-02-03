@@ -33,7 +33,7 @@ const auctionSchema = new mongoose.Schema({
     required: true,
   },
   highestBidder: {
-    type: String, // Assuming bidder's user ID or a unique identifier
+    type: String,
   },
   shopId: {
     type: String,
