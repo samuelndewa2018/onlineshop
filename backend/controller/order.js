@@ -951,27 +951,18 @@ router.get(
       doc.moveUp(1);
       doc.fontSize(10).text(`${order.paymentInfo.type}`, 150, doc.y);
       doc.moveDown();
-      const paymentDetailsTable = doc.table(
-        [
-          ["Payment Method:", order.paymentInfo.type],
-          [
-            "Payment Status:",
-            order.paymentInfo.status === "succeeded" ? "Paid" : "Not Paid",
-          ],
-          ["Order No:", order.orderNo],
-        ],
-        {
-          layout: "noBorders",
-          widths: [150, "*"],
-          // Align to the right with slightly more padding as per Response B
-          columnStyle: { halign: "right", margin: [10, 5, 10, 5] }, // Adjusted
-        }
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(11)
+        .fillColor("#1e4598")
+        .text("Payment Status:", 50, doc.y);
+      doc.fill("black").font("Helvetica").fontSize(10);
+      doc.moveUp(1);
+      doc.text(
+        `${order.paymentInfo.status === "succeeded" ? "Paid" : "Not Paid"}`,
+        150,
+        doc.y
       );
-
-      // Place the payment details table on the right side with sufficient space and padding
-      const paymentDetailsY = yCoordinate - 40; // Adjusted for spacing
-      const paymentDetailsX = doc.page.width - paymentDetailsTable.width - 50; // Adjusted for position and padding
-      paymentDetailsTable.drawAt(paymentDetailsX, paymentDetailsY);
       doc.moveDown();
       doc
         .font("Helvetica-Bold")
@@ -1074,16 +1065,7 @@ router.get(
 
       doc.moveDown(10);
 
-      // Add horizontal line above the footer with some padding and a slightly thinner line
-      doc.moveTo(50, yCoordinate - 20); // Adjusted for spacing
-      doc.lineTo(doc.page.width - 50, yCoordinate - 20); // Adjusted
-      doc.lineWidth(0.2);
-      doc.stroke("#777"); // Gray as suggested in Response B
-
-      doc
-        .fillColor("#1e4598")
-        .fontSize(9)
-        .text(footerText, 50, yCoordinate - 30); // Adjusted for spacing
+      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, doc.y);
 
       // Set the response headers for the PDF
 
@@ -1097,7 +1079,6 @@ router.get(
     }
   })
 );
-
 // update order status for seller
 
 router.put(
