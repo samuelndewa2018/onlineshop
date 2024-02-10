@@ -845,6 +845,240 @@ router.get(
 );
 
 //generate receipt
+// router.get(
+//   "/generate-receipt/:orderId",
+
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       const orderId = req.params.orderId;
+//       const order = await Order.findById(orderId);
+//       const orderNo = order.orderNo;
+
+//       const doc = new pdf({
+//         size: "Letter",
+//       });
+
+//       const footerText =
+//         "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
+//       const remainingSpaceForFooter = 10;
+//       const pageHeight = doc.page.height;
+//       console.log(pageHeight);
+//       const fontSize = 10;
+
+//       // Adjust the yCoordinate to leave space for the footer
+//       const yCoordinate = pageHeight - fontSize - remainingSpaceForFooter;
+
+//       const pdfFileName = `receipt_${orderNo}.pdf`;
+
+//       // Replace with your image URL
+
+//       try {
+//         const logoPath = path.join(__dirname, "logo.png");
+//         doc.image(logoPath, 50, 20, { width: 150, height: 100 });
+//       } catch (error) {
+//         console.error("Error loading image:", error);
+//       }
+
+//       doc.moveTo(50, 395);
+//       doc.dash(3);
+//       doc.lineTo(520, 395);
+
+//       doc.lineWidth(0.5);
+
+//       doc.stroke("#184ca0");
+
+//       doc.rect(0, 140, 350, 40).fill("#f3782f");
+//       doc.rect(520, 140, 620, 40).fill("#f3782f");
+
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(18)
+//         .fillColor("#1e4598")
+//         .text("Payment Receipt", 360, 153);
+
+//       doc.fill("black").font("Helvetica").fontSize(10);
+//       doc.moveDown(2);
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(12)
+//         .fillColor("#1e4598")
+//         .text(`Date: ${order.createdAt.toDateString()}`, { align: "right" });
+//       doc.moveUp(1);
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(11)
+//         .fillColor("#1e4598")
+//         .text("Customer Details:", 50, doc.y);
+
+//       doc.fill("black").font("Helvetica").fontSize(11);
+//       doc.moveDown();
+//       doc.font("Helvetica").fontSize(10);
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(11)
+//         .fillColor("#1e4598")
+//         .text("Name:", 50, doc.y);
+//       doc.fill("black").font("Helvetica").fontSize(10);
+//       doc.moveUp(1);
+//       doc.fontSize(10).text(`${order.user.name}`, 150, doc.y);
+//       doc.moveDown();
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(11)
+//         .fillColor("#1e4598")
+//         .text("Email:", 50, doc.y);
+//       doc.fill("black").font("Helvetica").fontSize(10);
+//       doc.moveUp(1);
+//       doc.fontSize(10).text(`${order.user.email}`, 150, doc.y);
+//       doc.moveDown();
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(11)
+//         .fillColor("#1e4598")
+//         .text("Phone No:", 50, doc.y);
+//       doc.fill("black").font("Helvetica").fontSize(10);
+//       doc.moveUp(1);
+//       doc.fontSize(10).text(`${order.user.phoneNumber}`, 150, doc.y);
+
+//       doc.moveDown();
+//       doc.font("Helvetica").fontSize(10);
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(11)
+//         .fillColor("#1e4598")
+//         .text("Payment Method:", 50, doc.y);
+//       doc.fill("black").font("Helvetica").fontSize(10);
+//       doc.moveUp(1);
+//       doc.fontSize(10).text(`${order.paymentInfo.type}`, 150, doc.y);
+//       doc.moveDown();
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(11)
+//         .fillColor("#1e4598")
+//         .text("Payment Status:", 50, doc.y);
+//       doc.fill("black").font("Helvetica").fontSize(10);
+//       doc.moveUp(1);
+//       doc.text(
+//         `${order.paymentInfo.status === "succeeded" ? "Paid" : "Not Paid"}`,
+//         150,
+//         doc.y
+//       );
+//       doc.moveDown();
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(11)
+//         .fillColor("#1e4598")
+//         .text("Order No:", 50, doc.y);
+//       doc.fill("black").font("Helvetica").fontSize(10);
+//       doc.moveUp(1);
+//       doc.text(`${order.orderNo}`, 150, doc.y);
+//       doc.moveDown();
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(11)
+//         .fillColor("#1e4598")
+//         .text("Shipping Address: ", 50, doc.y);
+
+//       doc.fill("black").font("Helvetica").fontSize(10);
+//       doc.moveUp(1);
+//       doc.text(
+//         `${order.shippingAddress.address1}, ${order.shippingAddress.zipCode}, ${order.shippingAddress.country}`,
+//         150,
+//         doc.y
+//       );
+
+//       doc.moveDown(2);
+
+//       // Create the table header row on the same line
+//       doc
+//         .font("Helvetica-Bold")
+//         .fontSize(11)
+//         .fillColor("#1e4598")
+//         .text("Items", 50, doc.y)
+//         .moveUp(1) // Adjust the vertical position
+//         .text("Qty", 280, doc.y)
+//         .moveUp(1) // Adjust the vertical position
+//         .text("Price", 380, doc.y)
+//         .moveUp(1) // Adjust the vertical position
+//         .text("Total", 480, doc.y);
+
+//       order.cart.forEach((item) => {
+//         const truncatedName =
+//           item.name.length > 25
+//             ? item.name.substring(0, 40) +
+//               "...\n" +
+//               item.name.substring(40, 80) +
+//               "...\n" +
+//               item.name.substring(80, 120)
+//             : item.name;
+//         doc
+//           .font("Helvetica")
+//           .fillColor("black")
+//           .fontSize(10)
+//           .text(truncatedName, 50, doc.y + 30)
+//           .moveUp(1)
+//           .text(item.qty, 280, doc.y)
+//           .font("Helvetica")
+//           .fillColor("black")
+//           .fontSize(10)
+//           .moveUp(1)
+//           .text(item.discountPrice, 380, doc.y)
+//           .font("Helvetica")
+//           .fillColor("black")
+//           .fontSize(10)
+//           .moveUp(1)
+//           .text(item.discountPrice * item.qty, 480, doc.y)
+//           .font("Helvetica")
+//           .fillColor("black")
+//           .fontSize(10);
+//       });
+
+//       // Calculate and display the total
+//       const total = order.cart.reduce(
+//         (acc, item) => acc + item.discountPrice * item.qty,
+//         0
+//       );
+
+//       doc.moveDown(3);
+//       doc
+//         .font("Helvetica-Bold")
+//         .fillColor("#1e4598")
+//         .fontSize(12)
+//         .text("Total", 380, doc.y);
+
+//       doc.moveUp(1);
+//       doc.fontSize(12).text("Ksh " + total, { align: "right" });
+
+//       doc.moveDown(1);
+//       doc
+//         .font("Helvetica-Bold")
+//         .fillColor("#1e4598")
+//         .fontSize(12)
+//         .text("Discount:", 380);
+
+//       doc.moveUp(1);
+//       doc
+//         .fontSize(10)
+//         .text(`Ksh ${order.discount === null ? 0 : order.discount}`, {
+//           align: "right",
+//         });
+
+//       doc.moveDown(10);
+
+//       doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, doc.y);
+
+//       // Set the response headers for the PDF
+
+//       res.setHeader("Content-Type", "application/pdf");
+
+//       doc.pipe(res);
+
+//       doc.end();
+//     } catch (error) {
+//       return next(new ErrorHandler(error.message, 500));
+//     }
+//   })
+// );
 router.get(
   "/generate-receipt/:orderId",
 
@@ -862,16 +1096,14 @@ router.get(
         "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
       const remainingSpaceForFooter = 10;
       const pageHeight = doc.page.height;
-      console.log(pageHeight);
       const fontSize = 10;
 
-      // Adjust the yCoordinate to leave space for the footer
-      const yCoordinate = pageHeight - fontSize - remainingSpaceForFooter;
+      // Adjust the yCoordinate to leave space for the footer with padding for better positioning
+      const yCoordinate = pageHeight - remainingSpaceForFooter - 20; // Added padding
 
       const pdfFileName = `receipt_${orderNo}.pdf`;
 
       // Replace with your image URL
-
       try {
         const logoPath = path.join(__dirname, "logo.png");
         doc.image(logoPath, 50, 20, { width: 150, height: 100 });
@@ -879,196 +1111,54 @@ router.get(
         console.error("Error loading image:", error);
       }
 
-      doc.moveTo(50, 395);
+      // Move logo to the middle of the width with slight adjustment as per Response A's suggestion
+      doc.moveTo(doc.page.width / 2 - 75, 395); // Adjusted
+
+      // Draw the horizontal line with better positioning and adjust its color
       doc.dash(3);
-      doc.lineTo(520, 395);
-
+      doc.lineTo(doc.page.width - 50, 395); // Adjusted
       doc.lineWidth(0.5);
+      doc.stroke("#777"); // Gray as suggested in Response B
 
-      doc.stroke("#184ca0");
-
-      doc.rect(0, 140, 350, 40).fill("#f3782f");
-      doc.rect(520, 140, 620, 40).fill("#f3782f");
-
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(18)
-        .fillColor("#1e4598")
-        .text("Payment Receipt", 360, 153);
-
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveDown(2);
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(12)
-        .fillColor("#1e4598")
-        .text(`Date: ${order.createdAt.toDateString()}`, { align: "right" });
-      doc.moveUp(1);
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Customer Details:", 50, doc.y);
-
-      doc.fill("black").font("Helvetica").fontSize(11);
-      doc.moveDown();
-      doc.font("Helvetica").fontSize(10);
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Name:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.fontSize(10).text(`${order.user.name}`, 150, doc.y);
-      doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Email:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.fontSize(10).text(`${order.user.email}`, 150, doc.y);
-      doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Phone No:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.fontSize(10).text(`${order.user.phoneNumber}`, 150, doc.y);
-
-      doc.moveDown();
-      doc.font("Helvetica").fontSize(10);
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Payment Method:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.fontSize(10).text(`${order.paymentInfo.type}`, 150, doc.y);
-      doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Payment Status:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.text(
-        `${order.paymentInfo.status === "succeeded" ? "Paid" : "Not Paid"}`,
-        150,
-        doc.y
-      );
-      doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Order No:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.text(`${order.orderNo}`, 150, doc.y);
-      doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Shipping Address: ", 50, doc.y);
-
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.text(
-        `${order.shippingAddress.address1}, ${order.shippingAddress.zipCode}, ${order.shippingAddress.country}`,
-        150,
-        doc.y
+      // Payment details: Use a table for clarity and align it to the right with padding
+      const paymentDetailsTable = doc.table(
+        [
+          ["Payment Method:", order.paymentInfo.type],
+          [
+            "Payment Status:",
+            order.paymentInfo.status === "succeeded" ? "Paid" : "Not Paid",
+          ],
+          ["Order No:", order.orderNo],
+        ],
+        {
+          layout: "noBorders",
+          widths: [150, "*"],
+          // Align to the right with slightly more padding as per Response B
+          columnStyle: { halign: "right", margin: [10, 5, 10, 5] }, // Adjusted
+        }
       );
 
-      doc.moveDown(2);
+      // Place the payment details table on the right side with sufficient space and padding
+      const paymentDetailsY = yCoordinate - 40; // Adjusted for spacing
+      const paymentDetailsX = doc.page.width - paymentDetailsTable.width - 50; // Adjusted for position and padding
+      paymentDetailsTable.drawAt(paymentDetailsX, paymentDetailsY);
 
-      // Create the table header row on the same line
+      // Remaining content (customer details, order items, total, etc.)
+      // ... your existing code here, making any necessary adjustments to ensure proper positioning
+      // ... with respect to the payment details table
+
+      // Add horizontal line above the footer with some padding and a slightly thinner line
+      doc.moveTo(50, yCoordinate - 20); // Adjusted for spacing
+      doc.lineTo(doc.page.width - 50, yCoordinate - 20); // Adjusted
+      doc.lineWidth(0.2);
+      doc.stroke("#777"); // Gray as suggested in Response B
+
       doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
         .fillColor("#1e4598")
-        .text("Items", 50, doc.y)
-        .moveUp(1) // Adjust the vertical position
-        .text("Qty", 280, doc.y)
-        .moveUp(1) // Adjust the vertical position
-        .text("Price", 380, doc.y)
-        .moveUp(1) // Adjust the vertical position
-        .text("Total", 480, doc.y);
-
-      order.cart.forEach((item) => {
-        const truncatedName =
-          item.name.length > 25
-            ? item.name.substring(0, 40) +
-              "...\n" +
-              item.name.substring(40, 80) +
-              "...\n" +
-              item.name.substring(80, 120)
-            : item.name;
-        doc
-          .font("Helvetica")
-          .fillColor("black")
-          .fontSize(10)
-          .text(truncatedName, 50, doc.y + 30)
-          .moveUp(1)
-          .text(item.qty, 280, doc.y)
-          .font("Helvetica")
-          .fillColor("black")
-          .fontSize(10)
-          .moveUp(1)
-          .text(item.discountPrice, 380, doc.y)
-          .font("Helvetica")
-          .fillColor("black")
-          .fontSize(10)
-          .moveUp(1)
-          .text(item.discountPrice * item.qty, 480, doc.y)
-          .font("Helvetica")
-          .fillColor("black")
-          .fontSize(10);
-      });
-
-      // Calculate and display the total
-      const total = order.cart.reduce(
-        (acc, item) => acc + item.discountPrice * item.qty,
-        0
-      );
-
-      doc.moveDown(3);
-      doc
-        .font("Helvetica-Bold")
-        .fillColor("#1e4598")
-        .fontSize(12)
-        .text("Total", 380, doc.y);
-
-      doc.moveUp(1);
-      doc.fontSize(12).text("Ksh " + total, { align: "right" });
-
-      doc.moveDown(1);
-      doc
-        .font("Helvetica-Bold")
-        .fillColor("#1e4598")
-        .fontSize(12)
-        .text("Discount:", 380);
-
-      doc.moveUp(1);
-      doc
-        .fontSize(10)
-        .text(`Ksh ${order.discount === null ? 0 : order.discount}`, {
-          align: "right",
-        });
-
-      doc.moveDown(10);
-
-      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, doc.y);
+        .fontSize(9)
+        .text(footerText, 50, yCoordinate - 30); // Adjusted for spacing
 
       // Set the response headers for the PDF
-
       res.setHeader("Content-Type", "application/pdf");
 
       doc.pipe(res);
@@ -1079,6 +1169,7 @@ router.get(
     }
   })
 );
+
 // update order status for seller
 
 router.put(
