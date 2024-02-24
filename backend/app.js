@@ -14,6 +14,7 @@ app.use(
       "ninetyone.co.ke",
       "ninetyone.co.ke/",
       "www.ninetyone.co.ke",
+      "www.ninetyone.co.ke/",
       "http://localhost:3000",
       "https://onlineshop-delta.vercel.app",
     ], //this one
