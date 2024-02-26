@@ -2,11 +2,11 @@ const express = require("express");
 const Category = require("../model/categories");
 const router = express.Router();
 const cloudinary = require("cloudinary");
-// changed mongo db
-//create category
+
+// Create category with subcategories
 router.post("/create-category", async (req, res, next) => {
   try {
-    const { name } = req.body;
+    const { name, subcategories } = req.body;
     let image = [];
 
     if (req.body.image) {
@@ -19,7 +19,7 @@ router.post("/create-category", async (req, res, next) => {
       });
     }
 
-    const category = new Category({ name, image });
+    const category = new Category({ name, image, subcategories });
 
     const savedCategory = await category.save();
 
@@ -29,7 +29,7 @@ router.post("/create-category", async (req, res, next) => {
   }
 });
 
-//get category
+// Get all categories with subcategories
 router.get("/categories", (req, res) => {
   Category.find()
     .then((categories) => {
@@ -40,7 +40,7 @@ router.get("/categories", (req, res) => {
     });
 });
 
-//delete category
+// Delete category and its subcategories
 router.delete("/delete-category/:id", async (req, res) => {
   const { id } = req.params;
 
