@@ -41,6 +41,7 @@ const CreateCategory = () => {
       formData.append("image", image);
       formData.append("subcategories", JSON.stringify(subcategories));
       await axios.post(`${server}/category/create-category`, formData);
+      console.log("formData is", formData);
       await fetchCategories();
       toast.success("Category and subcategories created!");
     } catch (error) {
