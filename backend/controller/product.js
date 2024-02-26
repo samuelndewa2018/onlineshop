@@ -336,12 +336,27 @@ router.put(
             (updatedData.discountPrice / exchangeRate).toFixed(2)
           );
           // Calculate dPrice for each size
+          // if (updatedData.sizes && Array.isArray(updatedData.sizes)) {
+          //   updatedData.sizes.forEach((size) => {
+          //     if (size.price) {
+          //       size.dPrice = parseFloat(size.price / exchangeRate).toFixed(2);
+          //     }
+          //   });
+          // }
           if (updatedData.sizes && Array.isArray(updatedData.sizes)) {
+            let totalStock = 0;
+
             updatedData.sizes.forEach((size) => {
               if (size.price) {
                 size.dPrice = parseFloat(size.price / exchangeRate).toFixed(2);
               }
+
+              // Add the stock of the current size to the total stock
+              totalStock += size.stock || 0;
             });
+
+            // totalStock now holds the sum of all sizes' stock
+            console.log("Total stock:", totalStock);
           }
         }
 
