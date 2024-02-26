@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { server } from "../../server";
 import { AiOutlineDelete, AiOutlinePlusCircle } from "react-icons/ai";
+import { RiCloseCircleLine } from "react-icons/ri";
 import "react-quill/dist/quill.snow.css";
 import styles from "../../styles/styles";
 import { toast } from "react-toastify";
-import { RxCross1 } from "react-icons/rx";
 import CustomModal from "../CustomModal";
 
 const CreateCategory = () => {
@@ -18,12 +18,14 @@ const CreateCategory = () => {
   const [image, setImage] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [catId, setCatId] = useState("");
+  const [subcategories, setSubcategories] = useState([]); // State for subcategories
 
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCategories();
   }, []);
+
   const fetchCategories = async () => {
     try {
       const response = await axios.get(`${server}/category/categories`);
@@ -38,28 +40,24 @@ const CreateCategory = () => {
       const formData = new FormData();
       formData.append("name", name);
       formData.append("image", image);
-      await axios.post(`${server}/category/create-category`, {
-        name,
-        image,
-      });
+      formData.append("subcategories", JSON.stringify(subcategories)); // Pass subcategories in FormData
+      await axios.post(`${server}/category/create-category`, formData);
       await fetchCategories();
-      toast.success("Category and sub-category created!");
+      toast.success("Category and subcategories created!");
     } catch (error) {
       toast.error(error.response.data);
     }
   };
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
+    const file = e.target.files[0];
 
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setImage(reader.result);
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    });
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImage(file);
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleDeleteCategory = async (id) => {
@@ -75,6 +73,23 @@ const CreateCategory = () => {
   const setOperations = (id) => {
     setCatId(id);
     setModalOpen(true);
+  };
+
+  const handleSubcategoryChange = (e, index) => {
+    const { name, value } = e.target;
+    const list = [...subcategories];
+    list[index][name] = value;
+    setSubcategories(list);
+  };
+
+  const handleAddSubcategory = () => {
+    setSubcategories([...subcategories, { name: "" }]);
+  };
+
+  const handleRemoveSubcategory = (index) => {
+    const list = [...subcategories];
+    list.splice(index, 1);
+    setSubcategories(list);
   };
 
   return (
@@ -94,7 +109,7 @@ const CreateCategory = () => {
           <div className="fixed w-full h-screen bg-[#0000004b] top-0 left-0 flex items-center justify-center ">
             <div className="w-[35%] h-[80vh] bg-white rounded shadow relative overflow-y-scroll">
               <div className="w-full flex justify-end p-3">
-                <RxCross1
+                <RiCloseCircleLine
                   size={30}
                   className="cursor-pointer"
                   onClick={() => setOpen(false)}
@@ -145,7 +160,39 @@ const CreateCategory = () => {
                         )}
                       </div>
                     </div>
-                    <div className=" w-full pb-2">
+                    <div className="pb-4">
+                      <label className="block pb-2 text-lg font-semibold">
+                        Subcategories
+                      </label>
+                      {subcategories.map((subcategory, index) => (
+                        <div key={index} className="flex items-center mb-2">
+                          <input
+                            type="text"
+                            name="name"
+                            value={subcategory.name}
+                            onChange={(e) => handleSubcategoryChange(e, index)}
+                            className="mt-2 appearance-none block w-full px-3 h-[35px] border border-gray-300 rounded-[3px] placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            placeholder="Enter Subcategory Name..."
+                            required
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSubcategory(index)}
+                            className="ml-2 px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:bg-red-600"
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={handleAddSubcategory}
+                        className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+                      >
+                        Add Subcategory
+                      </button>
+                    </div>
+                    <div className="w-full pb-2">
                       <input
                         type="submit"
                         value="Create Category"

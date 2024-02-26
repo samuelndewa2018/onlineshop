@@ -18,6 +18,7 @@ app.use(
       "www.ninetyone.co.ke/",
       "http://localhost:3000",
       "https://onlineshop-delta.vercel.app",
+      "https://onlineshop-2xjp.vercel.app",
     ], //this one
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
