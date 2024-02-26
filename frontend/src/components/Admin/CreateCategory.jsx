@@ -18,8 +18,7 @@ const CreateCategory = () => {
   const [image, setImage] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const [catId, setCatId] = useState("");
-  const [subcategories, setSubcategories] = useState([]); // State for subcategories
-
+  const [subcategories, setSubcategories] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
@@ -40,7 +39,8 @@ const CreateCategory = () => {
       const formData = new FormData();
       formData.append("name", name);
       formData.append("image", image);
-      formData.append("subcategories", JSON.stringify(subcategories)); // Pass subcategories in FormData
+      formData.append("subcategories", JSON.stringify(subcategories));
+
       await axios.post(`${server}/category/create-category`, formData);
       await fetchCategories();
       toast.success("Category and subcategories created!");
