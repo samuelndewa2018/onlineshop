@@ -7,6 +7,7 @@ const cloudinary = require("cloudinary");
 router.post("/create-category", async (req, res, next) => {
   try {
     const { name, subcategories } = req.body;
+    console.log("the body", req.body);
     let image = [];
 
     if (req.body.image) {
@@ -22,6 +23,7 @@ router.post("/create-category", async (req, res, next) => {
     const category = new Category({ name, image, subcategories });
 
     const savedCategory = await category.save();
+    console.log(savedCategory);
 
     res.json(savedCategory);
   } catch (error) {
