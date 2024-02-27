@@ -174,6 +174,14 @@ const App = () => {
           }
         />
         <Route
+          path="/trial"
+          element={
+            <ProtectedAdminRoute>
+              <AdminLocation />
+            </ProtectedAdminRoute>
+          }
+        />
+        <Route
           path="/statements"
           element={
             <ProtectedAdminRoute>
@@ -259,7 +267,7 @@ const App = () => {
           }
         />
         {/* to be removed in production */}
-        <Route path="/trial" element={<TrialPage />} />
+        {/* <Route path="/trial" element={<TrialPage />} /> */}
 
         <Route path="/location" element={<Location />} />
 
