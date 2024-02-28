@@ -82,6 +82,7 @@ import Unsubscribe from "./pages/Unsubscribe";
 import SendEmailsPage from "./pages/SendEmailsPage";
 import Location from "./Trial/Location";
 import ScrollToTop from "./components/ScroolTop";
+import { getAllCountries } from "./redux/actions/country.js";
 import LocationForm from "./components/location/dropDown.js";
 import CountryForm from "./components/location/countryform.js";
 import StateForm from "./components/location/StateForm.js";
@@ -100,6 +101,7 @@ const App = () => {
     Store.dispatch(loadSeller());
     Store.dispatch(getAllProducts());
     Store.dispatch(getAllEvents());
+    Store.dispatch(getAllCountries());
     getStripeApikey();
   }, []);
 
