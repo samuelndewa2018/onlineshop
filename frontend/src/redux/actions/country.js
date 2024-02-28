@@ -1,6 +1,6 @@
 import axios from "axios";
+import { server } from "../../server";
 
-const server = "http://localhost:5000";
 // create event
 export const createcountry = (name) => async (dispatch) => {
   try {
@@ -8,10 +8,7 @@ export const createcountry = (name) => async (dispatch) => {
       type: "eventCreateRequest",
     });
 
-    const { d } = await axios.post(
-      `${server}/api/countries/create-country`,
-      name
-    );
+    const { d } = await axios.post(`${server}/countries/create-country`, name);
     dispatch({
       type: "countryCreateSuccess",
       payload: d.country,
