@@ -9,6 +9,7 @@ import { wishlistReducer } from "./reducers/wishlist";
 import { orderReducer } from "./reducers/order";
 import { statementsReducer } from "./reducers/statements";
 import categoryReducer from "./reducers/categories";
+import { countryReducer } from "./reducers/country";
 
 const Store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ const Store = configureStore({
     order: orderReducer,
     statements: statementsReducer,
     categories: categoryReducer,
+    countries: countryReducer,
   },
 });
 

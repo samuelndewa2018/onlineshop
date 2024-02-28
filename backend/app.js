@@ -72,6 +72,9 @@ const subscribe = require("./controller/subscribers");
 const location = require("./controller/location");
 const flashSale = require("./controller/flashSale");
 const auction = require("./controller/auction");
+const cities = require("./controller/city");
+const states = require("./controller/state");
+const countries = require("./controller/country");
 
 app.use("/api/v2/user", user);
 app.use("/api/v2/conversation", conversation);
@@ -91,6 +94,9 @@ app.use("/api/v2/carousel", carousel);
 app.use("/api/v2/subscribe", subscribe);
 app.use("/api/v2/location", location);
 app.use("/api/v2/flashsale", flashSale);
+app.use("/api/v2/countries", countries);
+app.use("/api/v2/cities", cities);
+app.use("/api/v2/states", states);
 
 // it's for ErrorHandling
 app.use(ErrorHandler);

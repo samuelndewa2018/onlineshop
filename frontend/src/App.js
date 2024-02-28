@@ -270,6 +270,10 @@ const App = () => {
         {/* <Route path="/trial" element={<TrialPage />} /> */}
 
         <Route path="/location" element={<Location />} />
+        <Route path="/drop" element={<LocationForm />} />
+        <Route path="/countries/create" element={<CountryForm />} />
+        <Route path="/state/create" element={<StateForm />} />
+        <Route path="/city/create" element={<CityForm />} />
 
         {/* /// */}
 
