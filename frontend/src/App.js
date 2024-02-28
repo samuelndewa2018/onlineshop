@@ -141,6 +141,12 @@ const App = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/coming-soon" element={<ComingSoon />} />
         <Route path="/faq" element={<FAQPage />} />
+        {/* practice */}
+        <Route path="/location" element={<Location />} />
+        <Route path="/drop" element={<LocationForm />} />
+        <Route path="/countries/create" element={<CountryForm />} />
+        <Route path="/state/create" element={<StateForm />} />
+        <Route path="/city/create" element={<CityForm />} />
         <Route
           path="/unsubscribe"
           element={
@@ -272,12 +278,6 @@ const App = () => {
         />
         {/* to be removed in production */}
         {/* <Route path="/trial" element={<TrialPage />} /> */}
-
-        <Route path="/location" element={<Location />} />
-        <Route path="/drop" element={<LocationForm />} />
-        <Route path="/countries/create" element={<CountryForm />} />
-        <Route path="/state/create" element={<StateForm />} />
-        <Route path="/city/create" element={<CityForm />} />
 
         {/* /// */}
 
