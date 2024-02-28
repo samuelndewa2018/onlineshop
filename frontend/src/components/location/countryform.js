@@ -1,6 +1,7 @@
 // src/components/CountryForm.js
 import React, { useState } from "react";
 import axios from "axios";
+import { server } from "../../server";
 
 const CountryForm = () => {
   const [name, setName] = useState("");
@@ -10,7 +11,7 @@ const CountryForm = () => {
 
     console.log("this is the ", name);
     try {
-      await axios.post("http://localhost:5000/api/countries/create-country", {
+      await axios.post(`${server}/countries/create-country`, {
         name,
       });
       setName("");

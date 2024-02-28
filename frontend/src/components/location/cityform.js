@@ -1,6 +1,7 @@
 // src/components/CityForm.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { server } from "../../server";
 
 const CityForm = () => {
   const [name, setName] = useState("");
@@ -11,7 +12,7 @@ const CityForm = () => {
     // Fetch states from the backend when the component mounts
     const fetchStates = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/states");
+        const response = await axios.get(`${server}/states`);
         setStates(response.data);
       } catch (error) {
         console.error("Error fetching states:", error);
@@ -25,7 +26,7 @@ const CityForm = () => {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/api/cities/create-city", {
+      await axios.post(`${server}/cities/create-city`, {
         name,
         stateId,
       });

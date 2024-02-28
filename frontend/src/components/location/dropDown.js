@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllCountries } from "./redux/actions/country";
+import { server } from "../../server";
 
 const LocationForm = () => {
   const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const LocationForm = () => {
       if (selectedCountry) {
         try {
           const response = await axios.get(
-            `http://localhost:5000/api/states/${selectedCountry}`
+            `${server}/states/${selectedCountry}`
           );
           setStates(response.data);
         } catch (error) {
@@ -40,9 +41,7 @@ const LocationForm = () => {
     const fetchCities = async () => {
       if (selectedState) {
         try {
-          const response = await axios.get(
-            `http://localhost:5000/api/cities/${selectedState}`
-          );
+          const response = await axios.get(`${server}/cities/${selectedState}`);
           setCities(response.data);
         } catch (error) {
           console.error("Error fetching cities:", error);
@@ -58,7 +57,7 @@ const LocationForm = () => {
       if (selectedState) {
         try {
           const response = await axios.get(
-            `http://localhost:5000/api/states/price/${selectedState}`
+            `${server}/states/price/${selectedState}`
           );
           setPrice(response.data.price);
         } catch (error) {
