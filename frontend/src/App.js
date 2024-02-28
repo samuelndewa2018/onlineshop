@@ -82,6 +82,10 @@ import Unsubscribe from "./pages/Unsubscribe";
 import SendEmailsPage from "./pages/SendEmailsPage";
 import Location from "./Trial/Location";
 import ScrollToTop from "./components/ScroolTop";
+import LocationForm from "./components/location/dropDown.js";
+import CountryForm from "./components/location/countryform.js";
+import StateForm from "./components/location/StateForm.js";
+import CityForm from "./components/location/cityform.js";
 
 const App = () => {
   const [stripeApikey, setStripeApiKey] = useState("");
