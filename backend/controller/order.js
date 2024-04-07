@@ -1124,11 +1124,13 @@ router.put(
           if (order.referee && order.referee.trim() !== "") {
             const user = await User.findById(order.referee);
 
-            const cash = (order.totalPrice - order.discount - order.s) * 0.02;
+            const cash =
+              (order.totalPrice - order.discount - order.shippingPrice) * 0.02;
 
             if (user) {
               user.availableBalance += cash;
               console.log(user.availableBalance);
+              console.log("Cash is", cash);
               await user.save();
             } else {
               console.error(`User with ID ${order.referee} not found.`);

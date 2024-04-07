@@ -1,4 +1,3 @@
-// src/components/StateForm.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -12,7 +11,7 @@ const StateForm = () => {
     // Fetch countries from the backend when the component mounts
     const fetchCountries = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/countries");
+        const response = await axios.get(`${server}/countries`);
         setCountries(response.data);
       } catch (error) {
         console.error("Error fetching countries:", error);
@@ -26,7 +25,7 @@ const StateForm = () => {
     e.preventDefault();
 
     try {
-      await axios.post("http://localhost:5000/api/states/create-state", {
+      await axios.post(`${server}/states/create-state`, {
         name,
         price, // Include price in the request body
         countryId,
