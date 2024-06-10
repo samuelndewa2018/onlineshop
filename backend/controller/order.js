@@ -1312,7 +1312,11 @@ router.get(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { orderNo } = req.query;
-      const orders = await Order.find({ orderNo });
+
+      // Find the order using a case-insensitive query
+      const orders = await Order.find({
+        orderNo: new RegExp(`^${orderNo}$`, "i"),
+      });
 
       if (orders.length === 0) {
         return next(new ErrorHandler("Order not found", 404));
