@@ -948,6 +948,13 @@ router.get(
       });
 
       // Total section
+      const subtotal = order.cart.reduce(
+        (acc, item) => acc + item.discountPrice * item.qty,
+        0
+      );
+      const discount = order.discount || 0;
+      const shippingPrice = order.shippingPrice || 0;
+      const totalPrice = subtotal - discount + shippingPrice;
       doc
         .moveTo(50, y + 20)
         .lineTo(550, y + 20)
@@ -957,47 +964,31 @@ router.get(
         .font("Helvetica-Bold")
         .fontSize(10)
         .text("SUBTOTAL", 400, y + 30)
-        .text(
-          order.cart
-            .reduce((acc, item) => acc + item.discountPrice * item.qty, 0)
-            .toFixed(2),
-          500,
-          y + 30
-        );
+        .text(subtotal.toFixed(2), 500, y + 30);
 
       doc
         .font("Helvetica-Bold")
         .fontSize(10)
         .text("DISCOUNT", 400, y + 45)
-        .text(order.discount.toFixed(2), 500, y + 45);
+        .text(discount.toFixed(2), 500, y + 45);
 
       doc
         .font("Helvetica-Bold")
         .fontSize(10)
         .text("SUBTOTAL", 400, y + 60)
-        .text(
-          (
-            order.cart.reduce(
-              (acc, item) => acc + item.discountPrice * item.qty,
-              0
-            ) - (order.discount || 0)
-          ).toFixed(2),
-          500,
-          y + 60
-        );
+        .text(subtotal.toFixed(2), 500, y + 60);
 
       doc
         .font("Helvetica-Bold")
         .fontSize(10)
         .text("SHIPPING", 400, y + 75)
-        .text(`${order.shippingPrice}`, 500, y + 75);
+        .text(shippingPrice.toFixed(2), 500, y + 75);
 
       doc
         .font("Helvetica-Bold")
         .fontSize(12)
         .text("TOTAL ", 400, y + 90)
-        .text(`${order.totalPrice.toFixed(2)}`, 500, y + 90);
-
+        .text(`${order.totalPrice}`, 500, y + 90);
       doc
         .moveTo(50, y + 125)
         .lineTo(550, y + 125)
