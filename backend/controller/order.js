@@ -965,7 +965,7 @@ router.get(
         .font("Helvetica-Bold")
         .fontSize(10)
         .text("DISCOUNT", 400, y + 45)
-        .text((order.discount || 0).toFixed(2), 500, y + 45);
+        .text(order.discount.toFixed(2), 500, y + 45);
 
       doc
         .font("Helvetica-Bold")
@@ -986,7 +986,7 @@ router.get(
         .font("Helvetica-Bold")
         .fontSize(10)
         .text("SHIPPING", 400, y + 75)
-        .text(`${order.shippingPrice.toFixed(2)}`, 500, y + 75);
+        .text(`${order.shippingPrice}`, 500, y + 75);
 
       doc
         .font("Helvetica-Bold")
