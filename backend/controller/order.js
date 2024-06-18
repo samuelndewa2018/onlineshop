@@ -953,7 +953,7 @@ router.get(
         0
       );
       const discount = order.discount || 0;
-      const shippingPrice = order.totalPrice - discount;
+      const shippingPrice = order.shippingPrice || 0;
       const totalPrice = subtotal - discount + shippingPrice;
       doc
         .moveTo(50, y + 20)
