@@ -847,232 +847,181 @@ router.get(
 //generate receipt
 router.get(
   "/generate-receipt/:orderId",
-
   catchAsyncErrors(async (req, res, next) => {
     try {
       const orderId = req.params.orderId;
       const order = await Order.findById(orderId);
-      const orderNo = order.orderNo;
-
-      const doc = new pdf({
-        size: "Letter",
-      });
-
-      const footerText =
-        "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke";
-      const remainingSpaceForFooter = 10;
-      const pageHeight = doc.page.height;
-      console.log(pageHeight);
-      const fontSize = 10;
-
-      // Adjust the yCoordinate to leave space for the footer
-      const yCoordinate = pageHeight - fontSize - remainingSpaceForFooter;
-
-      const pdfFileName = `receipt_${orderNo}.pdf`;
-
-      // Replace with your image URL
-
-      try {
-        const logoPath = path.join(__dirname, "logo.png");
-        doc.image(logoPath, 50, 20, { width: 150, height: 100 });
-      } catch (error) {
-        console.error("Error loading image:", error);
+      if (!order) {
+        return next(new ErrorHandler("Order not found", 404));
       }
 
-      doc.moveTo(50, 395);
-      doc.dash(3);
-      doc.lineTo(520, 395);
+      const orderNo = order.orderNo;
+      const doc = new pdf({ size: "Letter" });
 
-      doc.lineWidth(0.5);
+      const pdfFileName = `receipt_${encodeURIComponent(orderNo)}.pdf`;
+      const pdfFilePath = path.join(__dirname, pdfFileName);
 
-      doc.stroke("#184ca0");
-
-      doc.rect(0, 140, 350, 40).fill("#f3782f");
-      doc.rect(520, 140, 620, 40).fill("#f3782f");
+      const logoPath = path.join(__dirname, "logo.png");
+      doc.image(logoPath, 15, 10, { width: 200, height: 125 });
 
       doc
         .font("Helvetica-Bold")
-        .fontSize(18)
-        .fillColor("#1e4598")
-        .text("Payment Receipt", 360, 153);
+        .fontSize(16)
+        .text("NinetyOne", 220, 30)
+        .fontSize(10)
+        .text("Nairobi City, Kenya", 220, 55)
+        .text("www.ninetyone.co.ke", 220, 70)
+        .text("contact@ninetyone.co.ke", 220, 85)
+        .text("+254751667713", 220, 100);
 
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveDown(2);
+      doc.font("Helvetica-Bold").fontSize(15).text("RECEIPT", 430, 30);
+
+      doc
+        .font("Helvetica")
+        .fontSize(10)
+        .text("Receipt No:", 430, 55)
+        .text(`${order.orderNo}`, 430, 70)
+        .text("Payment Status:", 430, 85)
+        .font("Helvetica-Bold")
+        .fontSize(12)
+        .text(
+          `${order.paymentInfo.status === "succeeded" ? "Paid" : "Not Paid"}`,
+          430,
+          100
+        );
+
+      const userEmail = order.user.email || order.user.guestEmail || "";
+      const userName = order.user.name || order.user.guestName || "";
+
       doc
         .font("Helvetica-Bold")
         .fontSize(12)
-        .fillColor("#1e4598")
-        .text(`Date: ${order.createdAt.toDateString()}`, { align: "right" });
-      doc.moveUp(1);
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Customer Details:", 50, doc.y);
+        .text("BILL TO", 50, 140)
+        .font("Helvetica")
+        .fontSize(10)
+        .text(`${userEmail}`, 50, 155)
+        .text(`${userName}`, 50, 170)
+        .text(
+          `${order.shippingAddress.zipCode}, ${order.shippingAddress.country}, ${order.shippingAddress.city}`,
+          50,
+          185
+        )
+        .text(`${order.user.phoneNumber}`, 50, 200);
 
-      doc.fill("black").font("Helvetica").fontSize(11);
-      doc.moveDown();
-      doc.font("Helvetica").fontSize(10);
       doc
         .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Name:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.fontSize(10).text(`${order.user.name}`, 150, doc.y);
-      doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Email:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.fontSize(10).text(`${order.user.email}`, 150, doc.y);
-      doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Phone No:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.fontSize(10).text(`${order.user.phoneNumber}`, 150, doc.y);
+        .fontSize(12)
+        .text("SHIP TO", 300, 140)
+        .font("Helvetica")
+        .fontSize(10)
+        .text(`${order.shippingAddress.address1}`, 300, 155)
+        .text(`${order.shippingAddress.zipCode}`, 300, 170)
+        .text(`${order.shippingAddress.city}`, 300, 185)
+        .text(`${order.user.phoneNumber}`, 300, 200);
 
-      doc.moveDown();
-      doc.font("Helvetica").fontSize(10);
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Payment Method:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.fontSize(10).text(`${order.paymentInfo.type}`, 150, doc.y);
-      doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Payment Status:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.text(
-        `${order.paymentInfo.status === "succeeded" ? "Paid" : "Not Paid"}`,
-        150,
-        doc.y
-      );
-      doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Order No:", 50, doc.y);
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.text(`${order.orderNo}`, 150, doc.y);
-      doc.moveDown();
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Shipping Address: ", 50, doc.y);
+      // Table header
+      doc.moveTo(50, 250).lineTo(550, 250).stroke();
 
-      doc.fill("black").font("Helvetica").fontSize(10);
-      doc.moveUp(1);
-      doc.text(
-        `${order.shippingAddress.address1}, ${order.shippingAddress.zipCode}, ${order.shippingAddress.country}`,
-        150,
-        doc.y
-      );
-
-      doc.moveDown(2);
-
-      // Create the table header row on the same line
       doc
         .font("Helvetica-Bold")
-        .fontSize(11)
-        .fillColor("#1e4598")
-        .text("Items", 50, doc.y)
-        .moveUp(1) // Adjust the vertical position
-        .text("Qty", 280, doc.y)
-        .moveUp(1) // Adjust the vertical position
-        .text("Price", 380, doc.y)
-        .moveUp(1) // Adjust the vertical position
-        .text("Total", 480, doc.y);
+        .fontSize(10)
+        .text("DESCRIPTION", 50, 255)
+        .text("QTY", 300, 255)
+        .text("UNIT PRICE", 400, 255)
+        .text("TOTAL", 500, 255);
 
+      // Table body
+      let y = 270;
       order.cart.forEach((item) => {
-        const truncatedName =
-          item.name.length > 25
-            ? item.name.substring(0, 40) +
-              "...\n" +
-              item.name.substring(40, 80) +
-              "...\n" +
-              item.name.substring(80, 120)
-            : item.name;
         doc
           .font("Helvetica")
-          .fillColor("black")
           .fontSize(10)
-          .text(truncatedName, 50, doc.y + 30)
-          .moveUp(1)
-          .text(item.qty, 280, doc.y)
-          .font("Helvetica")
-          .fillColor("black")
-          .fontSize(10)
-          .moveUp(1)
-          .text(item.discountPrice, 380, doc.y)
-          .font("Helvetica")
-          .fillColor("black")
-          .fontSize(10)
-          .moveUp(1)
-          .text(item.discountPrice * item.qty, 480, doc.y)
-          .font("Helvetica")
-          .fillColor("black")
-          .fontSize(10);
+          .text(item.name, 50, y)
+          .text(item.qty, 300, y)
+          .text(item.discountPrice.toFixed(2), 400, y)
+          .text((item.discountPrice * item.qty).toFixed(2), 500, y);
+        y += 15;
       });
 
-      // Calculate and display the total
-      const total = order.cart.reduce(
-        (acc, item) => acc + item.discountPrice * item.qty,
-        0
-      );
+      // Total section
+      doc
+        .moveTo(50, y + 20)
+        .lineTo(550, y + 20)
+        .stroke();
 
-      doc.moveDown(3);
       doc
         .font("Helvetica-Bold")
-        .fillColor("#1e4598")
-        .fontSize(12)
-        .text("Total", 380, doc.y);
-
-      doc.moveUp(1);
-      doc.fontSize(12).text("Ksh " + total, { align: "right" });
-
-      doc.moveDown(1);
-      doc
-        .font("Helvetica-Bold")
-        .fillColor("#1e4598")
-        .fontSize(12)
-        .text("Discount:", 380);
-
-      doc.moveUp(1);
-      doc
         .fontSize(10)
-        .text(`Ksh ${order.discount === null ? 0 : order.discount}`, {
-          align: "right",
-        });
+        .text("SUBTOTAL", 400, y + 30)
+        .text(
+          order.cart
+            .reduce((acc, item) => acc + item.discountPrice * item.qty, 0)
+            .toFixed(2),
+          500,
+          y + 30
+        );
 
-      doc.moveDown(10);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(10)
+        .text("DISCOUNT", 400, y + 45)
+        .text((order.discount || 0).toFixed(2), 500, y + 45);
 
-      doc.fillColor("#1e4598").fontSize(9).text(footerText, 50, doc.y);
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(10)
+        .text("SUBTOTAL", 400, y + 60)
+        .text(
+          (
+            order.cart.reduce(
+              (acc, item) => acc + item.discountPrice * item.qty,
+              0
+            ) - (order.discount || 0)
+          ).toFixed(2),
+          500,
+          y + 60
+        );
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(10)
+        .text("SHIPPING", 400, y + 75)
+        .text(`${order.shippingPrice.toFixed(2)}`, 500, y + 75);
+
+      doc
+        .font("Helvetica-Bold")
+        .fontSize(12)
+        .text("TOTAL ", 400, y + 90)
+        .text(`${order.totalPrice.toFixed(2)}`, 500, y + 90);
+
+      doc
+        .moveTo(50, y + 125)
+        .lineTo(550, y + 125)
+        .stroke();
+
+      doc
+        .font("Helvetica")
+        .fontSize(10)
+        .text("Thank you for your business!", 50, y + 160);
+
+      doc
+        .font("Helvetica")
+        .fontSize(8)
+        .text("Notes:", 50, y + 180)
+        .text(`Payment method used, ${order.paymentInfo.type} `, 50, y + 190)
+        .text(
+          "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke",
+          50,
+          y + 200
+        );
 
       // Set the response headers for the PDF
-
-      res.setHeader("Content-Type", "application/pdf");
+      res.set({
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="${pdfFileName}"`,
+      });
 
       doc.pipe(res);
-
       doc.end();
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
