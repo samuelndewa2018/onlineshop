@@ -932,11 +932,14 @@ router.get(
 
       // Table body
       let y = 270;
+      const truncatedName =
+        item.name.length > 25 ? item.name.slice(0, 25) + "..." : item.name;
+
       order.cart.forEach((item) => {
         doc
           .font("Helvetica")
           .fontSize(10)
-          .text(item.name, 50, y)
+          .text(truncatedName, 50, y)
           .text(item.qty, 300, y)
           .text(item.discountPrice.toFixed(2), 400, y)
           .text((item.discountPrice * item.qty).toFixed(2), 500, y);
