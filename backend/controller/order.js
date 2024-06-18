@@ -932,10 +932,11 @@ router.get(
 
       // Table body
       let y = 270;
-      const truncatedName =
-        item.name.length > 25 ? item.name.slice(0, 25) + "..." : item.name;
 
       order.cart.forEach((item) => {
+        const truncatedName =
+          item.name.length > 25 ? item.name.slice(0, 25) + "..." : item.name;
+
         doc
           .font("Helvetica")
           .fontSize(10)
