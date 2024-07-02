@@ -15,6 +15,7 @@ const fs = require("fs");
 const path = require("path"); //
 const cloudinary = require("cloudinary");
 const axios = require("axios");
+const invoice = require("../model/invoice");
 // const moment = require("moment")
 // import moment from "moment";
 
@@ -1132,9 +1133,16 @@ router.put(
           }
 
           order.paymentInfo.status = "succeeded";
+          const orderNo = order.orderNo;
+          const invoices = await Invoice.find({ receiptNo: orderNo });
+
+          for (const invoice of invoices) {
+            invoice.paid.status = true;
+            invoice.paid.paidAt = new Date();
+            await invoice.save();
+          }
         }
       }
-
       await order.save({ validateBeforeSave: false });
       res.status(200).json({
         success: true,
