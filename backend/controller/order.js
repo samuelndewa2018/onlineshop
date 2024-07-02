@@ -8,6 +8,7 @@ const Aorder = require("../model/aorder");
 const Shop = require("../model/shop");
 const User = require("../model/user");
 const Product = require("../model/product");
+const Invoice = require("../model/invoice");
 const sendMail = require("../utils/sendMail");
 const pdf = require("pdfkit");
 const fs = require("fs");
@@ -184,6 +185,26 @@ router.post(
       });
 
       console.log(order);
+
+      // Create invoices for each item in the cart
+      const invoicePromises = order.cart.map(async (item) => {
+        const paidStatus = order.paymentInfo.status === "succeeded";
+        const paidAtDate = paidStatus ? new Date() : null;
+
+        const invoice = await Invoice.create({
+          receiptNo: order.orderNo,
+          amount: item.discountPrice * item.selectedQuantity,
+          purpose: `Purchase of ${item.name}`,
+          paid: {
+            status: paidStatus,
+            paidAt: paidAtDate,
+          },
+          shopId: item.shopId,
+        });
+        return invoice;
+      });
+
+      await Promise.all(invoicePromises);
 
       res.status(201).json({
         success: true,
