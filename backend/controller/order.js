@@ -15,7 +15,7 @@ const fs = require("fs");
 const path = require("path"); //
 const cloudinary = require("cloudinary");
 const axios = require("axios");
-const invoice = require("../model/invoice");
+const Expense = require("../model/expense");
 // const moment = require("moment")
 // import moment from "moment";
 
@@ -204,6 +204,41 @@ router.post(
         });
         return invoice;
       });
+
+      if (order.shippingPrice > 0) {
+        const paidStatus = order.paymentInfo.status === "succeeded";
+        const paidAtDate = paidStatus ? new Date() : null;
+
+        const shippingInvoice = await Invoice.create({
+          receiptNo: order.orderNo,
+          amount: order.shippingPrice,
+          purpose: "Shipping Fee",
+          paid: {
+            status: paidStatus,
+            paidAt: paidAtDate,
+          },
+          shopId: Logistics,
+        });
+        invoicePromises.push(shippingInvoice);
+      }
+      // Create expense if discount is not null
+      if (order.discount !== null) {
+        const paidStatus = order.paymentInfo.status === "succeeded";
+        const paidAtDate = paidStatus ? new Date() : null;
+
+        const discountExpense = await Expense.create({
+          receiptNo: order.orderNo,
+          amount: order.discount,
+          purpose: "Discount",
+          paid: {
+            status: paidStatus,
+            paidAt: paidAtDate,
+          },
+          shopId: order.discShop,
+        });
+
+        invoicePromises.push(discountExpense);
+      }
 
       await Promise.all(invoicePromises);
 
@@ -1135,11 +1170,17 @@ router.put(
           order.paymentInfo.status = "succeeded";
           const orderNo = order.orderNo;
           const invoices = await Invoice.find({ receiptNo: orderNo });
+          const expenses = await Expense.find({ receiptNo: orderNo });
 
           for (const invoice of invoices) {
             invoice.paid.status = true;
             invoice.paid.paidAt = new Date();
             await invoice.save();
+          }
+          for (const expense of expenses) {
+            expense.paid.status = true;
+            expense.paid.paidAt = new Date();
+            await expense.save();
           }
         }
       }
