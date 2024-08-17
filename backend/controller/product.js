@@ -8,6 +8,7 @@ const Shop = require("../model/shop");
 const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
 const Statements = require("../model/Statements");
+const crypto = require("crypto");
 
 // create product
 router.post(
@@ -81,6 +82,18 @@ router.post(
 
         // Validate sizes data (optional step)
         // You may want to perform additional validation on the sizes data here
+        // Function to generate a 6-character alphanumeric itemNo
+        const generateItemNo = () => {
+          return crypto.randomBytes(3).toString("hex").toUpperCase();
+        };
+
+        // Generate a unique itemNo
+        let itemNo;
+        let itemNoExists = true;
+        while (itemNoExists) {
+          itemNo = generateItemNo();
+          itemNoExists = await Product.exists({ itemNo });
+        }
 
         // Create the product object
         const productData = {
@@ -104,6 +117,7 @@ router.post(
           shop,
           sold_out: 0,
           sizes: sizesWithDPrice,
+          itemNo,
         };
 
         const product = await Product.create(productData);

@@ -48,7 +48,7 @@ router.post(
     }
 
     initializePayment();
-  })
+  }) 
 );
 
 router.post("/callback", async (req, res) => {

@@ -107,6 +107,11 @@ const productSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
+  itemNo: {
+    type: String,
+    required: true,
+    unique: true,
+  },
 });
 
 module.exports = mongoose.model("Product", productSchema);
