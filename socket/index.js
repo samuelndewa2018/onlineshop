@@ -9,7 +9,7 @@ const io = socketIO(server);
 require("dotenv").config({
   path: "./.env",
 });
-//for upload purpose////hjh//
+//for upload purpose////hjh//trial
 app.use(
   cors({
     origin: [
