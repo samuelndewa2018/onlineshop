@@ -10,7 +10,24 @@ require("dotenv").config({
   path: "./.env",
 });
 //for upload purpose////hjh//
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://www.ninetyone.co.ke",
+      "https://ninetyone.co.ke",
+      "www.ninetyone.co.ke",
+      "https://whatsapp-delta-nine.vercel.app",
+    ], //this one
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Access-Control-Allow-Credentials",
+      "Access-Control-Allow-Origin",
+    ],
+    credentials: true, // email data change
+  })
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {
