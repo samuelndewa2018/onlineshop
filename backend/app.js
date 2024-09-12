@@ -20,6 +20,7 @@ app.use(
       "https://onlineshop-delta.vercel.app",
       "https://onlineshop-delta-three.vercel.app",
       "https://onlineshop-2xjp.vercel.app",
+      "https://whatsapp-delta-nine.vercel.app",
     ], //this one
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
