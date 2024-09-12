@@ -9,17 +9,8 @@ app.use(
   cors({
     origin: [
       "https://www.ninetyone.co.ke",
-      "https://www.ninetyone.co.ke/",
       "https://ninetyone.co.ke",
-      "https://ninetyone.co.ke/",
-      "ninetyone.co.ke",
-      "ninetyone.co.ke/",
       "www.ninetyone.co.ke",
-      "www.ninetyone.co.ke/",
-      "http://localhost:3000",
-      "https://onlineshop-delta.vercel.app",
-      "https://onlineshop-delta-three.vercel.app",
-      "https://onlineshop-2xjp.vercel.app",
       "https://whatsapp-delta-nine.vercel.app",
     ], //this one
     methods: ["GET", "POST", "PUT", "DELETE"],
