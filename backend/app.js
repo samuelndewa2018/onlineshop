@@ -12,6 +12,10 @@ app.use(
       "https://ninetyone.co.ke",
       "www.ninetyone.co.ke",
       "ninetyone.co.ke",
+      "https://www.ninetyone.co.ke/",
+      "https://ninetyone.co.ke/",
+      "www.ninetyone.co.ke/",
+      "ninetyone.co.ke",
       "https://whatsapp-delta-nine.vercel.app",
     ], //this one
     methods: ["GET", "POST", "PUT", "DELETE"],
