@@ -17,6 +17,7 @@ app.use(
       "www.ninetyone.co.ke/",
       "ninetyone.co.ke",
       "https://whatsapp-delta-nine.vercel.app",
+      "https://threed-edu.vercel.app",
     ], //this one
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
