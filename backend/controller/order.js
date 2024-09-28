@@ -16,6 +16,7 @@ const path = require("path"); //
 const cloudinary = require("cloudinary");
 const axios = require("axios");
 const Expense = require("../model/expense");
+const OrderCount = require("../model/numberOrders");
 // const moment = require("moment");
 // import moment from "moment";
 
@@ -241,6 +242,12 @@ router.post(
       }
 
       await Promise.all(invoicePromises);
+      // Increment the order count
+      await OrderCount.updateOne(
+        {},
+        { $inc: { totalOrders: 1 } },
+        { upsert: true }
+      );
 
       res.status(201).json({
         success: true,
