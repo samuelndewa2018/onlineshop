@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const TinyTransaction = require("../model/tinytransactions");
+const IntaSend = require("intasend-node");
+const intasend = new IntaSend(
+  process.env.PUBLISHABLE_KEY,
+  process.env.SECRET_KEY
+);
 
 let successfulCallbackData = null;
 
@@ -48,7 +53,7 @@ router.post(
     }
 
     initializePayment();
-  }) 
+  })
 );
 
 router.post("/callback", async (req, res) => {
@@ -176,6 +181,69 @@ router.get("/checkRefcode/:mpesa_ref/:requestID", async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// intasend stk push
+router.post("/mpesa-stk-push", async (req, res) => {
+  try {
+    const { amount, phone } = req.body;
+
+    // Convert phone number to international format
+    function convertPhoneNumber(phoneNumber) {
+      if (phoneNumber.startsWith("0") && phoneNumber.length === 10) {
+        return "254" + phoneNumber.slice(1);
+      } else {
+        return phoneNumber;
+      }
+    }
+
+    const convertedPhoneNumber = convertPhoneNumber(phone);
+
+    const response = await intasend.collection().mpesaStkPush({
+      first_name: "Joe",
+      last_name: "Doe",
+      email: "joe@doe.com",
+      api_ref: "test",
+      host: "https://yourwebsite.com", // Replace with your actual host URL
+      amount,
+      phone_number: convertedPhoneNumber,
+    });
+
+    // Respond with the STK push result
+    res.status(200).json({
+      success: true,
+      message: "Stk Pushed Successfully",
+      request_id,
+    });
+  } catch (err) {
+    console.error(`STK Push error:`, err);
+    res.status(500).json({
+      message: "STK Push failed",
+      error: err.message,
+    });
+  }
+});
+
+// Define the route to check payment status
+router.get("/payment-status/:transaction_id", async (req, res) => {
+  try {
+    const { transaction_id } = req.params;
+
+    const response = await intasend.collection().status(transaction_id);
+    const request_id = response.invoice.invoice_id;
+
+    // Respond with the payment status
+    res.status(200).json({
+      message: "Payment status fetched successfully",
+      data: response,
+    });
+  } catch (err) {
+    console.error(`Payment status error:`, err);
+    res.status(500).json({
+      message: "Failed to fetch payment status",
+      error: err.message,
+    });
   }
 });
 
