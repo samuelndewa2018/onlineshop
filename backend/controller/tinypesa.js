@@ -209,6 +209,8 @@ router.post("/mpesa-stk-push", async (req, res) => {
       amount,
       phone_number: convertedPhoneNumber,
     });
+    const request_id = response.invoice.invoice_id;
+    console.log(request_id);
 
     // Respond with the STK push result
     res.status(200).json({
