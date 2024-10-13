@@ -10,6 +10,17 @@ const intasend = new IntaSend(
 
 let successfulCallbackData = null;
 
+// Your API username and password (could be stored in environment variables)
+const apiUsername = process.env.apiUsername;
+const apiPassword = process.env.apiPassword;
+
+// Function to generate the Basic Auth token
+const generateBasicAuthToken = () => {
+  const credentials = `${apiUsername}:${apiPassword}`;
+  const encodedCredentials = Buffer.from(credentials).toString("base64");
+  return `Basic ${encodedCredentials}`;
+};
+
 router.post(
   "/tinystk",
   catchAsyncErrors(async (req, res, next) => {
@@ -199,16 +210,32 @@ router.post("/mpesa-stk-push", async (req, res) => {
     }
 
     const convertedPhoneNumber = convertPhoneNumber(phone);
+    const callback_url = "https://onlineshop-delta-three.vercel.app/api/v2/tiny/callback"
 
-    const response = await intasend.collection().mpesaStkPush({
-      first_name: "Joe",
-      last_name: "Doe",
-      email: "joe@doe.com",
-      api_ref: "test",
-      host: "https://yourwebsite.com", // Replace with your actual host URL
+    const postData = {
       amount,
       phone_number: convertedPhoneNumber,
-    });
+      channel_id: 897, // Replace with the actual channel ID if needed
+      provider: "m-pesa", // Payment provider
+      external_reference: external_reference || "INV-001", // External reference (invoice number)
+      callback_url: callback_url || "https://example.com/callback.php", // Callback URL
+    };
+  
+    // Generate the Basic Auth token
+    const basicAuthToken = generateBasicAuthToken();
+  
+    try {
+      // Make the POST request using axios
+      const response = await axios.post(
+        "https://backend.payhero.co.ke/api/v2/payments",
+        postData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: basicAuthToken,
+          },
+        }
+      );
     const request_id = response.invoice.invoice_id;
     console.log(request_id);
 
