@@ -69,48 +69,31 @@ router.post(
 );
 
 router.post("/callback", async (req, res) => {
-  const stkCallbackResponse = req.body;
+  const stkCallbackResponse = req.body.response;
 
-  console.log("this is", stkCallbackResponse);
+  console.log("Received response:", stkCallbackResponse);
 
-  const code = stkCallbackResponse.Body.stkCallback.ResultCode;
-  successfulCallbackData = stkCallbackResponse.Body.stkCallback;
-
-  const resultId = stkCallbackResponse.Body.stkCallback.TinyPesaID;
+  const code = stkCallbackResponse.ResultCode; // Access ResultCode directly
+  const resultId = stkCallbackResponse.CheckoutRequestID; // Assuming TinyPesaID was meant to be CheckoutRequestID
+  const amount = stkCallbackResponse.Amount; // Access Amount directly
+  const ref = stkCallbackResponse.MpesaReceiptNumber; // Access MpesaReceiptNumber directly
+  const phone = stkCallbackResponse.Phone; // Access Phone directly
 
   try {
-    if (
-      stkCallbackResponse.Body.stkCallback.CallbackMetadata &&
-      stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item
-    ) {
-      const metadataItems =
-        stkCallbackResponse.Body.stkCallback.CallbackMetadata.Item;
+    if (code === 0) {
+      const transaction = new TinyTransaction();
+      transaction.customer_number = phone;
+      transaction.mpesa_ref = ref;
+      transaction.amount = amount;
+      transaction.resultId = resultId;
 
-      if (metadataItems.length > 0) {
-        const amount = metadataItems[0].Value;
-        const ref = metadataItems[1].Value;
-        let phone;
-        if (metadataItems.length === 5) {
-          phone = metadataItems[4].Value;
-        } else if (metadataItems.length === 4) {
-          phone = metadataItems[3].Value;
-        }
-
-        if (code === 0) {
-          const transaction = new TinyTransaction();
-          transaction.customer_number = phone;
-          transaction.mpesa_ref = ref;
-          transaction.amount = amount;
-          transaction.resultId = resultId;
-
-          const savedTransaction = await transaction.save();
-          console.log({
-            message: "transaction saved successfully",
-            data: savedTransaction,
-          });
-        }
-      }
+      const savedTransaction = await transaction.save();
+      console.log({
+        message: "Transaction saved successfully",
+        data: savedTransaction,
+      });
     }
+
     return res.json({
       message: "Callback processed successfully",
     });
