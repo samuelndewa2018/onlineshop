@@ -240,11 +240,10 @@ router.post("/mpesa-stk-push", async (req, res) => {
       );
 
       // Log the full response to understand its structure
-      console.log("STK Push Response:", response.data);
+      console.log("STK Push Response:", response.data.CheckoutRequestID);
 
       // Assuming `CheckoutRequestID` is in the response data
-      const request_id =
-        response.data.CheckoutRequestID || response.data.request_id;
+      const request_id = response.data.CheckoutRequestID;
 
       // Respond with the STK push result
       res.status(200).json({
