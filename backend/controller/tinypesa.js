@@ -218,9 +218,9 @@ router.post("/mpesa-stk-push", async (req, res) => {
       amount,
       phone_number: convertedPhoneNumber,
       channel_id: 897, // Replace with the actual channel ID if needed
-      provider: "m-pesa", // Payment provider
-      external_reference, // External reference (invoice number)
-      callback_url, // Callback URL
+      provider: "m-pesa",
+      external_reference: "inv",
+      callback_url: callback_url, // Callback URL
     };
 
     // Generate the Basic Auth token
