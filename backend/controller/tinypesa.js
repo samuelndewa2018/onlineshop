@@ -72,10 +72,11 @@ router.post("/callback", async (req, res) => {
   const stkCallbackResponse = req.body.response;
 
   console.log("Received response:", stkCallbackResponse);
+  successfulCallbackData = stkCallbackResponse;
 
   const code = stkCallbackResponse.ResultCode; // Access ResultCode directly
   const resultId = stkCallbackResponse.CheckoutRequestID; // Assuming TinyPesaID was meant to be CheckoutRequestID
-  const amount = stkCallbackResponse.Amount; // Access Amount directly
+  const amount = stkCallbackResponse.ExternalReference; // Access Amount directly
   const ref = stkCallbackResponse.MpesaReceiptNumber; // Access MpesaReceiptNumber directly
   const phone = stkCallbackResponse.Phone; // Access Phone directly
 
@@ -198,11 +199,11 @@ router.post("/mpesa-stk-push", async (req, res) => {
       "https://onlineshop-delta-three.vercel.app/api/v2/tiny/callback";
 
     const postData = {
-      amount: 2,
+      amount,
       phone_number: convertedPhoneNumber,
       channel_id: 897, // Replace with the actual channel ID if needed
       provider: "m-pesa",
-      external_reference: "inv",
+      external_reference,
       callback_url: callback_url, // Callback URL
     };
 
