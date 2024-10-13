@@ -198,7 +198,7 @@ router.post("/mpesa-stk-push", async (req, res) => {
       "https://onlineshop-delta-three.vercel.app/api/v2/tiny/callback";
 
     const postData = {
-      amount: 1,
+      amount: 2,
       phone_number: convertedPhoneNumber,
       channel_id: 897, // Replace with the actual channel ID if needed
       provider: "m-pesa",
