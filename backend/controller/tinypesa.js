@@ -1,4 +1,5 @@
 const express = require("express");
+const axios = require("axios");
 const router = express.Router();
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const TinyTransaction = require("../model/tinytransactions");
@@ -198,7 +199,7 @@ router.get("/checkRefcode/:mpesa_ref/:requestID", async (req, res) => {
 // intasend stk push
 router.post("/mpesa-stk-push", async (req, res) => {
   try {
-    const { amount, phone } = req.body;
+    const { amount, phone, external_reference = "INV-001" } = req.body;
 
     // Convert phone number to international format
     function convertPhoneNumber(phoneNumber) {
@@ -210,20 +211,21 @@ router.post("/mpesa-stk-push", async (req, res) => {
     }
 
     const convertedPhoneNumber = convertPhoneNumber(phone);
-    const callback_url = "https://onlineshop-delta-three.vercel.app/api/v2/tiny/callback"
+    const callback_url =
+      "https://onlineshop-delta-three.vercel.app/api/v2/tiny/callback";
 
     const postData = {
       amount,
       phone_number: convertedPhoneNumber,
       channel_id: 897, // Replace with the actual channel ID if needed
       provider: "m-pesa", // Payment provider
-      external_reference: external_reference || "INV-001", // External reference (invoice number)
-      callback_url: callback_url || "https://example.com/callback.php", // Callback URL
+      external_reference, // External reference (invoice number)
+      callback_url, // Callback URL
     };
-  
+
     // Generate the Basic Auth token
     const basicAuthToken = generateBasicAuthToken();
-  
+
     try {
       // Make the POST request using axios
       const response = await axios.post(
@@ -236,19 +238,34 @@ router.post("/mpesa-stk-push", async (req, res) => {
           },
         }
       );
-    const request_id = response.invoice.invoice_id;
-    console.log(request_id);
 
-    // Respond with the STK push result
-    res.status(200).json({
-      success: true,
-      message: "Stk Pushed Successfully",
-      request_id,
-    });
+      // Log the full response to understand its structure
+      console.log("STK Push Response:", response.data);
+
+      // Assuming `CheckoutRequestID` is in the response data
+      const request_id =
+        response.data.CheckoutRequestID || response.data.request_id;
+
+      // Respond with the STK push result
+      res.status(200).json({
+        success: true,
+        message: "STK Pushed Successfully",
+        request_id,
+      });
+    } catch (err) {
+      console.error(
+        "STK Push error:",
+        err.response ? err.response.data : err.message
+      );
+      res.status(500).json({
+        message: "STK Push failed",
+        error: err.response ? err.response.data : err.message,
+      });
+    }
   } catch (err) {
-    console.error(`STK Push error:`, err);
+    console.error("Error:", err.message);
     res.status(500).json({
-      message: "STK Push failed",
+      message: "Request failed",
       error: err.message,
     });
   }
