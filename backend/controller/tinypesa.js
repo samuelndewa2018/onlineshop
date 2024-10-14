@@ -279,3 +279,17 @@ router.get("/payment-status/:transaction_id", async (req, res) => {
 });
 
 module.exports = router;
+
+//  Received response: {
+//   Amount: 1,
+//   CheckoutRequestID: 'ws_CO_14102024092514495741895028',
+//   ExternalReference: '1',
+//   MerchantRequestID: '0a83-4731-ac2e-58dccc54ee5984319654',
+//   MpesaReceiptNumber: 'SJE91DHU17',
+//   PaymentWalletBalance: 0,
+//   Phone: '+254741895028',
+//   ResultCode: 0,
+//   ResultDesc: 'The service request is processed successfully.',
+//   ServiceWalletBalance: 0,
+//   Status: 'Success'
+// }
