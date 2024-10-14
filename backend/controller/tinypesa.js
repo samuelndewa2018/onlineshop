@@ -49,7 +49,6 @@ router.post(
         const response = await fetch(url, options);
         const data = await response.json();
 
-        console.log("TinyPesa response:", data);
         const request_id = data.request_id;
         res.json({
           success: true,
@@ -71,7 +70,6 @@ router.post(
 router.post("/callback", async (req, res) => {
   const stkCallbackResponse = req.body.response;
 
-  console.log("Received response:", stkCallbackResponse);
   successfulCallbackData = stkCallbackResponse;
 
   const code = stkCallbackResponse.ResultCode; // Access ResultCode directly
@@ -120,8 +118,6 @@ router.get("/get-transactions", async (req, res) => {
   try {
     const transactions = await TinyTransaction.find({}).sort({ createdAt: -1 });
 
-    console.log("tra", transactions);
-
     const maskedTransactions = transactions.map((transaction) => {
       const firstFour = transaction.customer_number.substring(0, 4);
       const lastTwo = transaction.customer_number.slice(-2);
@@ -142,7 +138,6 @@ router.get("/get-transactions", async (req, res) => {
 
 router.get("/checkResultId/:resultId", async (req, res) => {
   const { resultId } = req.params;
-  console.log("This is the resultId ", resultId);
 
   try {
     const existingTransaction = await TinyTransaction.findOne({ resultId });
@@ -224,11 +219,12 @@ router.post("/mpesa-stk-push", async (req, res) => {
       );
 
       // Log the full response to understand its structure
-      console.log("STK Push Response:", response.data.reference);
 
       // Assuming `CheckoutRequestID` is in the response data
       const request_id = response.data.CheckoutRequestID;
       const track_id = response.data.reference;
+      const apiUsername = process.env.apiUsername;
+      const apiPassword = process.env.apiPassword;
 
       // Respond with the STK push result
       res.status(200).json({
@@ -236,6 +232,8 @@ router.post("/mpesa-stk-push", async (req, res) => {
         message: "STK Pushed Successfully",
         request_id,
         track_id,
+        apiUsername,
+        apiPassword,
       });
     } catch (err) {
       console.error(
@@ -274,6 +272,47 @@ router.get("/payment-status/:transaction_id", async (req, res) => {
     res.status(500).json({
       message: "Failed to fetch payment status",
       error: err.message,
+    });
+  }
+});
+
+router.get("/statas", async (req, res) => {
+  try {
+    const basicAuthToken = generateBasicAuthToken();
+    const reference =
+      req.query.reference || "1fc82266-55bc-47c5-b0c8-0907f04cc758"; // Use reference from query param or default value
+
+    // Make the GET request using axios
+    const response = await axios.get(
+      `https://backend.payhero.co.ke/api/v2/transaction-status?reference=${reference}`,
+      {
+        headers: {
+          Authorization: basicAuthToken,
+        },
+      }
+    );
+
+    // Respond with the data from the server
+    res.status(200).json({
+      message: "Transaction status retrieved successfully",
+      data: response.data,
+    });
+    //   "data": {
+    //     "transaction_date": "2024-10-14T09:18:38.221252Z",
+    //     "provider": "m-pesa",
+    //     "success": true,
+    //     "merchant": "Craig_corne",
+    //     "payment_reference": "",
+    //     "third_party_reference": "",
+    //     "status": "QUEUED",
+    //     "reference": "1fc82266-55bc-47c5-b0c8-0907f04cc758",
+    //     "CheckoutRequestID": ""
+    // }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to retrieve transaction status",
+      error: error.message,
     });
   }
 });
