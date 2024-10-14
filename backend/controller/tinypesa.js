@@ -238,8 +238,6 @@ router.post("/mpesa-stk-push", async (req, res) => {
         message: "STK Pushed Successfully",
         request_id,
         track_id,
-        apiUsername,
-        apiPassword,
       });
     } catch (err) {
       console.error(
