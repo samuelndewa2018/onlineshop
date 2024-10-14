@@ -218,13 +218,19 @@ router.post("/mpesa-stk-push", async (req, res) => {
         }
       );
 
-      // Log the full response to understand its structure
-
       // Assuming `CheckoutRequestID` is in the response data
       const request_id = response.data.CheckoutRequestID;
       const track_id = response.data.reference;
       const apiUsername = process.env.apiUsername;
       const apiPassword = process.env.apiPassword;
+
+      // Log the details before sending the response
+      console.log({
+        request_id,
+        track_id,
+        apiUsername,
+        apiPassword,
+      });
 
       // Respond with the STK push result
       res.status(200).json({
@@ -235,7 +241,6 @@ router.post("/mpesa-stk-push", async (req, res) => {
         apiUsername,
         apiPassword,
       });
-      console.log(res.data);
     } catch (err) {
       console.error(
         "STK Push error:",
