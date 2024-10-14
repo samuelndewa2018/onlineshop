@@ -128,9 +128,10 @@ router.post(
           if (!shop) {
             console.error(`Shop with ID ${shopId} not found.`);
           } else {
-            if (referee && referee.trim() !== "") {
+            if (!referee || referee.trim() === "") {
+              console.error(`Referee is invalid: ${referee}`);
+            } else {
               const user = await User.findById(referee);
-
               if (user) {
                 if (
                   (paymentInfo.type === "Mpesa" ||
@@ -155,9 +156,6 @@ router.post(
                 console.error(`User with ID ${referee} not found.`);
                 // Handle the case where the user is not found
               }
-            } else {
-              console.error("Referee is an empty string.");
-              // Handle the case where referee is an empty string
             }
 
             await shop.save();
@@ -195,7 +193,9 @@ router.post(
 
         const invoice = await Invoice.create({
           receiptNo: order.orderNo,
-          amount: item.discountPrice * item.selectedQuantity,
+          amount:
+            item.discountPrice * item.selectedQuantity ||
+            item.discountPrice * item.qty,
           purpose: `Purchase of ${item.name}`,
           paid: {
             status: paidStatus,
