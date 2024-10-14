@@ -183,7 +183,7 @@ router.get("/checkRefcode/:mpesa_ref/:requestID", async (req, res) => {
 // intasend stk push
 router.post("/mpesa-stk-push", async (req, res) => {
   try {
-    const { amount, phone, external_reference } = req.body;
+    const { amount, phone } = req.body;
 
     // Convert phone number to international format
     function convertPhoneNumber(phoneNumber) {
@@ -203,7 +203,7 @@ router.post("/mpesa-stk-push", async (req, res) => {
       phone_number: convertedPhoneNumber,
       channel_id: 897, // Replace with the actual channel ID if needed
       provider: "m-pesa",
-      external_reference,
+      external_reference: amount,
       callback_url: callback_url, // Callback URL
     };
 
