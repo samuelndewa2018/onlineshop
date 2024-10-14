@@ -128,34 +128,23 @@ router.post(
           if (!shop) {
             console.error(`Shop with ID ${shopId} not found.`);
           } else {
-            if (!referee || referee.trim() === "") {
-              console.error(`Referee is invalid: ${referee}`);
-            } else {
-              const user = await User.findById(referee);
-              if (user) {
+            if (referee && referee.trim() !== "") {
+              const refereeUser = await User.findById(referee);
+              if (refereeUser) {
                 if (
                   (paymentInfo.type === "Mpesa" ||
                     paymentInfo.type === "Paypal") &&
                   paymentInfo.status === "succeeded"
                 ) {
-                  user.availableBalance += Math.round(subTotals * 0.02);
-                  console.log(user.availableBalance);
-                  await user.save();
-                  const amountToAdd = Math.round(subTotals * 0.9);
-
-                  shop.availableBalance += Math.round(subTotals * 0.9);
-
-                  for (const o of items) {
-                    if (o.sizes.length > 0) {
-                      await updateOrderWithSizes(o._id, o.qty, o.size);
-                    }
-                    await updateOrder(o._id, o.qty);
-                  }
+                  refereeUser.availableBalance += Math.round(subTotals * 0.02);
+                  console.log(refereeUser.availableBalance);
+                  await refereeUser.save();
                 }
               } else {
                 console.error(`User with ID ${referee} not found.`);
-                // Handle the case where the user is not found
               }
+            } else {
+              console.log("No valid referee provided.");
             }
 
             await shop.save();
