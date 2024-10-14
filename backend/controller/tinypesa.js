@@ -235,6 +235,7 @@ router.post("/mpesa-stk-push", async (req, res) => {
         apiUsername,
         apiPassword,
       });
+      console.log("data", res.data);
     } catch (err) {
       console.error(
         "STK Push error:",
