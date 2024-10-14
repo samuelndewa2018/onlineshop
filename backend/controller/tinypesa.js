@@ -183,7 +183,7 @@ router.get("/checkRefcode/:mpesa_ref/:requestID", async (req, res) => {
 // intasend stk push
 router.post("/mpesa-stk-push", async (req, res) => {
   try {
-    const { amount, phone, external_reference = "INV-001" } = req.body;
+    const { amount, phone, external_reference } = req.body;
 
     // Convert phone number to international format
     function convertPhoneNumber(phoneNumber) {
@@ -227,7 +227,7 @@ router.post("/mpesa-stk-push", async (req, res) => {
       console.log("STK Push Response:", response.data.CheckoutRequestID);
 
       // Assuming `CheckoutRequestID` is in the response data
-      const request_id = response.data.CheckoutRequestID;
+      const request_id = response.data.reference;
 
       // Respond with the STK push result
       res.status(200).json({
