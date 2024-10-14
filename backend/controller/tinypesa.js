@@ -227,13 +227,15 @@ router.post("/mpesa-stk-push", async (req, res) => {
       console.log("STK Push Response:", response.data.reference);
 
       // Assuming `CheckoutRequestID` is in the response data
-      const request_id = response.data.reference;
+      const request_id = response.data.CheckoutRequestID;
+      const track_id = response.data.reference;
 
       // Respond with the STK push result
       res.status(200).json({
         success: true,
         message: "STK Pushed Successfully",
         request_id,
+        track_id,
       });
     } catch (err) {
       console.error(
