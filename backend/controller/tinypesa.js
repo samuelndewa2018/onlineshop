@@ -282,8 +282,7 @@ router.get("/statas", async (req, res) => {
   try {
     const basicAuthToken = generateBasicAuthToken();
 
-    const reference =
-      req.query.trackID || "b607806a-7262-4e8f-8802-5351ce33a61a";
+    const reference = "b607806a-7262-4e8f-8802-5351ce33a61a";
     console.log("this is the ref", reference);
 
     // Make the GET request using axios
