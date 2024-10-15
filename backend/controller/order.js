@@ -138,7 +138,7 @@ router.post(
                   paymentInfo.status === "succeeded"
                 ) {
                   refereeUser.availableBalance += Math.round(subTotals * 0.02);
-                  console.log(refereeUser.availableBalance);
+
                   await refereeUser.save();
                 }
               } else {
@@ -159,6 +159,22 @@ router.post(
       });
 
       await Promise.all(promises);
+
+      if (
+        (paymentInfo.type === "Mpesa" || paymentInfo.type === "Paypal") &&
+        paymentInfo.status === "succeeded"
+      ) {
+        const stockUpdatePromises = cart.map(async (item) => {
+          if (item.size && item.size !== "") {
+            await updateOrderWithSizes(item._id, item.qty, item.size);
+          } else {
+            await updateOrder(item._id, item.qty);
+          }
+        });
+
+        // Await all stock updates to complete
+        await Promise.all(stockUpdatePromises);
+      }
 
       const order = await Order.create({
         cart,
@@ -249,243 +265,6 @@ router.post(
     }
   })
 );
-// router.post(
-//   "/create-order",
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const {
-//         cart,
-//         shippingAddress,
-//         user,
-//         orderNo,
-//         totalPrice,
-//         paymentInfo,
-//         shippingPrice,
-//         discount,
-//         discShop,
-//         referee,
-//         balance,
-//       } = req.body;
-
-//       // Check if order with the same order number already exists
-//       const existingOrder = await Order.findOne({ orderNo });
-//       if (existingOrder) {
-//         return res.status(400).json({
-//           success: false,
-//           message: "Order with the same order number already exists.",
-//         });
-//       }
-
-//       // Validate user
-//       if (user._id) {
-//         const userr = await User.findById(user._id);
-//         if (!userr) {
-//           return res
-//             .status(404)
-//             .json({ success: false, message: "User not found." });
-//         }
-//         userr.availableBalance -= balance;
-//         await userr.save();
-//       } else {
-//         return res
-//           .status(400)
-//           .json({ success: false, message: "User ID is not defined." });
-//       }
-
-//       // Check if each item in the cart is available
-//       for (const item of cart) {
-//         const product = await Product.findById(item._id);
-
-//         // Check if product exists
-//         if (!product) {
-//           return res.status(404).json({
-//             success: false,
-//             message: `Product with ID ${item._id} not found.`,
-//           });
-//         }
-
-//         // Check size availability
-//         const selectedSize = product.sizes.find((s) => s.name === item.size);
-//         if (!selectedSize || selectedSize.stock < item.selectedQuantity) {
-//           return res.status(400).json({
-//             success: false,
-//             message: `Selected size ${item.size} for ${product.name} is not available in the required quantity.`,
-//           });
-//         }
-
-//         // Check overall product stock
-//         if (product.stock < item.selectedQuantity) {
-//           return res.status(400).json({
-//             success: false,
-//             message: `Insufficient stock for ${product.name}. Only ${product.stock} left in stock.`,
-//           });
-//         }
-//       }
-
-//       // Now proceed with order creation as the product stock has been validated
-//       async function updateOrder(id, qty) {
-//         const product = await Product.findById(id);
-//         product.stock -= qty;
-//         product.sold_out += qty;
-//         await product.save({ validateBeforeSave: false });
-//       }
-
-//       async function updateOrderWithSizes(id, qty, size) {
-//         const product = await Product.findById(id);
-//         const sizeObj = product.sizes.find((s) => s.name === size);
-//         if (sizeObj) {
-//           sizeObj.stock -= qty;
-//         }
-//         await product.save({ validateBeforeSave: false });
-//       }
-
-//       if (discShop && discount) {
-//         const shopWithDiscount = await Shop.findById(discShop);
-//         if (!shopWithDiscount) {
-//           console.error(`Shop with ID ${discShop} not found.`);
-//         } else {
-//           shopWithDiscount.availableBalance -= discount;
-//           await shopWithDiscount.save();
-//         }
-//       }
-
-//       const allItems = cart.reduce((acc, item) => {
-//         const shopId = item.shopId;
-//         if (!acc[shopId]) {
-//           acc[shopId] = [];
-//         }
-//         acc[shopId].push(item);
-//         return acc;
-//       }, {});
-
-//       const promises = Object.keys(allItems).map(async (shopId) => {
-//         const items = allItems[shopId];
-//         const subTotals = items.reduce(
-//           (acc, item) => acc + item.qty * item.discountPrice,
-//           0
-//         );
-
-//         try {
-//           const shop = await Shop.findById(shopId);
-//           if (!shop) {
-//             console.error(`Shop with ID ${shopId} not found.`);
-//           } else {
-//             if (referee && referee.trim() !== "") {
-//               const user = await User.findById(referee);
-//               if (user) {
-//                 if (
-//                   (paymentInfo.type === "Mpesa" ||
-//                     paymentInfo.type === "Paypal") &&
-//                   paymentInfo.status === "succeeded"
-//                 ) {
-//                   user.availableBalance += Math.round(subTotals * 0.02);
-//                   await user.save();
-//                   shop.availableBalance += Math.round(subTotals * 0.9);
-
-//                   for (const o of items) {
-//                     if (o.sizes.length > 0) {
-//                       await updateOrderWithSizes(o._id, o.qty, o.size);
-//                     }
-//                     await updateOrder(o._id, o.qty);
-//                   }
-//                 }
-//               }
-//             }
-//             await shop.save();
-//           }
-//         } catch (error) {
-//           console.error(
-//             `Error updating availableBalance for shop ${shopId}: ${error}`
-//           );
-//         }
-//       });
-
-//       await Promise.all(promises);
-
-//       const order = await Order.create({
-//         cart,
-//         shippingAddress,
-//         user,
-//         orderNo,
-//         totalPrice,
-//         paymentInfo,
-//         shippingPrice,
-//         discount,
-//         discShop,
-//         referee,
-//         balance,
-//       });
-
-//       console.log(order);
-
-//       // Create invoices for each item in the cart
-//       const invoicePromises = order.cart.map(async (item) => {
-//         const paidStatus = order.paymentInfo.status === "succeeded";
-//         const paidAtDate = paidStatus ? new Date() : null;
-
-//         const invoice = await Invoice.create({
-//           receiptNo: order.orderNo,
-//           amount: item.discountPrice * item.selectedQuantity,
-//           purpose: `Purchase of ${item.name}`,
-//           paid: {
-//             status: paidStatus,
-//             paidAt: paidAtDate,
-//           },
-//           shopId: item.shopId,
-//         });
-//         return invoice;
-//       });
-
-//       if (order.shippingPrice > 0) {
-//         const paidStatus = order.paymentInfo.status === "succeeded";
-//         const paidAtDate = paidStatus ? new Date() : null;
-
-//         const shippingInvoice = await Invoice.create({
-//           receiptNo: order.orderNo,
-//           amount: order.shippingPrice,
-//           purpose: "Shipping Fee",
-//           paid: {
-//             status: paidStatus,
-//             paidAt: paidAtDate,
-//           },
-//           shopId: Logistics,
-//         });
-//         invoicePromises.push(shippingInvoice);
-//       }
-
-//       // Create expense if discount is not null
-//       if (order.discount !== null) {
-//         const paidStatus = order.paymentInfo.status === "succeeded";
-//         const paidAtDate = paidStatus ? new Date() : null;
-
-//         const discountExpense = await Expense.create({
-//           receiptNo: order.orderNo,
-//           amount: order.discount,
-//           purpose: "Discount",
-//           paid: {
-//             status: paidStatus,
-//             paidAt: paidAtDate,
-//           },
-//           shopId: order.discShop,
-//         });
-
-//         invoicePromises.push(discountExpense);
-//       }
-
-//       await Promise.all(invoicePromises);
-
-//       res.status(201).json({
-//         success: true,
-//         order,
-//       });
-//     } catch (error) {
-//       console.log(error);
-//       return next(new ErrorHandler(error.message, 500));
-//     }
-//   })
-// );
-
-// send emails
 router.post(
   "/sendmyorder",
   catchAsyncErrors(async (req, res, next) => {
