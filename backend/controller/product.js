@@ -10,15 +10,6 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const Statements = require("../model/Statements");
 const crypto = require("crypto");
 
-// Helper function to get the latest exchange rate
-async function getExchangeRate() {
-  const statements = await Statements.find().sort({ createdAt: -1 }).limit(1);
-  if (statements.length === 0) {
-    throw new Error("No statements found in the database!");
-  }
-  return statements[0].exchangeRate;
-}
-
 // create product
 router.post(
   "/create-product",
@@ -304,94 +295,6 @@ router.get(
 );
 
 //update product
-// router.put(
-//   "/update-product/:productId",
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       const productId = req.params.productId;
-//       const product = await Product.findById(productId);
-
-//       if (!product) {
-//         return next(new ErrorHandler("Product not found!", 404));
-//       } else {
-//         let images = [];
-
-//         if (typeof req.body.images === "string") {
-//           images.push(req.body.images);
-//         } else {
-//           images = req.body.images;
-//         }
-
-//         const updatedData = req.body;
-//         console.log(updatedData);
-
-//         if (images && images.length > 0) {
-//           const imagesLinks = [];
-
-//           for (let i = 0; i < images.length; i++) {
-//             const result = await cloudinary.v2.uploader.upload(images[i], {
-//               folder: "products",
-//             });
-
-//             imagesLinks.push({
-//               public_id: result.public_id,
-//               url: result.secure_url,
-//             });
-//           }
-
-//           const currentImages = product.images;
-//           updatedData.images = currentImages.concat(imagesLinks);
-//         } else {
-//           updatedData.images = product.images;
-//         }
-
-//         if (updatedData.discountPrice) {
-//           const statements = await Statements.find()
-//             .sort({ createdAt: -1 })
-//             .limit(1);
-//           if (statements.length === 0) {
-//             return next(
-//               new ErrorHandler("No statements found in the database!", 400)
-//             );
-//           }
-//           const exchangeRate = statements[0].exchangeRate;
-//           updatedData.dPrice = parseFloat(
-//             (updatedData.discountPrice / exchangeRate).toFixed(2)
-//           );
-
-//           if (updatedData.sizes && Array.isArray(updatedData.sizes)) {
-//             let totalStock = 0;
-
-//             updatedData.sizes.forEach((size) => {
-//               if (size.price) {
-//                 size.dPrice = parseFloat(size.price / exchangeRate).toFixed(2);
-//               }
-
-//               // Add the stock of the current size to the total stock
-//               totalStock += parseInt(size.stock) || 0;
-//               updatedData.stock = totalStock;
-//             });
-//             console.log();
-
-//             // totalStock now holds the sum of all sizes' stock
-//             console.log("Total stock:", totalStock);
-//           }
-//         }
-
-//         // Update the product with the new data
-//         product.set(updatedData);
-//         await product.save();
-
-//         res.status(200).json({
-//           success: true,
-//           product,
-//         });
-//       }
-//     } catch (error) {
-//       return next(new ErrorHandler(error, 400));
-//     }
-//   })
-// );
 
 router.put(
   "/update-product/:productId",
@@ -400,57 +303,92 @@ router.put(
       const productId = req.params.productId;
       const product = await Product.findById(productId);
 
+      // Function to generate a unique item number
+      const generateItemNo = () => {
+        return crypto.randomBytes(3).toString("hex").toUpperCase();
+      };
+
       if (!product) {
         return next(new ErrorHandler("Product not found!", 404));
-      }
+      } else {
+        let images = [];
 
-      // Log incoming request body for debugging
-      console.log("Incoming Request Body:", req.body);
-
-      // Individually update fields
-      product.name = req.body.name || product.name;
-      product.description = req.body.description || product.description;
-      product.category = req.body.category || product.category;
-      product.tags = req.body.tags || product.tags;
-      product.originalPrice = req.body.originalPrice || product.originalPrice;
-      product.discountPrice = req.body.discountPrice || product.discountPrice;
-      product.stock = req.body.stock || product.stock;
-      product.condition = req.body.condition || product.condition;
-
-      // Update sizes and calculate discount price if applicable
-      if (req.body.sizes && Array.isArray(req.body.sizes)) {
-        const exchangeRate = await getExchangeRate(); // Get the exchange rate first
-        let totalStock = 0;
-
-        // Use for...of loop to handle async operations
-        product.sizes = []; // Initialize sizes array
-
-        for (const size of req.body.sizes) {
-          const dPrice = size.price
-            ? parseFloat(size.price / exchangeRate).toFixed(2)
-            : undefined;
-
-          product.sizes.push({
-            ...size,
-            dPrice, // Add dPrice to each size
-          });
-
-          totalStock += parseInt(size.stock) || 0; // Update total stock
+        if (typeof req.body.images === "string") {
+          images.push(req.body.images);
+        } else {
+          images = req.body.images;
         }
 
-        product.stock = totalStock; // Update total stock
+        const updatedData = req.body;
+        console.log(updatedData);
+
+        // Check if itemNo exists, if not generate a new one
+        if (!updatedData.itemNo) {
+          updatedData.itemNo = generateItemNo();
+        }
+
+        if (images && images.length > 0) {
+          const imagesLinks = [];
+
+          for (let i = 0; i < images.length; i++) {
+            const result = await cloudinary.v2.uploader.upload(images[i], {
+              folder: "products",
+            });
+
+            imagesLinks.push({
+              public_id: result.public_id,
+              url: result.secure_url,
+            });
+          }
+
+          const currentImages = product.images;
+          updatedData.images = currentImages.concat(imagesLinks);
+        } else {
+          updatedData.images = product.images;
+        }
+
+        if (updatedData.discountPrice) {
+          const statements = await Statements.find()
+            .sort({ createdAt: -1 })
+            .limit(1);
+          if (statements.length === 0) {
+            return next(
+              new ErrorHandler("No statements found in the database!", 400)
+            );
+          }
+          const exchangeRate = statements[0].exchangeRate;
+          updatedData.dPrice = parseFloat(
+            (updatedData.discountPrice / exchangeRate).toFixed(2)
+          );
+
+          if (updatedData.sizes && Array.isArray(updatedData.sizes)) {
+            let totalStock = 0;
+
+            updatedData.sizes.forEach((size) => {
+              if (size.price) {
+                size.dPrice = parseFloat(size.price / exchangeRate).toFixed(2);
+              }
+
+              // Add the stock of the current size to the total stock
+              totalStock += parseInt(size.stock) || 0;
+            });
+
+            updatedData.stock = totalStock; // Assign total stock
+            console.log("Total stock:", totalStock);
+          }
+        }
+
+        // Update the product with the new data
+        product.set(updatedData);
+        await product.save();
+
+        res.status(200).json({
+          success: true,
+          product,
+        });
       }
-
-      // Save the updated product
-      await product.save();
-
-      res.status(200).json({
-        success: true,
-        product,
-      });
     } catch (error) {
-      console.error("Update Product Error:", error); // Log the error for debugging
-      return next(new ErrorHandler(error.message || "An error occurred!", 400));
+      return next(new ErrorHandler(error.message || "Server Error", 400));
     }
   })
 );
