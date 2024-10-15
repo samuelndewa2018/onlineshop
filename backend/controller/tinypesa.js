@@ -281,7 +281,8 @@ router.get("/payment-status/:transaction_id", async (req, res) => {
 router.get("/statas", async (req, res) => {
   try {
     const basicAuthToken = generateBasicAuthToken();
-    const reference = req.query.trackID; // Use reference from query param or default value
+    const reference = req.query.trackID;
+    console.log("this is the ref", reference);
 
     // Make the GET request using axios
     const response = await axios.get(
@@ -293,11 +294,11 @@ router.get("/statas", async (req, res) => {
       }
     );
 
-    // Respond with the data from the server
     res.status(200).json({
       message: "Transaction status retrieved successfully",
       data: response.data,
     });
+    console.log("this is the data", response.data);
   } catch (error) {
     console.error(error);
     res.status(500).json({
