@@ -286,7 +286,7 @@ router.get("/statas", async (req, res) => {
 
     // Make the GET request using axios
     const response = await axios.get(
-      `https://backend.payhero.co.ke/api/v2/transaction-status?reference=${reference}`,
+      `https://backend.payhero.co.ke/api/v2/transaction-status?reference=${req.query.params}`,
       {
         headers: {
           Authorization: basicAuthToken,
