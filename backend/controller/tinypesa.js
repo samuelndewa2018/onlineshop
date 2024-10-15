@@ -283,8 +283,7 @@ router.get("/payment-status/:transaction_id", async (req, res) => {
 router.get("/statas", async (req, res) => {
   try {
     const basicAuthToken = generateBasicAuthToken();
-    const reference =
-      req.query.reference || "1fc82266-55bc-47c5-b0c8-0907f04cc758"; // Use reference from query param or default value
+    const reference = req.query.referencem; // Use reference from query param or default value
 
     // Make the GET request using axios
     const response = await axios.get(
@@ -301,17 +300,6 @@ router.get("/statas", async (req, res) => {
       message: "Transaction status retrieved successfully",
       data: response.data,
     });
-    //   "data": {
-    //     "transaction_date": "2024-10-14T09:18:38.221252Z",
-    //     "provider": "m-pesa",
-    //     "success": true,
-    //     "merchant": "Craig_corne",
-    //     "payment_reference": "",
-    //     "third_party_reference": "",
-    //     "status": "QUEUED",
-    //     "reference": "1fc82266-55bc-47c5-b0c8-0907f04cc758",
-    //     "CheckoutRequestID": ""
-    // }
   } catch (error) {
     console.error(error);
     res.status(500).json({
