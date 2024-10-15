@@ -96,6 +96,7 @@ router.post(
         product.sizes.find((s) => s.name === size).stock -= qty;
         await product.save({ validateBeforeSave: false });
       }
+
       if (discShop && discount) {
         const shopWithDiscount = await Shop.findById(discShop);
 
