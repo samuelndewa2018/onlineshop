@@ -94,6 +94,8 @@ router.post(
       async function updateOrderWithSizes(id, qty, size) {
         const product = await Product.findById(id);
         product.sizes.find((s) => s.name === size).stock -= qty;
+        product.stock -= qty;
+        product.sold_out += qty;
         await product.save({ validateBeforeSave: false });
       }
 
