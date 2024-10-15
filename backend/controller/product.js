@@ -10,6 +10,7 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const Statements = require("../model/Statements");
 const crypto = require("crypto");
 
+// Helper function to get the latest exchange rate
 async function getExchangeRate() {
   const statements = await Statements.find().sort({ createdAt: -1 }).limit(1);
   if (statements.length === 0) {
@@ -371,7 +372,6 @@ router.get(
 //               updatedData.stock = totalStock;
 //             });
 //             console.log();
-            
 
 //             // totalStock now holds the sum of all sizes' stock
 //             console.log("Total stock:", totalStock);
@@ -405,7 +405,7 @@ router.put(
       }
 
       // Log incoming request body for debugging
-      console.log('Incoming Request Body:', req.body);
+      console.log("Incoming Request Body:", req.body);
 
       // Individually update fields
       product.name = req.body.name || product.name;
@@ -419,14 +419,25 @@ router.put(
 
       // Update sizes and calculate discount price if applicable
       if (req.body.sizes && Array.isArray(req.body.sizes)) {
+        const exchangeRate = await getExchangeRate(); // Get the exchange rate first
         let totalStock = 0;
-        product.sizes = req.body.sizes.map((size) => {
-          if (size.price) {
-            size.dPrice = parseFloat(size.price / (await getExchangeRate())).toFixed(2); // Assuming getExchangeRate() is defined
-          }
-          totalStock += parseInt(size.stock) || 0;
-          return size;
-        });
+
+        // Use for...of loop to handle async operations
+        product.sizes = []; // Initialize sizes array
+
+        for (const size of req.body.sizes) {
+          const dPrice = size.price
+            ? parseFloat(size.price / exchangeRate).toFixed(2)
+            : undefined;
+
+          product.sizes.push({
+            ...size,
+            dPrice, // Add dPrice to each size
+          });
+
+          totalStock += parseInt(size.stock) || 0; // Update total stock
+        }
+
         product.stock = totalStock; // Update total stock
       }
 
@@ -443,7 +454,6 @@ router.put(
     }
   })
 );
-
 
 // remove product image
 router.put(
