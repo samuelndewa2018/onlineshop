@@ -221,8 +221,6 @@ router.post("/mpesa-stk-push", async (req, res) => {
       // Assuming `CheckoutRequestID` is in the response data
       const request_id = response.data.CheckoutRequestID;
       const track_id = response.data.reference;
-      const apiUsername = process.env.apiUsername;
-      const apiPassword = process.env.apiPassword;
 
       // Log the details before sending the response
       console.log({
@@ -283,7 +281,7 @@ router.get("/payment-status/:transaction_id", async (req, res) => {
 router.get("/statas", async (req, res) => {
   try {
     const basicAuthToken = generateBasicAuthToken();
-    const reference = req.query.reference; // Use reference from query param or default value
+    const reference = req.query.trackID; // Use reference from query param or default value
 
     // Make the GET request using axios
     const response = await axios.get(
