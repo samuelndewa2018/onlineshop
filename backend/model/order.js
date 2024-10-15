@@ -7,6 +7,7 @@ const orderSchema = new mongoose.Schema({
   },
   referee: {
     type: String,
+    default: "6585d56c77187a0eec7dc6f6", // Set the default value to null
   },
   cart: {
     type: Array,
