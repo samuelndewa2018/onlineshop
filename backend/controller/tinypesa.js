@@ -278,11 +278,11 @@ router.get("/payment-status/:transaction_id", async (req, res) => {
   }
 });
 
-router.get("/statas", async (req, res) => {
+router.post("/statas", async (req, res) => {
   try {
     const basicAuthToken = generateBasicAuthToken();
 
-    const reference = "b607806a-7262-4e8f-8802-5351ce33a61a";
+    const reference = req.body.trackID;
     console.log("this is the ref", reference);
 
     // Make the GET request using axios
