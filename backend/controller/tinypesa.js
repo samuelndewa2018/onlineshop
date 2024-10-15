@@ -283,7 +283,7 @@ router.get("/payment-status/:transaction_id", async (req, res) => {
 router.get("/statas", async (req, res) => {
   try {
     const basicAuthToken = generateBasicAuthToken();
-    const reference = req.query.referencem; // Use reference from query param or default value
+    const reference = req.query.reference; // Use reference from query param or default value
 
     // Make the GET request using axios
     const response = await axios.get(
