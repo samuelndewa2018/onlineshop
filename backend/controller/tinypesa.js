@@ -196,7 +196,7 @@ router.post("/mpesa-stk-push", async (req, res) => {
     const postData = {
       amount,
       phone_number: convertedPhoneNumber,
-      channel_id: 897, // Replace with the actual channel ID if needed
+      channel_id: 899, // Replace with the actual channel ID if needed
       provider: "m-pesa",
       external_reference: String(amount),
       callback_url: callback_url, // Callback URL
