@@ -18,7 +18,7 @@ app.use(
       "ninetyone.co.ke",
       "https://whatsapp-delta-nine.vercel.app",
       "https://threed-edu.vercel.app",
-      // "http://localhost:3000",
+      "http://localhost:3000",
     ], //this one
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: [
