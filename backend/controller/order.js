@@ -43,12 +43,35 @@ router.post(
   "/api/check-stock",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { cartItems } = req.body;
-      console.log(cartItems);
+      const { cartItems } = req.body; // Assuming cartItems is an array of items
+      let outOfStockItems = [];
 
-      res.status(200).json({
-        success: true,
+      cartItems.forEach((item, index) => {
+        const selectedSize = item.size;
+        const quantity = item.qty;
+
+        const sizeInfo = item.sizes.find((s) => s.size === selectedSize); // Find the matching size
+
+        if (!sizeInfo || sizeInfo.stock < quantity) {
+          outOfStockItems.push({
+            index,
+            itemId: item._id,
+          });
+        }
       });
+
+      if (outOfStockItems.length === 0) {
+        res.status(200).json({
+          success: true,
+        });
+      } else {
+        // Some items are out of stock
+        res.status(200).json({
+          success: false,
+          outOfStockItems,
+          message: "Some items are out of stock or don't have enough stock",
+        });
+      }
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
@@ -218,9 +241,7 @@ router.post(
 
         const invoice = await Invoice.create({
           receiptNo: order.orderNo,
-          amount:
-            item.discountPrice * item.selectedQuantity ||
-            item.discountPrice * item.qty,
+          amount: item.discountPrice * item.qty,
           purpose: `Purchase of ${item.name}`,
           paid: {
             status: paidStatus,
