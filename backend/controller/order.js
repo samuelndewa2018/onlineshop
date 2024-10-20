@@ -45,7 +45,6 @@ router.post(
     try {
       const { cartItems } = req.body; // cartItems is an array of items from the cart
       let outOfStockItems = [];
-      console.log(cartItems);
 
       // Iterate through each item in the cart
       for (const [index, item] of cartItems.entries()) {
@@ -93,7 +92,6 @@ router.post(
 );
 
 // create new order
-
 router.post(
   "/create-order",
   catchAsyncErrors(async (req, res, next) => {
@@ -319,6 +317,8 @@ router.post(
     }
   })
 );
+
+// send my order
 router.post(
   "/sendmyorder",
   catchAsyncErrors(async (req, res, next) => {
