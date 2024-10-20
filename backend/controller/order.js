@@ -45,6 +45,7 @@ router.post(
     try {
       const { cartItems } = req.body; // cartItems is an array of items from the cart
       let outOfStockItems = [];
+      console.log(cartItems);
 
       // Iterate through each item in the cart
       for (const [index, item] of cartItems.entries()) {
