@@ -46,46 +46,6 @@ router.post(
       const { cartItems } = req.body; // cartItems is an array of items from the cart
       let outOfStockItems = [];
       console.log(cartItems);
-
-      // Iterate through each item in the cart
-      for (const [index, item] of cartItems.entries()) {
-        const selectedSize = item.size;
-        const quantity = item.qty;
-
-        // Fetch the product from the database by its ID
-        const product = await Product.findById(item._id);
-
-        if (!product) {
-          return res.status(404).json({
-            success: false,
-            message: `Product with ID ${item._id} not found.`,
-          });
-        }
-
-        // Find the matching size in the product's sizes array
-        const sizeInfo = product.sizes.find((s) => s.name === selectedSize);
-
-        if (!sizeInfo || sizeInfo.stock < quantity) {
-          outOfStockItems.push({
-            index,
-            itemId: item._id,
-          });
-        }
-      }
-
-      // If all items are in stock
-      if (outOfStockItems.length === 0) {
-        res.status(200).json({
-          success: true,
-        });
-      } else {
-        // Some items are out of stock
-        res.status(200).json({
-          success: false,
-          outOfStockItems, // Send back the out-of-stock items
-          message: "Some items are out of stock or don't have enough stock.",
-        });
-      }
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
