@@ -40,7 +40,7 @@ function sendSMS(phoneNumber, message) {
 
 // check the cart
 router.post(
-  "/api/check-stock",
+  "/check-stock",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { cartItems } = req.body; // cartItems is an array of items from the cart
