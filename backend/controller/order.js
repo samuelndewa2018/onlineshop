@@ -38,6 +38,23 @@ function sendSMS(phoneNumber, message) {
   });
 }
 
+// check the cart
+router.post(
+  "/api/check-stock",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { cartItems } = req.body;
+      console.log(cartItems);
+
+      res.status(200).json({
+        success: true,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 // create new order
 
 router.post(
