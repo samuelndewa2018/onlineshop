@@ -176,6 +176,34 @@ router.delete(
     }
   })
 );
+// delete all out of stock products
+router.delete(
+  "/delete-out-of-stock-products",
+
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      // Find all products with stock less than or equal to 0
+      const outOfStockProducts = await Product.find({ stock: { $lte: 0 } });
+
+      // Loop through each product and delete its images
+      for (const product of outOfStockProducts) {
+        for (const image of product.images) {
+          await cloudinary.v2.uploader.destroy(image.public_id);
+        }
+      }
+
+      // Delete all products with stock less than or equal to 0
+      const result = await Product.deleteMany({ stock: { $lte: 0 } });
+
+      res.status(200).json({
+        success: true,
+        message: `${result.deletedCount} out-of-stock products and associated images deleted successfully!`,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error, 400));
+    }
+  })
+);
 
 // get all products
 router.get(
