@@ -190,13 +190,19 @@ router.post("/mpesa-stk-push", async (req, res) => {
     }
 
     const convertedPhoneNumber = convertPhoneNumber(phone);
+    // Define the array of channel IDs
+    const channelIds = [897, 899, 900]; // Replace with your actual channel IDs
+
+    // Randomly select a channel ID from the array
+    const channel_id =
+      channelIds[Math.floor(Math.random() * channelIds.length)];
     const callback_url =
       "https://onlineshop-delta-three.vercel.app/api/v2/tiny/callback";
 
     const postData = {
       amount,
       phone_number: convertedPhoneNumber,
-      channel_id: 897, // Replace with the actual channel ID if needed
+      channel_id: channel_id, // Replace with the actual channel ID if needed
       provider: "m-pesa",
       external_reference: String(amount),
       callback_url: callback_url, // Callback URL
