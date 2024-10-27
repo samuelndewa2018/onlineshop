@@ -264,7 +264,7 @@ router.post(
         return invoice;
       });
 
-      if (order.shippingPrice > 0) {
+      if (order.shippingPrice && order.shippingPrice > 0) {
         const paidStatus = order.paymentInfo.status === "succeeded";
         const paidAtDate = paidStatus ? new Date() : null;
 
@@ -276,12 +276,12 @@ router.post(
             status: paidStatus,
             paidAt: paidAtDate,
           },
-          shopId: Logistics,
+          shopId: "logistics",
         });
         invoicePromises.push(shippingInvoice);
       }
       // Create expense if discount is not null
-      if (order.discount !== null) {
+      if (order.discount != null && order.discount > 0) {
         const paidStatus = order.paymentInfo.status === "succeeded";
         const paidAtDate = paidStatus ? new Date() : null;
 
