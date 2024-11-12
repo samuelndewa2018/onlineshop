@@ -11,6 +11,7 @@ const InvoiceSchema = new mongoose.Schema({
   },
   createdAt: { type: Date, default: Date.now },
   shopId: { type: String, required: true },
+  type: { type: String, default: "invoice" } 
 });
 
 module.exports = mongoose.model("Invoice", InvoiceSchema);

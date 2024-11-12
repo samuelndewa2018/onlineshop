@@ -11,6 +11,7 @@ const ExpenseSchema = new mongoose.Schema({
   },
   createdAt: { type: Date, default: Date.now },
   shopId: { type: String, required: true },
+  type: { type: String, default: "expense" },
 });
 
 module.exports = mongoose.model("Expense", ExpenseSchema);
