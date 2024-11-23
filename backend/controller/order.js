@@ -318,6 +318,17 @@ router.post(
   })
 );
 
+// Create a new expense
+router.post("/expense", async (req, res) => {
+  try {
+    const newExpense = new Expense(req.body);
+    const savedExpense = await newExpense.save();
+    res.status(201).json(savedExpense);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // send my order
 router.post(
   "/sendmyorder",
