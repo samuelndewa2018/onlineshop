@@ -17,6 +17,7 @@ const cloudinary = require("cloudinary");
 const axios = require("axios");
 const Expense = require("../model/expense");
 const OrderCount = require("../model/numberOrders");
+const aorder = require("../model/aorder");
 // const moment = require("moment");
 // import moment from "moment";
 
@@ -1167,6 +1168,19 @@ router.put(
 
       if (!order) {
         return next(new ErrorHandler("Order not found with this id", 400));
+      }
+      const relatedOrders = await Aorder.find({ orderNo: order.orderNo });
+      if (relatedOrders.length === 0) {
+        return next(new ErrorHandler("No related orders found", 400));
+      }
+
+      for (const relOrder of relatedOrders) {
+        relOrder.status = req.body.status;
+
+        if (req.body.status === "Delivered") {
+          relOrder.deliveredAt = Date.now();
+        }
+        await relOrder.save({ validateBeforeSave: false });
       }
 
       async function updateOrder(id, qty) {
