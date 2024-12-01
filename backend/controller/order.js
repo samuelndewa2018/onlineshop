@@ -1402,11 +1402,18 @@ router.get(
   "/specific-order",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { orderNo } = req.query;
+      let { orderNo } = req.query;
 
-      // Find the order using a case-insensitive query
+      if (!orderNo) {
+        return next(new ErrorHandler("Order number is required", 400));
+      }
+
+      // Remove special characters like "#" from the orderNo
+      const sanitizedOrderNo = orderNo.replace(/[^a-zA-Z0-9]/g, "");
+
+      // Find the order using a regex to allow case-insensitive matching
       const orders = await Order.find({
-        orderNo: new RegExp(`^${orderNo}$`, "i"),
+        orderNo: { $regex: new RegExp(`^${sanitizedOrderNo}$`, "i") },
       });
 
       if (orders.length === 0) {
@@ -1424,6 +1431,7 @@ router.get(
           order,
         });
       }
+
       console.log("orders", orders);
 
       // More than one order found
