@@ -1408,12 +1408,14 @@ router.get(
         return next(new ErrorHandler("Order number is required", 400));
       }
 
-      // Remove special characters like "#" from the orderNo
-      const sanitizedOrderNo = orderNo.replace(/[^a-zA-Z0-9]/g, "");
+      // Ensure the query starts with '#' if not already present
+      if (!orderNo.startsWith("#")) {
+        orderNo = `#${orderNo}`;
+      }
 
       // Find the order using a regex to allow case-insensitive matching
       const orders = await Order.find({
-        orderNo: { $regex: new RegExp(`^${sanitizedOrderNo}$`, "i") },
+        orderNo: { $regex: new RegExp(`^${orderNo}$`, "i") },
       });
 
       if (orders.length === 0) {
