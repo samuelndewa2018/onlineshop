@@ -1260,8 +1260,14 @@ router.put(
 
           order.paymentInfo.status = "succeeded";
           const orderNo = order.orderNo;
-          const invoices = await Invoice.find({ receiptNo: orderNo });
-          const expenses = await Expense.find({ receiptNo: orderNo });
+          const invoices = await Invoice.find({
+            receiptNo: orderNo,
+            "paid.status": false,
+          });
+          const expenses = await Expense.find({
+            receiptNo: orderNo,
+            "paid.status": false,
+          });
 
           for (const invoice of invoices) {
             invoice.paid.status = true;
