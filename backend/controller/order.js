@@ -1110,8 +1110,10 @@ router.get(
         (acc, item) => acc + item.discountPrice * item.qty,
         0
       );
-      const discount = order.discount || 0;
-      const shippingPrice = order.shippingPrice || 0;
+      const discount = order.discount ?? 0;
+      const disc = order.discount ?? 0;
+
+      const shippingPrice = order.totalPrice - disc - subtotal;
       const totalPrice = subtotal - discount + shippingPrice;
       doc
         .moveTo(50, y + 20)
