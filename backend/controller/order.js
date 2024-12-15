@@ -1066,12 +1066,34 @@ router.get(
         .text("TOTAL", 500, 255);
 
       // Table body
-      let y = 270;
+      let y = 270; // Starting position for table body
 
       order.cart.forEach((item) => {
+        // Check if we need to add a new page
+        if (y > 700) {
+          // Adjust 700 based on your bottom margin
+          doc.addPage();
+          y = 50; // Reset y for the new page
+
+          // Redraw table header on the new page
+          doc.moveTo(50, y).lineTo(550, y).stroke();
+          y += 5;
+
+          doc
+            .font("Helvetica-Bold")
+            .fontSize(10)
+            .text("DESCRIPTION", 50, y)
+            .text("QTY", 300, y)
+            .text("UNIT PRICE", 400, y)
+            .text("TOTAL", 500, y);
+          y += 15;
+        }
+
+        // Truncate item name if it's too long
         const truncatedName =
           item.name.length > 25 ? item.name.slice(0, 25) + "..." : item.name;
 
+        // Print item details
         doc
           .font("Helvetica")
           .fontSize(10)
@@ -1079,6 +1101,7 @@ router.get(
           .text(item.qty, 300, y)
           .text(item.discountPrice.toFixed(2), 400, y)
           .text((item.discountPrice * item.qty).toFixed(2), 500, y);
+
         y += 15;
       });
 
