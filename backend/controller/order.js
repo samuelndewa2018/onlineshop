@@ -687,7 +687,7 @@ router.post(
 
             if (shopPhoneNumber.startsWith("254")) {
               shopPhoneNumber = "0" + shopPhoneNumber.slice(3); // Remove "2547" and replace with "07"
-            } else if (!shopPhoneNumber.startsWith("07")) {
+            } else if (!shopPhoneNumber.startsWith("0")) {
               console.error(
                 "Invalid phone number: must start with '07' or '2547'."
               );
@@ -695,7 +695,7 @@ router.post(
 
             function formatPhoneNumber(phoneNumber) {
               if (phoneNumber.startsWith("0")) {
-                return "+2547" + phoneNumber.slice(1);
+                return "+254" + phoneNumber.slice(1);
               } else {
                 throw new Error("Invalid phone number: must start with '07'.");
               }
