@@ -20,6 +20,12 @@ const OrderCount = require("../model/numberOrders");
 const aorder = require("../model/aorder");
 const { log } = require("console");
 
+const uploadsFolder = path.join(__dirname, "uploads");
+
+if (!fs.existsSync(uploadsFolder)) {
+  fs.mkdirSync(uploadsFolder, { recursive: true });
+}
+
 // send whatsapp sms
 const sendWhatsAppReceipt = async (message, session, recipients) => {
   const username = process.env.WHATSAPP_USERNAME;
