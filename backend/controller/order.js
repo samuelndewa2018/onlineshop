@@ -732,7 +732,7 @@ router.post(
             sendWhatsAppText(
               `Hello ${shopName}, You have created an order Order Number:${order.orderNo} click on these link below to track order and download your receipt https://www.ninetyone.co.ke/searchorder`,
               process.env.WHATSAPP_SESSION,
-              number
+              shopPhoneNumber
             );
           }
         } catch (error) {
@@ -747,7 +747,7 @@ router.post(
       sendWhatsAppText(
         `Hello ${userName}, You have a new order Order Number:${order.orderNo} click on these link below to check https://ninetyone.co.ke/dashboard-orders`,
         process.env.WHATSAPP_SESSION,
-        shopPhoneNumber
+        number
       );
     }
 
