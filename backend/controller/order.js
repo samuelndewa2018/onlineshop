@@ -18,26 +18,284 @@ const axios = require("axios");
 const Expense = require("../model/expense");
 const OrderCount = require("../model/numberOrders");
 const aorder = require("../model/aorder");
-// const moment = require("moment");
-// import moment from "moment";
 
-function sendSMS(phoneNumber, message) {
-  const url = "https://api.umeskiasoftwares.com/api/v1/sms";
-  const data = {
-    api_key: "SDlTWDE0V0Y6dmZxY21tM2s=", // Replace with your API key
-    email: "cornecraig26@gmail.com", // Replace with your email
-    Sender_Id: "23107", // If you have a custom sender id, use it here OR Use the default sender id: 23107
-    message: message,
-    phone: phoneNumber, // Phone number should be in the format: 0768XXXXX60 OR 254768XXXXX60 OR 254168XXXXX60
-  };
+// send whatsapp sms
+const sendWhatsAppReceipt = async (message, session, recipients) => {
+  try {
+    const response = await axios.post(
+      "https://backend.payhero.co.ke/api/v2/whatspp/sendBulk",
+      {
+        message_type: "DOCUMENT",
+        message: message,
+        session: session,
+        recipients: recipients,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${authToken}`, // Dynamic authorization token
+        },
+      }
+    );
 
-  return axios.post(url, data, {
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-  });
-}
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error sending WhatsApp text:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+// send whatsapp sms
+const sendWhatsAppText = async (message, session, phoneNumber) => {
+  try {
+    const response = await axios.post(
+      " https://backend.payhero.co.ke/api/v2/whatspp/sendText",
+      {
+        message: message,
+        session: session,
+        phone_number: phoneNumber,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${authToken}`, // Dynamic authorization token
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error sending WhatsApp text:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+
+// generate receipt
+const generateReceipt = async (orderNo) => {
+  try {
+    const lowerCaseOrderNo = orderNo.toLowerCase();
+    const order = await Order.findOne({
+      orderNo: new RegExp(`^${lowerCaseOrderNo}$`, "i"),
+    });
+
+    if (!order) {
+      throw new Error("Order not found");
+    }
+
+    const doc = new pdf({
+      size: "Letter",
+    });
+
+    const pdfFileName = `receipt_${orderNo.replace("#", "_")}.pdf`;
+    const pdfFilePath = path.join(uploadsFolder, pdfFileName);
+
+    // Replace with your image URL
+    const logoPath = path.join(__dirname, "logo.png");
+    doc.image(logoPath, 15, 10, { width: 200, height: 125 });
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(16)
+      .text("NinetyOne", 220, 30)
+      .fontSize(10)
+      .text("Nairobi City, Kenya", 220, 55)
+      .text("www.ninetyone.co.ke", 220, 70)
+      .text("contact@ninetyone.co.ke", 220, 85)
+      .text("+254751667713", 220, 100);
+
+    doc.font("Helvetica-Bold").fontSize(15).text("RECEIPT", 430, 30);
+
+    doc
+      .font("Helvetica")
+      .fontSize(10)
+      .text("Receipt No:", 430, 55)
+      .text(`${order.orderNo}`, 430, 70)
+      .text("Payment Status:", 430, 85)
+      .font("Helvetica-Bold")
+      .fontSize(12)
+      .text(
+        `${order.paymentInfo.status === "succeeded" ? "Paid" : "Not Paid"}`,
+        430,
+        100
+      );
+
+    const userEmail = order.user.email || order.user.guestEmail || "";
+    const userName = order.user.name || order.user.guestName || "";
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(12)
+      .text("BILL TO", 50, 140)
+      .font("Helvetica")
+      .fontSize(10)
+      .text(`${userEmail}`, 50, 155)
+      .text(`${userName}`, 50, 170)
+      .text(
+        `${order.shippingAddress.zipCode},${order.shippingAddress.country},${order.shippingAddress.city}`,
+        50,
+        185
+      )
+      .text(`${order.user.phoneNumber}`, 50, 200);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(12)
+      .text("SHIP TO", 300, 140)
+      .font("Helvetica")
+      .fontSize(10)
+      .text(`${order.shippingAddress.address1}`, 300, 155)
+      .text(`${order.shippingAddress.zipCode}`, 300, 170)
+      .text(`${order.shippingAddress.city}`, 300, 185)
+      .text(`${order.user.phoneNumber}`, 300, 200);
+
+    // Table header
+    doc.moveTo(50, 250).lineTo(550, 250).stroke();
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(10)
+      .text("DESCRIPTION", 50, 255)
+      .text("QTY", 300, 255)
+      .text("UNIT PRICE", 400, 255)
+      .text("TOTAL", 500, 255);
+
+    // Table body
+    let y = 270; // Starting position for table body
+
+    order.cart.forEach((item) => {
+      // Check if we need to add a new page
+      if (y > 700) {
+        // Adjust 700 based on your bottom margin
+        doc.addPage();
+        y = 50; // Reset y for the new page
+
+        // Redraw table header on the new page
+        doc.moveTo(50, y).lineTo(550, y).stroke();
+        y += 5;
+
+        doc
+          .font("Helvetica-Bold")
+          .fontSize(10)
+          .text("DESCRIPTION", 50, y)
+          .text("QTY", 300, y)
+          .text("UNIT PRICE", 400, y)
+          .text("TOTAL", 500, y);
+        y += 15;
+      }
+
+      // Truncate item name if it's too long
+      const truncatedName =
+        item.name.length > 25 ? item.name.slice(0, 25) + "..." : item.name;
+
+      // Print item details
+      doc
+        .font("Helvetica")
+        .fontSize(10)
+        .text(truncatedName, 50, y)
+        .text(item.qty, 300, y)
+        .text(item.discountPrice.toFixed(2), 400, y)
+        .text((item.discountPrice * item.qty).toFixed(2), 500, y);
+
+      y += 15;
+    });
+
+    // Total section
+    const subtotal = order.cart.reduce(
+      (acc, item) => acc + item.discountPrice * item.qty,
+      0
+    );
+    const discount = order.discount ?? 0;
+    const disc = order.discount ?? 0;
+
+    const shippingPrice = order.totalPrice - disc - subtotal;
+    const totalPrice = subtotal - discount + shippingPrice;
+
+    doc
+      .moveTo(50, y + 20)
+      .lineTo(550, y + 20)
+      .stroke();
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(10)
+      .text("SUBTOTAL", 400, y + 30)
+      .text(subtotal.toFixed(2), 500, y + 30);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(10)
+      .text("DISCOUNT", 400, y + 45)
+      .text(discount.toFixed(2), 505, y + 45);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(10)
+      .text("SUBTOTAL", 400, y + 60)
+      .text(subtotal.toFixed(2), 500, y + 60);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(10)
+      .text("SHIPPING", 400, y + 75)
+      .text(shippingPrice.toFixed(2), 505, y + 75);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(12)
+      .text("TOTAL ", 400, y + 90)
+      .text(`${order.totalPrice}`, 500, y + 90);
+
+    doc
+      .moveTo(50, y + 125)
+      .lineTo(550, y + 125)
+      .stroke();
+
+    doc
+      .font("Helvetica")
+      .fontSize(10)
+      .text("Thank you for your business!", 50, y + 160);
+
+    doc
+      .font("Helvetica")
+      .fontSize(8)
+      .text("Notes:", 50, y + 180)
+      .text(`Payment method used,${order.paymentInfo.type} `, 50, y + 190)
+      .text(
+        "Nb: This is a computer generated receipt and therefore not signed. It is valid and issued by ninetyone.co.ke",
+        50,
+        y + 200
+      );
+
+    // Write the PDF file and wait for completion
+    await new Promise((resolve, reject) => {
+      const writeStream = fs.createWriteStream(pdfFilePath);
+      doc.pipe(writeStream);
+
+      writeStream.on("finish", () => {
+        console.log(`Receipt generated successfully at: ${pdfFilePath}`);
+        resolve();
+      });
+
+      writeStream.on("error", (err) => {
+        console.error("Error writing PDF:", err);
+        reject(err);
+      });
+
+      doc.end();
+    });
+
+    return pdfFilePath;
+  } catch (error) {
+    console.error("Error generating receipt:", error);
+    return null;
+  }
+};
 
 // check the cart
 router.post(
@@ -427,20 +685,28 @@ router.post(
             let shopPhoneNumber = shop.phoneNumber;
             const shopName = shop.name;
 
-            // Check if the phone number starts with "07" and replace it with "2547"
-            if (shopPhoneNumber.startsWith("07")) {
-              shopPhoneNumber = "2547" + shopPhoneNumber.slice(2);
+            if (shopPhoneNumber.startsWith("254")) {
+              shopPhoneNumber = "0" + shopPhoneNumber.slice(3); // Remove "2547" and replace with "07"
+            } else if (!shopPhoneNumber.startsWith("07")) {
+              console.error(
+                "Invalid phone number: must start with '07' or '2547'."
+              );
             }
-            console.log("Sending SMS to:", shopPhoneNumber);
-            console.log("this is", shopName);
+
+            function formatPhoneNumber(phoneNumber) {
+              if (phoneNumber.startsWith("0")) {
+                return "+2547" + phoneNumber.slice(1);
+              } else {
+                throw new Error("Invalid phone number: must start with '07'.");
+              }
+            }
 
             // Sending SMS
-            sendSMS(
-              shopPhoneNumber,
-              `Hello ${shopName}, You have a new order Order Number:${order.orderNo} click on these link below to check https://ninetyone.co.ke/dashboard-orders`
+            sendWhatsAppText(
+              `Hello ${shopName}, You have a new order Order Number:${order.orderNo} click on these link below to check https://ninetyone.co.ke/dashboard-orders`,
+              process.env.WHATSAPP_SESSION,
+              shopPhoneNumber
             );
-
-            console.log("SMS sent successfully to:", shopPhoneNumber);
           }
         } catch (error) {
           console.error(
@@ -448,6 +714,72 @@ router.post(
           );
         }
       }
+      const number = formatPhoneNumber(order.user.phoneNumber);
+
+      const createRecipients = async (order) => {
+        try {
+          // Generate the receipt and get the PDF file path
+          const pdfFilePath = await generateReceipt(order.orderNo);
+
+          if (!pdfFilePath) {
+            throw new Error("Failed to generate receipt.");
+          }
+
+          // Construct the document URL (ensure the file is publicly accessible if hosted)
+          const documentUrl = `https://onlineshop-delta-three.vercel.app/uploads/${path.basename(
+            pdfFilePath
+          )}`;
+
+          // Define recipients with dynamic URL
+          const recipients = [
+            {
+              name: "Name",
+              phone_number: number, // Replace 'number' with actual phone number from the order
+              message: `This is a receipt for order number ${order.orderNo}. Use ${order.orderNo} as the tracking number.`,
+              document_url: documentUrl, // Dynamically generated document URL
+            },
+          ];
+
+          return { recipients, pdfFilePath };
+        } catch (error) {
+          console.error("Error creating recipients:", error);
+          return { recipients: [], pdfFilePath: null };
+        }
+      };
+
+      const handleReceiptProcess = async (order) => {
+        const { recipients, pdfFilePath } = await createRecipients(order);
+
+        if (!recipients.length || !pdfFilePath) {
+          console.error("Failed to create recipients or generate PDF.");
+          return;
+        }
+
+        try {
+          // Send WhatsApp receipt
+          await sendWhatsAppReceipt(
+            `This is a receipt for order number ${order.orderNo}. Use ${order.orderNo} as the tracking number.`,
+            process.env.WHATSAPP_SESSION,
+            recipients
+          );
+
+          console.log("Receipt sent successfully.");
+
+          // Delete the PDF after successfully sending the receipt
+          fs.unlink(pdfFilePath, (err) => {
+            if (err) {
+              console.error("Error deleting PDF file:", err);
+            } else {
+              console.log(`PDF file deleted successfully: ${pdfFilePath}`);
+            }
+          });
+        } catch (error) {
+          console.error("Error sending receipt:", error);
+        }
+      };
+
+      // Call the function
+      await handleReceiptProcess(order);
 
       await sendMail({
         email: order.user.email || order.user.guestEmail,
