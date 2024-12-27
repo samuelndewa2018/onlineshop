@@ -749,9 +749,6 @@ router.post(
         process.env.WHATSAPP_SESSION,
         number
       );
-    }
-
-
 
       await sendMail({
         email: order.user.email || order.user.guestEmail,
