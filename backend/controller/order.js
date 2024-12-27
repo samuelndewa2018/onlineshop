@@ -709,18 +709,18 @@ router.post(
                 );
               }
 
-              if (phoneNumber.startsWith("0")) {
+              if (phoneNumber.startsWith("254")) {
                 // Replace the leading '0' with '+254'
-                return "+254" + phoneNumber.slice(1);
+                return "0" + phoneNumber.slice(3);
               } else if (phoneNumber.startsWith("254")) {
                 // Add '+' to the beginning if the number starts with '254'
-                return "+" + phoneNumber;
+                return "0" + phoneNumber.slice(3);
               } else if (
                 phoneNumber.startsWith("7") ||
                 phoneNumber.startsWith("1")
               ) {
                 // Add '+254' to numbers starting with '7' or '1'
-                return "+254" + phoneNumber;
+                return "0" + phoneNumber;
               } else {
                 throw new Error(
                   "Invalid phone number: must start with '0', '254', '7', or '1'."
@@ -730,9 +730,9 @@ router.post(
 
             // Sending SMS
             sendWhatsAppText(
-              `Hello ${shopName}, You have a new order Order Number:${order.orderNo} click on these link below to check https://ninetyone.co.ke/dashboard-orders`,
+              `Hello ${shopName}, You have created an order Order Number:${order.orderNo} click on these link below to track order and download your receipt https://www.ninetyone.co.ke/searchorder`,
               process.env.WHATSAPP_SESSION,
-              shopPhoneNumber
+              number
             );
           }
         } catch (error) {
@@ -742,71 +742,16 @@ router.post(
         }
       }
       const number = formatPhoneNumber(order.user.phoneNumber);
+      const userName = order.user.name || order.user.guestName;
 
-      const createRecipients = async (order) => {
-        try {
-          // Generate the receipt and get the PDF file path
-          const pdfFilePath = await generateReceipt(order.orderNo);
+      sendWhatsAppText(
+        `Hello ${userName}, You have a new order Order Number:${order.orderNo} click on these link below to check https://ninetyone.co.ke/dashboard-orders`,
+        process.env.WHATSAPP_SESSION,
+        shopPhoneNumber
+      );
+    }
 
-          if (!pdfFilePath) {
-            throw new Error("Failed to generate receipt.");
-          }
 
-          // Construct the document URL (ensure the file is publicly accessible if hosted)
-          const documentUrl = `https://onlineshop-delta-three.vercel.app/controller/uploads/${path.basename(
-            pdfFilePath
-          )}`;
-
-          // Define recipients with dynamic URL
-          const recipients = [
-            {
-              name: "Name",
-              phone_number: number, // Replace 'number' with actual phone number from the order
-              message: `This is a receipt for order number ${order.orderNo}. Use ${order.orderNo} as the tracking number.`,
-              document_url: documentUrl, // Dynamically generated document URL
-            },
-          ];
-
-          return { recipients, pdfFilePath };
-        } catch (error) {
-          console.error("Error creating recipients:", error);
-          return { recipients: [], pdfFilePath: null };
-        }
-      };
-
-      const handleReceiptProcess = async (order) => {
-        const { recipients, pdfFilePath } = await createRecipients(order);
-
-        if (!recipients.length || !pdfFilePath) {
-          console.error("Failed to create recipients or generate PDF.");
-          return;
-        }
-
-        try {
-          // Send WhatsApp receipt
-          await sendWhatsAppReceipt(
-            `This is a receipt for order number ${order.orderNo}. Use ${order.orderNo} as the tracking number.`,
-            process.env.WHATSAPP_SESSION,
-            recipients
-          );
-
-          console.log("Receipt sent successfully.");
-
-          // Delete the PDF after successfully sending the receipt
-          fs.unlink(pdfFilePath, (err) => {
-            if (err) {
-              console.error("Error deleting PDF file:", err);
-            } else {
-              console.log(`PDF file deleted successfully: ${pdfFilePath}`);
-            }
-          });
-        } catch (error) {
-          console.error("Error sending receipt:", error);
-        }
-      };
-
-      // Call the function
-      await handleReceiptProcess(order);
 
       await sendMail({
         email: order.user.email || order.user.guestEmail,
