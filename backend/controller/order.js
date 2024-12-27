@@ -21,6 +21,9 @@ const aorder = require("../model/aorder");
 
 // send whatsapp sms
 const sendWhatsAppReceipt = async (message, session, recipients) => {
+  const username = process.env.WHATSAPP_USERNAME;
+  const password = process.env.WHATSAPP_PASSWORD;
+  const authToken = Buffer.from(`${username}:${password}`).toString("base64");
   try {
     const response = await axios.post(
       "https://backend.payhero.co.ke/api/v2/whatspp/sendBulk",
@@ -50,6 +53,9 @@ const sendWhatsAppReceipt = async (message, session, recipients) => {
 
 // send whatsapp sms
 const sendWhatsAppText = async (message, session, phoneNumber) => {
+  const username = process.env.WHATSAPP_USERNAME;
+  const password = process.env.WHATSAPP_PASSWORD;
+  const authToken = Buffer.from(`${username}:${password}`).toString("base64");
   try {
     const response = await axios.post(
       " https://backend.payhero.co.ke/api/v2/whatspp/sendText",
