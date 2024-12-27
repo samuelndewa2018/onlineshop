@@ -18,6 +18,7 @@ const axios = require("axios");
 const Expense = require("../model/expense");
 const OrderCount = require("../model/numberOrders");
 const aorder = require("../model/aorder");
+const { log } = require("console");
 
 // send whatsapp sms
 const sendWhatsAppReceipt = async (message, session, recipients) => {
@@ -700,10 +701,28 @@ router.post(
             }
 
             function formatPhoneNumber(phoneNumber) {
+              if (!phoneNumber || typeof phoneNumber !== "string") {
+                throw new Error(
+                  "Invalid phone number: must be a non-empty string."
+                );
+              }
+
               if (phoneNumber.startsWith("0")) {
+                // Replace the leading '0' with '+254'
                 return "+254" + phoneNumber.slice(1);
+              } else if (phoneNumber.startsWith("254")) {
+                // Add '+' to the beginning if the number starts with '254'
+                return "+" + phoneNumber;
+              } else if (
+                phoneNumber.startsWith("7") ||
+                phoneNumber.startsWith("1")
+              ) {
+                // Add '+254' to numbers starting with '7' or '1'
+                return "+254" + phoneNumber;
               } else {
-                throw new Error("Invalid phone number: must start with '07'.");
+                throw new Error(
+                  "Invalid phone number: must start with '0', '254', '7', or '1'."
+                );
               }
             }
 
