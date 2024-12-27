@@ -702,32 +702,9 @@ router.post(
               );
             }
 
-            function formatPhoneNumber(phoneNumber) {
-              if (!phoneNumber || typeof phoneNumber !== "string") {
-                throw new Error(
-                  "Invalid phone number: must be a non-empty string."
-                );
-              }
-
-              if (phoneNumber.startsWith("0")) {
-                return phoneNumber;
-              } else if (phoneNumber.startsWith("254")) {
-                return "0" + phoneNumber.slice(3);
-              } else if (
-                phoneNumber.startsWith("7") ||
-                phoneNumber.startsWith("1")
-              ) {
-                return "0" + phoneNumber;
-              } else {
-                throw new Error(
-                  "Invalid phone number: must start with '0', '254', '7', or '1'."
-                );
-              }
-            }
-
             // Sending SMS
             sendWhatsAppText(
-              `Hello ${shopName}, You have created an order Order Number:${order.orderNo} click on these link below to track order and download your receipt https://www.ninetyone.co.ke/searchorder`,
+              `Hello ${shopName}, You have a new order Order Number:${order.orderNo} click on these link below to check https://ninetyone.co.ke/dashboard-orders`,
               process.env.WHATSAPP_SESSION,
               shopPhoneNumber
             );
@@ -738,11 +715,28 @@ router.post(
           );
         }
       }
+      function formatPhoneNumber(phoneNumber) {
+        if (!phoneNumber || typeof phoneNumber !== "string") {
+          throw new Error("Invalid phone number: must be a non-empty string.");
+        }
+
+        if (phoneNumber.startsWith("0")) {
+          return phoneNumber;
+        } else if (phoneNumber.startsWith("254")) {
+          return "0" + phoneNumber.slice(3);
+        } else if (phoneNumber.startsWith("7") || phoneNumber.startsWith("1")) {
+          return "0" + phoneNumber;
+        } else {
+          throw new Error(
+            "Invalid phone number: must start with '0', '254', '7', or '1'."
+          );
+        }
+      }
       const number = formatPhoneNumber(order.user.phoneNumber);
       const userName = order.user.name || order.user.guestName;
 
       sendWhatsAppText(
-        `Hello ${userName}, You have a new order Order Number:${order.orderNo} click on these link below to check https://ninetyone.co.ke/dashboard-orders`,
+        `Hello ${userName}, You have created an order Order Number:${order.orderNo} click on these link below to track order and download your receipt https://www.ninetyone.co.ke/searchorder`,
         process.env.WHATSAPP_SESSION,
         number
       );
