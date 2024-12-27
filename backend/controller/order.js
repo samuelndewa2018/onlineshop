@@ -22,10 +22,6 @@ const { log } = require("console");
 
 const uploadsFolder = path.join(__dirname, "uploads");
 
-if (!fs.existsSync(uploadsFolder)) {
-  fs.mkdirSync(uploadsFolder, { recursive: true });
-}
-
 // send whatsapp sms
 const sendWhatsAppReceipt = async (message, session, recipients) => {
   const username = process.env.WHATSAPP_USERNAME;
@@ -757,7 +753,7 @@ router.post(
           }
 
           // Construct the document URL (ensure the file is publicly accessible if hosted)
-          const documentUrl = `https://onlineshop-delta-three.vercel.app/uploads/${path.basename(
+          const documentUrl = `https://onlineshop-delta-three.vercel.app/controller/uploads/${path.basename(
             pdfFilePath
           )}`;
 
