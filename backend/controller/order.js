@@ -709,17 +709,14 @@ router.post(
                 );
               }
 
-              if (phoneNumber.startsWith("254")) {
-                // Replace the leading '0' with '+254'
-                return "0" + phoneNumber.slice(3);
+              if (phoneNumber.startsWith("0")) {
+                return phoneNumber;
               } else if (phoneNumber.startsWith("254")) {
-                // Add '+' to the beginning if the number starts with '254'
                 return "0" + phoneNumber.slice(3);
               } else if (
                 phoneNumber.startsWith("7") ||
                 phoneNumber.startsWith("1")
               ) {
-                // Add '+254' to numbers starting with '7' or '1'
                 return "0" + phoneNumber;
               } else {
                 throw new Error(
