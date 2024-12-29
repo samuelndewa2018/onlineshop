@@ -704,7 +704,7 @@ router.post(
 
             // Sending SMS
             sendWhatsAppText(
-              `Hello ${shopName}, You have a new order \n Order Number:${order.orderNo}\n click on the link below to check https://ninetyone.co.ke/dashboard-orders`,
+              `Hello ${shopName}, New order \n Order No:${order.orderNo}\n click on the link below to check https://ninetyone.co.ke/dashboard-orders`,
               process.env.WHATSAPP_SESSION,
               shopPhoneNumber
             );
@@ -736,7 +736,7 @@ router.post(
       const userName = order.user.name || order.user.guestName;
 
       sendWhatsAppText(
-        `Hello ${userName}, You've received and are processing ypuur order\n Order Number:${order.orderNo}\n click on the link below to track order and download your receipt using the order number https://www.ninetyone.co.ke/searchorder`,
+        `Hello ${userName}, we've received and processing your order\n Order No:${order.orderNo}\n click the link below to track order and download your receipt using the order number https://www.ninetyone.co.ke/searchorder`,
         process.env.WHATSAPP_SESSION,
         number
       );
@@ -1533,9 +1533,7 @@ router.put(
           : order.shippingAddress.city;
       if (req.body.status === "On the way") {
         sendWhatsAppText(
-          `Hello ${userName},\n
-          Your order ${order.orderNo} is ready for collection.\n
-          Collection point: ${collectionPoint}\n`,
+          `Hello ${userName},Your order\n${order.orderNo} is ready for collection.\nCollection point: ${collectionPoint}\n`,
           process.env.WHATSAPP_SESSION,
           order.user.phoneNumber
         );
