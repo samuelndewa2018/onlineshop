@@ -19,7 +19,7 @@ router.post(
   "/create-shop",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { email, name } = req.body;
+      const { email, name, phoneNumber } = req.body;
       const sellerEmail = await Shop.findOne({ email });
       if (sellerEmail) {
         return next(new ErrorHandler("User already exists", 400));
@@ -27,6 +27,11 @@ router.post(
       const existingShop = await Shop.findOne({ name });
       if (existingShop) {
         return next(new ErrorHandler("Shop name already exists", 400));
+      }
+      // Check if a shop with the given phone number exists
+      const existingPhoneNumber = await Shop.findOne({ phoneNumber });
+      if (existingPhoneNumber) {
+        return next(new ErrorHandler("Phone number already in use", 400));
       }
       const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
         folder: "avatars",
