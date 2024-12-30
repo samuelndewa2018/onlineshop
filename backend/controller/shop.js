@@ -15,6 +15,7 @@ const sendShopToken = require("../utils/shopToken");
 const shop = require("../model/shop");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
+const sendOtp = require("../utils/sendVerify");
 
 // middlewares
 const sendWhatsAppText = async (message, session, phoneNumber) => {
@@ -706,7 +707,7 @@ router.post(
         order.user.phoneNumber
       );
       // sendotp via email
-      await sendMail({
+      await sendOtp({
         email: user.email,
         otp: otp,
         subject: "Your Verification Code",
