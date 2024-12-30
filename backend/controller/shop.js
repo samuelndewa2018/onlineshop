@@ -704,7 +704,7 @@ router.post(
       await sendWhatsAppText(
         message,
         process.env.WHATSAPP_SESSION,
-        order.user.phoneNumber
+        user.phoneNumber
       );
       // sendotp via email
       await sendOtp({
