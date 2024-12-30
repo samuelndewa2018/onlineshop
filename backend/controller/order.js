@@ -1534,7 +1534,7 @@ router.put(
           ? "NinetyOne, Kahawa Shukari, Baringo Road"
           : homeLocation;
       if (req.body.status === "On the way") {
-        sendWhatsAppText(
+        await sendWhatsAppText(
           `Hello ${userName},Your order\n${order.orderNo} is ready for collection.\nCollection point: ${collectionPoint}\n`,
           process.env.WHATSAPP_SESSION,
           order.user.phoneNumber

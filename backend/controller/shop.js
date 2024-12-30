@@ -7,12 +7,45 @@ const sendMail = require("../utils/sendMail");
 const sendToken = require("../utils/jwtToken");
 const crypto = require("crypto");
 const Shop = require("../model/shop");
+const Otp = require("../model/otp");
 const { isAuthenticated, isSeller, isAdmin } = require("../middleware/auth");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 const sendShopToken = require("../utils/shopToken");
 const shop = require("../model/shop");
+const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
+
+// middlewares
+const sendWhatsAppText = async (message, session, phoneNumber) => {
+  const username = process.env.WHATSAPP_USERNAME;
+  const password = process.env.WHATSAPP_PASSWORD;
+  const authToken = Buffer.from(`${username}:${password}`).toString("base64");
+  try {
+    const response = await axios.post(
+      " https://backend.payhero.co.ke/api/v2/whatspp/sendText",
+      {
+        message: message,
+        session: session,
+        phone_number: phoneNumber,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${authToken}`, // Dynamic authorization token
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error sending WhatsApp text:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
 
 // create shop
 router.post(
@@ -614,6 +647,82 @@ router.post(
 // login shop
 router.post(
   "/login-shop",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+
+      if (!email || !password) {
+        return next(new ErrorHandler("Please provide the all fields!", 400));
+      }
+
+      const user = await Shop.findOne({ email }).select("+password");
+
+      if (!user) {
+        return next(new ErrorHandler("User doesn't exists!", 400));
+      }
+
+      const isPasswordValid = await user.comparePassword(password);
+
+      if (!isPasswordValid) {
+        return next(
+          new ErrorHandler("Please provide the correct information", 400)
+        );
+      }
+
+      sendShopToken(user, 201, res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// create otp for login
+router.post(
+  "/create-otp",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { phoneNumber } = req.body;
+      const user = await Shop.findOne({ phoneNumber });
+      if (!user) {
+        return next(new ErrorHandler("User doesn't exists!", 400));
+      }
+      const userId = user._id;
+      const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+      const message = `Your OTP is ${otp}. It is valid for 60 secs.`;
+      // hash otp
+      const saltRounds = 10;
+      const hashedOtp = await bcrypt.hash(otp, saltRounds);
+      const newOtp = await new Otp({
+        userId: userId,
+        otp: hashedOtp,
+        createdAt: new Date(),
+        expireAt: new Date(new Date().getTime() + 60 * 1000),
+      });
+      await newOtp.save();
+      // send otp to user
+      await sendWhatsAppText(
+        message,
+        process.env.WHATSAPP_SESSION,
+        order.user.phoneNumber
+      );
+      // sendotp via email
+      await sendMail({
+        email: user.email,
+        otp: otp,
+        subject: "Your Verification Code",
+      });
+      res.status(201).json({
+        success: true,
+        message: "OTP sent successfully check your whatsapp or email!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+// login_otp
+router.post(
+  "/login-otp",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const { email, password } = req.body;
