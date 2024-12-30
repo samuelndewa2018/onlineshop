@@ -1527,10 +1527,12 @@ router.put(
 
       order.status = req.body.status;
       const userName = order.user.name || order.user.guestName;
+      const homeLocation = `${order.shippingAddress.city}, ${order.shippingAddress.address1}`;
+
       const collectionPoint =
         order.shippingAddress.city === "Self Pickup"
           ? "NinetyOne, Kahawa Shukari, Baringo Road"
-          : order.shippingAddress.city;
+          : homeLocation;
       if (req.body.status === "On the way") {
         sendWhatsAppText(
           `Hello ${userName},Your order\n${order.orderNo} is ready for collection.\nCollection point: ${collectionPoint}\n`,
