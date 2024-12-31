@@ -16,6 +16,7 @@ const sendShopToken = require("../utils/shopToken");
 const shop = require("../model/shop");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
+import { v4 as uuidv4 } from "uuid";
 const sendOtp = require("../utils/sendVerify");
 
 // middlewares
@@ -46,6 +47,58 @@ const sendWhatsAppText = async (message, session, phoneNumber) => {
       error.response?.data || error.message
     );
     throw error;
+  }
+};
+// create and send otp
+const generateAndSendOtp = async (user) => {
+  try {
+    let otp, hashedOtp;
+
+    // Loop until a unique OTP is generated
+    do {
+      // Generate a 6-digit OTP
+      const randomPart = uuidv4().slice(0, 6);
+      otp = randomPart.replace(/-/g, "").slice(0, 6);
+
+      const saltRounds = process.env.SALT_ROUNDS || 10;
+
+      // Hash the OTP
+      hashedOtp = await bcrypt.hash(otp, saltRounds);
+
+      // Check if the OTP already exists in the database
+      const existingOtp = await Otp.findOne({ otp: hashedOtp });
+      if (!existingOtp) break; // Exit loop if the OTP is unique
+    } while (true);
+
+    const message = `Your OTP is ${otp}. It is valid for 60 secs.`;
+
+    // Save the OTP to the database
+    const newOtp = new Otp({
+      userId: user.userId,
+      otp: hashedOtp,
+      createdAt: new Date(),
+      expireAt: new Date(new Date().getTime() + 60 * 1000),
+    });
+    await newOtp.save();
+
+    // Send OTP via WhatsApp
+    await sendWhatsAppText(
+      message,
+      process.env.WHATSAPP_SESSION,
+      user.phoneNumber
+    );
+
+    // Send OTP via Email
+    await sendOtp({
+      email: user.email,
+      otp: otp,
+      subject: "Your Verification Code",
+    });
+
+    return { success: true, message: "OTP sent successfully" };
+  } catch (error) {
+    console.error("Error generating and sending OTP:", error);
+    throw new Error("Failed to generate and send OTP");
   }
 };
 
@@ -683,39 +736,51 @@ router.post(
   "/create-otp",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const userOtps = await Otp.find({
+        expireAt: { $lt: new Date() },
+      });
+      for (const userOtp of userOtps) {
+        await Otp.deleteOne({ _id: userOtp._id });
+      }
+      const { phoneNumber } = req.body;
+      const user = await Shop.findOne({ phoneNumber: phoneNumber });
+      if (!user) {
+        return next(new ErrorHandler("User doesn't exists!", 400));
+      }
+
+      await generateAndSendOtp({ user });
+
+      res.status(201).json({
+        success: true,
+        message: "OTP sent successfully check your whatsapp & email!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+// resend otp
+router.post(
+  "/resend-otp",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const userOtps = await Otp.find({
+        expireAt: { $lt: new Date() },
+      });
+      for (const userOtp of userOtps) {
+        await Otp.deleteOne({ _id: userOtp._id });
+      }
       const { phoneNumber } = req.body;
       const user = await Shop.findOne({ phoneNumber });
       if (!user) {
         return next(new ErrorHandler("User doesn't exists!", 400));
       }
-      const userId = user._id;
-      const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
-      const message = `Your OTP is ${otp}. It is valid for 60 secs.`;
-      // hash otp
-      const saltRounds = 10;
-      const hashedOtp = await bcrypt.hash(otp, saltRounds);
-      const newOtp = await new Otp({
-        userId: userId,
-        otp: hashedOtp,
-        createdAt: new Date(),
-        expireAt: new Date(new Date().getTime() + 60 * 1000),
-      });
-      await newOtp.save();
-      // send otp to user
-      await sendWhatsAppText(
-        message,
-        process.env.WHATSAPP_SESSION,
-        user.phoneNumber
-      );
-      // sendotp via email
-      await sendOtp({
-        email: user.email,
-        otp: otp,
-        subject: "Your Verification Code",
-      });
+
+      await generateAndSendOtp({ user });
+
       res.status(201).json({
         success: true,
-        message: "OTP sent successfully check your whatsapp or email!",
+        message: "OTP sent successfully check your whatsapp & email!",
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -727,24 +792,31 @@ router.post(
   "/login-otp",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { email, password } = req.body;
+      const { otp } = req.body;
+      let hashedOtp;
 
-      if (!email || !password) {
-        return next(new ErrorHandler("Please provide the all fields!", 400));
+      const saltRounds = process.env.SALT_ROUNDS || 10;
+
+      // Hash the OTP
+      hashedOtp = await bcrypt.hash(otp, saltRounds);
+
+      if (!otp) {
+        return res.status(400).send("OTP is required");
       }
+      // Find all OTPs for the user that have not expired
+      const shop = await Otp.findOne({
+        otp: hashedOtp,
+        expireAt: { $gt: new Date() },
+      });
 
-      const user = await Shop.findOne({ email }).select("+password");
+      if (!shop || shop.length === 0) {
+        return res.status(404).send("No valid OTP found for the user");
+      }
+      const userId = shop.userId;
+      const user = await Shop.findById({ userId });
 
       if (!user) {
         return next(new ErrorHandler("User doesn't exists!", 400));
-      }
-
-      const isPasswordValid = await user.comparePassword(password);
-
-      if (!isPasswordValid) {
-        return next(
-          new ErrorHandler("Please provide the correct information", 400)
-        );
       }
 
       sendShopToken(user, 201, res);

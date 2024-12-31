@@ -17,7 +17,7 @@ const sendOtp = async (options) => {
         <p>Hello,</p>
         <p>Use the following OTP to complete your process:</p>
         <h1 style="color: #007BFF;">${options.otp}</h1>
-        <p>This code is valid for 10 minutes.</p>
+        <p>This code is valid for 60seconds.</p>
         <p>If you didn’t request this code, please ignore this email.</p>
         <p>Best regards,</p>
         <p><strong>Ninety One</strong></p>
