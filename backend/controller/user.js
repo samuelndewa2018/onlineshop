@@ -1308,7 +1308,7 @@ router.post(
       const token = await user.createPasswordResetToken();
       await user.save();
       const resetURL = `https://ninetyone.co.ke/reset-password/${token}`;
-      sendMail({
+      await sendMail({
         email: user.email,
         subject: "Forgot Password Link",
         html: `<!DOCTYPE html>
