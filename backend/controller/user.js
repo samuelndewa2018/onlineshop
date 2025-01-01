@@ -55,7 +55,7 @@ const generateAndSendOtp = async (user, phone) => {
     do {
       // Generate a 6-digit OTP
       const randomPart = uuidv4().slice(0, 6);
-      otp = randomPart.replace(/-/g, "").slice(0, 6);
+      otp = randomPart.replace(/-/g, "").slice(0, 6).toUpperCase();
 
       const saltRounds = parseInt(process.env.SALT_ROUNDS, 10) || 10;
 
@@ -68,8 +68,8 @@ const generateAndSendOtp = async (user, phone) => {
     } while (true);
 
     const message = `Your OTP is ${otp}. It is valid for 60 secs.`;
-    const phone = phone;
-    console.log("phone", phone);
+    const phoneNumber = phone;
+    console.log("phone", phoneNumber);
 
     // Save the OTP to the database
     const newOtp = new Otp({
@@ -703,7 +703,7 @@ router.post(
         return next(new ErrorHandler("User doesn't exists!", 400));
       }
 
-      await generateAndSendOtp({ user, phoneNumber: formattedPhoneNumber });
+      await generateAndSendOtp({ user, formattedPhoneNumber });
 
       res.status(201).json({
         success: true,
