@@ -56,7 +56,7 @@ const generateAndSendOtp = async (user) => {
       const randomPart = uuidv4().slice(0, 6);
       otp = randomPart.replace(/-/g, "").slice(0, 6);
 
-      const saltRounds = process.env.SALT_ROUNDS || 10;
+      const saltRounds = parseInt(process.env.SALT_ROUNDS, 10) || 10;
 
       // Hash the OTP
       hashedOtp = await bcrypt.hash(otp, saltRounds);
