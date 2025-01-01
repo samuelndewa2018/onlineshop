@@ -79,7 +79,7 @@ const generateAndSendOtp = async (user, phone) => {
     await newOtp.save();
 
     // Send OTP via WhatsApp
-    await sendWhatsAppText(message, process.env.WHATSAPP_SESSION, user.phone);
+    await sendWhatsAppText(message, process.env.WHATSAPP_SESSION, phone);
 
     // Send OTP via Email
     await sendOtp({
