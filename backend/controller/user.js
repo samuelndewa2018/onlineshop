@@ -13,6 +13,7 @@ const { isAuthenticated, isAdmin } = require("../middleware/auth");
 const crypto = require("crypto");
 import { v4 as uuidv4 } from "uuid";
 import sendOtp from "../utils/sendVerify";
+const bcrypt = require("bcrypt");
 
 // middlewares
 const sendWhatsAppText = async (message, session, phoneNumber) => {
