@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const User = require("../model/user");
+const Otp = require("../model/otp");
 const router = express.Router();
 const ErrorHandler = require("../utils/ErrorHandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
@@ -58,7 +59,7 @@ const generateAndSendOtp = async (user) => {
       hashedOtp = await bcrypt.hash(otp, saltRounds);
 
       // Check if the OTP already exists in the database
-      const existingOtp = await Otp.findOne({ otp: hashedOtp });
+      const existingOtp = await otp.findOne({ otp: hashedOtp });
       if (!existingOtp) break; // Exit loop if the OTP is unique
     } while (true);
 
