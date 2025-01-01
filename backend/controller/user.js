@@ -744,14 +744,17 @@ router.post(
       };
 
       const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+      console.log("Formatted Phone Number:", formattedPhoneNumber);
 
       const user = await User.findOne({ phoneNumber: formattedPhoneNumber });
+      console.log("User found:", user);
       if (!user) return next(new ErrorHandler("User doesn't exist!", 400));
 
       const userOtps = await Otp.find({
         userId: user._id,
         expireAt: { $gt: new Date() },
       });
+      console.log("User OTPs:", userOtps);
 
       if (!userOtps || userOtps.length === 0) {
         return res.status(404).send("No valid OTP found for the user");
@@ -760,6 +763,9 @@ router.post(
       let matchedOtp = null;
       for (const userOtp of userOtps) {
         const isOtpValid = await bcrypt.compare(otp, userOtp.otp);
+        console.log(
+          `OTP check: ${otp} vs ${userOtp.otp}, valid: ${isOtpValid}`
+        );
         if (isOtpValid) {
           matchedOtp = userOtp;
           break;
@@ -771,8 +777,6 @@ router.post(
       }
 
       console.log("OTP verified successfully, user:", user);
-
-      // Send token upon successful OTP verification
       sendToken(user, 201, res);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
