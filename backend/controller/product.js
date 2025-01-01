@@ -9,6 +9,7 @@ const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
 const Statements = require("../model/Statements");
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 
 // create product
 router.post(
