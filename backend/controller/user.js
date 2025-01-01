@@ -725,7 +725,7 @@ router.post(
       const { otp } = req.body;
       let hashedOtp;
 
-      const saltRounds = process.env.SALT_ROUNDS || 10;
+      const saltRounds = parseInt(process.env.SALT_ROUNDS, 10) || 10;
 
       // Hash the OTP
       hashedOtp = await bcrypt.hash(otp, saltRounds);
