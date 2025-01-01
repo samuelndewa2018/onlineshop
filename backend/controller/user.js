@@ -101,6 +101,27 @@ router.post("/create-user", async (req, res, next) => {
     const userEmail = await User.findOne({ email });
     const userPhone = await User.findOne({ phoneNumber });
 
+    const formatPhoneNumber = (phoneNumber) => {
+      if (phoneNumber.startsWith("0")) {
+        // Valid format
+        return phoneNumber;
+      } else if (phoneNumber.startsWith("7") || phoneNumber.startsWith("1")) {
+        // Prepend '0'
+        return `0${phoneNumber}`;
+      } else if (
+        phoneNumber.startsWith("+2547") ||
+        phoneNumber.startsWith("2547")
+      ) {
+        // Replace '+254' or '254' with '0'
+        return phoneNumber.replace(/^(\+254|254)/, "0");
+      } else {
+        // Invalid format
+        throw new Error("Invalid phone number format");
+      }
+    };
+
+    const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+
     if (userPhone) {
       return next(new ErrorHandler("Phone number already exists", 400));
     }
@@ -116,7 +137,7 @@ router.post("/create-user", async (req, res, next) => {
       name: name,
       email: email,
       password: password,
-      phoneNumber: phoneNumber,
+      phoneNumber: formattedPhoneNumber,
       country: country,
       avatar: {
         public_id: myCloud.public_id,
@@ -133,7 +154,7 @@ router.post("/create-user", async (req, res, next) => {
       await sendWhatsAppText(
         message,
         process.env.WHATSAPP_SESSION,
-        user.phoneNumber
+        formattedPhoneNumber
       );
       await sendMail({
         email: user.email,
@@ -654,7 +675,27 @@ router.post(
         await Otp.deleteOne({ _id: userOtp._id });
       }
       const { phoneNumber } = req.body;
-      const user = await User.findOne({ phoneNumber: phoneNumber });
+      const formatPhoneNumber = (phoneNumber) => {
+        if (phoneNumber.startsWith("0")) {
+          // Valid format
+          return phoneNumber;
+        } else if (phoneNumber.startsWith("7") || phoneNumber.startsWith("1")) {
+          // Prepend '0'
+          return `0${phoneNumber}`;
+        } else if (
+          phoneNumber.startsWith("+2547") ||
+          phoneNumber.startsWith("2547")
+        ) {
+          // Replace '+254' or '254' with '0'
+          return phoneNumber.replace(/^(\+254|254)/, "0");
+        } else {
+          // Invalid format
+          throw new Error("Invalid phone number format");
+        }
+      };
+      const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+
+      const user = await User.findOne({ phoneNumber: formattedPhoneNumber });
       if (!user) {
         return next(new ErrorHandler("User doesn't exists!", 400));
       }
