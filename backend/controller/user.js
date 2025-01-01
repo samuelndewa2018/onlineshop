@@ -735,32 +735,19 @@ router.post(
       const { otp, phoneNumber } = req.body;
 
       const formatPhoneNumber = (phoneNumber) => {
-        if (phoneNumber.startsWith("0")) {
-          // Already in valid format
-          return phoneNumber;
-        } else if (phoneNumber.startsWith("7") || phoneNumber.startsWith("1")) {
-          // Prepend '0'
+        if (phoneNumber.startsWith("0")) return phoneNumber;
+        if (phoneNumber.startsWith("7") || phoneNumber.startsWith("1"))
           return `0${phoneNumber}`;
-        } else if (
-          phoneNumber.startsWith("+2547") ||
-          phoneNumber.startsWith("2547")
-        ) {
-          // Convert international format to local
+        if (phoneNumber.startsWith("+2547") || phoneNumber.startsWith("2547"))
           return phoneNumber.replace(/^(\+254|254)/, "0");
-        } else {
-          throw new Error("Invalid phone number format");
-        }
+        throw new Error("Invalid phone number format");
       };
 
       const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
 
-      // Find the user first
       const user = await User.findOne({ phoneNumber: formattedPhoneNumber });
-      if (!user) {
-        return next(new ErrorHandler("User doesn't exist!", 400));
-      }
+      if (!user) return next(new ErrorHandler("User doesn't exist!", 400));
 
-      // Find all OTPs for the user that have not expired
       const userOtps = await Otp.find({
         userId: user._id,
         expireAt: { $gt: new Date() },
@@ -770,7 +757,6 @@ router.post(
         return res.status(404).send("No valid OTP found for the user");
       }
 
-      // Check if the provided OTP matches any of the valid OTPs
       let matchedOtp = null;
       for (const userOtp of userOtps) {
         const isOtpValid = await bcrypt.compare(otp, userOtp.otp);
@@ -784,8 +770,10 @@ router.post(
         return res.status(401).send("Invalid OTP");
       }
 
-      // OTP verification successful, send token
-      sendToken(user, 200, res); // You can send a success status of 200 for OTP verification
+      console.log("OTP verified successfully, user:", user);
+
+      // Send token upon successful OTP verification
+      sendToken(user, 201, res);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
