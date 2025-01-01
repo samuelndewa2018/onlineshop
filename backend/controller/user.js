@@ -732,39 +732,66 @@ router.post(
   "/login-otp",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { otp } = req.body;
-      let hashedOtp;
+      const { otp, phoneNumber } = req.body;
 
-      const saltRounds = parseInt(process.env.SALT_ROUNDS, 10) || 10;
+      const formatPhoneNumber = (phoneNumber) => {
+        if (phoneNumber.startsWith("0")) {
+          // Already in valid format
+          return phoneNumber;
+        } else if (phoneNumber.startsWith("7") || phoneNumber.startsWith("1")) {
+          // Prepend '0'
+          return `0${phoneNumber}`;
+        } else if (
+          phoneNumber.startsWith("+2547") ||
+          phoneNumber.startsWith("2547")
+        ) {
+          // Convert international format to local
+          return phoneNumber.replace(/^(\+254|254)/, "0");
+        } else {
+          throw new Error("Invalid phone number format");
+        }
+      };
 
-      // Hash the OTP
-      hashedOtp = await bcrypt.hash(otp, saltRounds);
+      const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
 
-      if (!otp) {
-        return res.status(400).send("OTP is required");
+      // Find the user first
+      const user = await User.findOne({ phoneNumber: formattedPhoneNumber });
+      if (!user) {
+        return next(new ErrorHandler("User doesn't exist!", 400));
       }
+
       // Find all OTPs for the user that have not expired
-      const shop = await Otp.findOne({
-        otp: hashedOtp,
+      const userOtps = await Otp.find({
+        userId: user._id,
         expireAt: { $gt: new Date() },
       });
 
-      if (!shop || shop.length === 0) {
+      if (!userOtps || userOtps.length === 0) {
         return res.status(404).send("No valid OTP found for the user");
       }
-      const userId = shop.userId;
-      const user = await User.findById({ userId });
 
-      if (!user) {
-        return next(new ErrorHandler("User doesn't exists!", 400));
+      // Check if the provided OTP matches any of the valid OTPs
+      let matchedOtp = null;
+      for (const userOtp of userOtps) {
+        const isOtpValid = await bcrypt.compare(otp, userOtp.otp);
+        if (isOtpValid) {
+          matchedOtp = userOtp;
+          break;
+        }
       }
 
-      sendToken(user, 201, res);
+      if (!matchedOtp) {
+        return res.status(401).send("Invalid OTP");
+      }
+
+      // OTP verification successful, send token
+      sendToken(user, 200, res); // You can send a success status of 200 for OTP verification
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
   })
 );
+
 // create activation token
 const createActivationToken = (user) => {
   return jwt.sign(user, process.env.ACTIVATION_SECRET, {
