@@ -48,31 +48,29 @@ const sendWhatsAppText = async (message, session, phoneNumber) => {
   }
 };
 // create and send otp
-const generateAndSendOtp = async (user, phone) => {
+const generateAndSendOtp = async (user, phoneNumber) => {
+  // Use phoneNumber instead of phone
   try {
     let otp, hashedOtp;
 
     // Loop until a unique OTP is generated
     do {
-      // Generate a 6-digit OTP
       const randomPart = uuidv4().slice(0, 6);
       otp = randomPart.replace(/-/g, "").slice(0, 6).toUpperCase();
 
       const saltRounds = parseInt(process.env.SALT_ROUNDS, 10) || 10;
 
-      // Hash the OTP
       hashedOtp = await bcrypt.hash(otp, saltRounds);
 
-      // Check if the OTP already exists in the database
+      // Check if OTP exists in the DB
       const existingOtp = await Otp.findOne({ otp: hashedOtp });
-      if (!existingOtp) break; // Exit loop if the OTP is unique
+      if (!existingOtp) break;
     } while (true);
 
     const message = `Your OTP is ${otp}. It is valid for 60 secs.`;
-    const phoneNumber = phone;
-    console.log("phone", phoneNumber);
+    console.log("phoneNumber", phoneNumber); // Log the formatted phone number
 
-    // Save the OTP to the database
+    // Save OTP to the database
     const newOtp = new Otp({
       userId: user.userId,
       otp: hashedOtp,
@@ -82,7 +80,7 @@ const generateAndSendOtp = async (user, phone) => {
     await newOtp.save();
 
     // Send OTP via WhatsApp
-    await sendWhatsAppText(message, process.env.WHATSAPP_SESSION, phone);
+    await sendWhatsAppText(message, process.env.WHATSAPP_SESSION, phoneNumber); // Use phoneNumber
 
     // Send OTP via Email
     await sendOtp({
@@ -672,18 +670,21 @@ router.post(
   "/create-otp",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      // Clean up expired OTPs
       const userOtps = await Otp.find({
         expireAt: { $lt: new Date() },
       });
       for (const userOtp of userOtps) {
         await Otp.deleteOne({ _id: userOtp._id });
       }
-      const { phoneNumber } = req.body;
-      console.log("phone", phoneNumber);
 
+      const { phoneNumber } = req.body;
+      console.log("Received phoneNumber:", phoneNumber);
+
+      // Phone number formatting function
       const formatPhoneNumber = (phoneNumber) => {
         if (phoneNumber.startsWith("0")) {
-          // Valid format
+          // Already in valid format
           return phoneNumber;
         } else if (phoneNumber.startsWith("7") || phoneNumber.startsWith("1")) {
           // Prepend '0'
@@ -692,29 +693,35 @@ router.post(
           phoneNumber.startsWith("+2547") ||
           phoneNumber.startsWith("2547")
         ) {
-          // Replace '+254' or '254' with '0'
+          // Convert international format to local
           return phoneNumber.replace(/^(\+254|254)/, "0");
         } else {
-          // Invalid format
           throw new Error("Invalid phone number format");
         }
       };
-      const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
-      log("formattedPhoneNumber", formattedPhoneNumber);
 
+      const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+      console.log("Formatted phoneNumber:", formattedPhoneNumber);
+
+      // Find the user by formatted phone number
       const user = await User.findOne({ phoneNumber: formattedPhoneNumber });
       if (!user) {
-        return next(new ErrorHandler("User doesn't exists!", 400));
+        return next(new ErrorHandler("User doesn't exist!", 400));
       }
 
-      await generateAndSendOtp({ user, formattedPhoneNumber });
+      // Send OTP
+      await generateAndSendOtp(user, formattedPhoneNumber); // Passing user directly, formattedPhoneNumber is redundant
 
+      // Respond with success
       res.status(201).json({
         success: true,
-        message: "OTP sent successfully check your whatsapp & email!",
+        message: "OTP sent successfully! Check your WhatsApp & email.",
       });
     } catch (error) {
-      return next(new ErrorHandler(error.message, 500));
+      console.error("Error generating OTP:", error); // Log error for better debugging
+      return next(
+        new ErrorHandler(error.message || "Internal Server Error", 500)
+      );
     }
   })
 );
