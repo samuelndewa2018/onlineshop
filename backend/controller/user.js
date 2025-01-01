@@ -11,6 +11,89 @@ const sendToken = require("../utils/jwtToken");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
 const crypto = require("crypto");
 
+// middlewares
+const sendWhatsAppText = async (message, session, phoneNumber) => {
+  const username = process.env.WHATSAPP_USERNAME;
+  const password = process.env.WHATSAPP_PASSWORD;
+  const authToken = Buffer.from(`${username}:${password}`).toString("base64");
+  try {
+    const response = await axios.post(
+      " https://backend.payhero.co.ke/api/v2/whatspp/sendText",
+      {
+        message: message,
+        session: session,
+        phone_number: phoneNumber,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Basic ${authToken}`, // Dynamic authorization token
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      "Error sending WhatsApp text:",
+      error.response?.data || error.message
+    );
+    throw error;
+  }
+};
+// create and send otp
+const generateAndSendOtp = async (user) => {
+  try {
+    let otp, hashedOtp;
+
+    // Loop until a unique OTP is generated
+    do {
+      // Generate a 6-digit OTP
+      const randomPart = uuidv4().slice(0, 6);
+      otp = randomPart.replace(/-/g, "").slice(0, 6);
+
+      const saltRounds = process.env.SALT_ROUNDS || 10;
+
+      // Hash the OTP
+      hashedOtp = await bcrypt.hash(otp, saltRounds);
+
+      // Check if the OTP already exists in the database
+      const existingOtp = await Otp.findOne({ otp: hashedOtp });
+      if (!existingOtp) break; // Exit loop if the OTP is unique
+    } while (true);
+
+    const message = `Your OTP is ${otp}. It is valid for 60 secs.`;
+
+    // Save the OTP to the database
+    const newOtp = new Otp({
+      userId: user.userId,
+      otp: hashedOtp,
+      createdAt: new Date(),
+      expireAt: new Date(new Date().getTime() + 60 * 1000),
+    });
+    await newOtp.save();
+
+    // Send OTP via WhatsApp
+    await sendWhatsAppText(
+      message,
+      process.env.WHATSAPP_SESSION,
+      user.phoneNumber
+    );
+
+    // Send OTP via Email
+    await sendOtp({
+      email: user.email,
+      otp: otp,
+      subject: "Your Verification Code",
+    });
+
+    return { success: true, message: "OTP sent successfully" };
+  } catch (error) {
+    console.error("Error generating and sending OTP:", error);
+    throw new Error("Failed to generate and send OTP");
+  }
+};
+
 //create user
 router.post("/create-user", async (req, res, next) => {
   try {
@@ -44,8 +127,14 @@ router.post("/create-user", async (req, res, next) => {
     const activationToken = createActivationToken(user);
 
     const activationUrl = `https://ninetyone.co.ke/activation/${activationToken}`;
+    const message = `Hello ${name}, Welcome to Ninety One. Click the link below to activate your account. ${activationUrl}`;
 
     try {
+      await sendWhatsAppText(
+        message,
+        process.env.WHATSAPP_SESSION,
+        user.phoneNumber
+      );
       await sendMail({
         email: user.email,
         subject: "Activate your account",
@@ -543,7 +632,7 @@ router.post("/create-user", async (req, res, next) => {
       });
       res.status(201).json({
         success: true,
-        message: `Registered successfully. Please check your email to activate your account.`,
+        message: `Registered successfully. Please check your email or whatsapp to activate your account.`,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
@@ -553,6 +642,74 @@ router.post("/create-user", async (req, res, next) => {
   }
 });
 
+// create otp for login
+router.post(
+  "/create-otp",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const userOtps = await Otp.find({
+        expireAt: { $lt: new Date() },
+      });
+      for (const userOtp of userOtps) {
+        await Otp.deleteOne({ _id: userOtp._id });
+      }
+      const { phoneNumber } = req.body;
+      const user = await User.findOne({ phoneNumber: phoneNumber });
+      if (!user) {
+        return next(new ErrorHandler("User doesn't exists!", 400));
+      }
+
+      await generateAndSendOtp({ user });
+
+      res.status(201).json({
+        success: true,
+        message: "OTP sent successfully check your whatsapp & email!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// login with otp
+
+router.post(
+  "/login-otp",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const { otp } = req.body;
+      let hashedOtp;
+
+      const saltRounds = process.env.SALT_ROUNDS || 10;
+
+      // Hash the OTP
+      hashedOtp = await bcrypt.hash(otp, saltRounds);
+
+      if (!otp) {
+        return res.status(400).send("OTP is required");
+      }
+      // Find all OTPs for the user that have not expired
+      const shop = await Otp.findOne({
+        otp: hashedOtp,
+        expireAt: { $gt: new Date() },
+      });
+
+      if (!shop || shop.length === 0) {
+        return res.status(404).send("No valid OTP found for the user");
+      }
+      const userId = shop.userId;
+      const user = await User.findById({ userId });
+
+      if (!user) {
+        return next(new ErrorHandler("User doesn't exists!", 400));
+      }
+
+      sendToken(user, 201, res);
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 // create activation token
 const createActivationToken = (user) => {
   return jwt.sign(user, process.env.ACTIVATION_SECRET, {
@@ -575,7 +732,7 @@ router.post(
       if (!newUser) {
         return next(new ErrorHandler("Invalid token", 400));
       }
-      const { name, email, password, avatar } = newUser;
+      const { name, email, password, avatar, phoneNumber } = newUser;
 
       let user = await User.findOne({ email });
 
@@ -587,6 +744,7 @@ router.post(
         email,
         avatar,
         password,
+        phoneNumber,
       });
 
       sendToken(user, 201, res);
