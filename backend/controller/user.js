@@ -47,7 +47,7 @@ const sendWhatsAppText = async (message, session, phoneNumber) => {
   }
 };
 // create and send otp
-const generateAndSendOtp = async (user) => {
+const generateAndSendOtp = async (user, phone) => {
   try {
     let otp, hashedOtp;
 
@@ -79,11 +79,7 @@ const generateAndSendOtp = async (user) => {
     await newOtp.save();
 
     // Send OTP via WhatsApp
-    await sendWhatsAppText(
-      message,
-      process.env.WHATSAPP_SESSION,
-      user.phoneNumber
-    );
+    await sendWhatsAppText(message, process.env.WHATSAPP_SESSION, user.phone);
 
     // Send OTP via Email
     await sendOtp({
@@ -705,7 +701,7 @@ router.post(
         return next(new ErrorHandler("User doesn't exists!", 400));
       }
 
-      await generateAndSendOtp({ user });
+      await generateAndSendOtp({ user, phoneNumber: formattedPhoneNumber });
 
       res.status(201).json({
         success: true,
