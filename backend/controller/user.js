@@ -678,6 +678,8 @@ router.post(
         await Otp.deleteOne({ _id: userOtp._id });
       }
       const { phoneNumber } = req.body;
+      console.log("phone", phoneNumber);
+
       const formatPhoneNumber = (phoneNumber) => {
         if (phoneNumber.startsWith("0")) {
           // Valid format
