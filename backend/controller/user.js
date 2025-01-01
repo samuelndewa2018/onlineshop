@@ -62,7 +62,7 @@ const generateAndSendOtp = async (user) => {
       hashedOtp = await bcrypt.hash(otp, saltRounds);
 
       // Check if the OTP already exists in the database
-      const existingOtp = await otp.findOne({ otp: hashedOtp });
+      const existingOtp = await Otp.findOne({ otp: hashedOtp });
       if (!existingOtp) break; // Exit loop if the OTP is unique
     } while (true);
 
