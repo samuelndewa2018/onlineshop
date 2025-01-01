@@ -68,6 +68,8 @@ const generateAndSendOtp = async (user, phone) => {
     } while (true);
 
     const message = `Your OTP is ${otp}. It is valid for 60 secs.`;
+    const phone = phone;
+    console.log("phone", phone);
 
     // Save the OTP to the database
     const newOtp = new Otp({
