@@ -13,6 +13,7 @@ const { isAuthenticated, isAdmin } = require("../middleware/auth");
 const crypto = require("crypto");
 import { v4 as uuidv4 } from "uuid";
 import sendOtp from "../utils/sendVerify";
+import { log } from "console";
 const bcrypt = require("bcrypt");
 const axios = require("axios");
 
@@ -699,6 +700,7 @@ router.post(
         }
       };
       const formattedPhoneNumber = formatPhoneNumber(phoneNumber);
+      log("formattedPhoneNumber", formattedPhoneNumber);
 
       const user = await User.findOne({ phoneNumber: formattedPhoneNumber });
       if (!user) {
