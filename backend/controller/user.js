@@ -72,7 +72,7 @@ const generateAndSendOtp = async (user, phoneNumber) => {
 
     // Save OTP to the database
     const newOtp = new Otp({
-      userId: user.userId,
+      userId: user._Id,
       otp: hashedOtp,
       createdAt: new Date(),
       expireAt: new Date(new Date().getTime() + 60 * 1000),
