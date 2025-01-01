@@ -14,9 +14,13 @@ const crypto = require("crypto");
 //create user
 router.post("/create-user", async (req, res, next) => {
   try {
-    const { name, email, password, avatar } = req.body;
+    const { name, email, password, avatar, phoneNumber, country } = req.body;
     const userEmail = await User.findOne({ email });
+    const userPhone = await User.findOne({ phoneNumber });
 
+    if (userPhone) {
+      return next(new ErrorHandler("Phone number already exists", 400));
+    }
     if (userEmail) {
       return next(new ErrorHandler("User already exists", 400));
     }
@@ -29,6 +33,8 @@ router.post("/create-user", async (req, res, next) => {
       name: name,
       email: email,
       password: password,
+      phoneNumber: phoneNumber,
+      country: country,
       avatar: {
         public_id: myCloud.public_id,
         url: myCloud.secure_url,

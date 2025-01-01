@@ -107,7 +107,7 @@ router.post(
   "/create-shop",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const { email, name, phoneNumber } = req.body;
+      const { email, name, phoneNumber, country } = req.body;
       const sellerEmail = await Shop.findOne({ email });
       if (sellerEmail) {
         return next(new ErrorHandler("User already exists", 400));
@@ -129,6 +129,7 @@ router.post(
         name: req.body.name,
         email: email,
         password: req.body.password,
+        country: country,
         avatar: {
           public_id: myCloud.public_id,
           url: myCloud.secure_url,
