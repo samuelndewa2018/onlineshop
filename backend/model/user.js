@@ -28,6 +28,9 @@ const userSchema = new mongoose.Schema({
   refCode: {
     type: String,
   },
+  country: {
+    type: String,
+  },
   addresses: [
     {
       country: {

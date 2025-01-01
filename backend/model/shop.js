@@ -25,6 +25,9 @@ const shopSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
+  country: {
+    type: String,
+  },
   phoneNumber: {
     type: String,
     required: true,
