@@ -55,7 +55,8 @@ const generateAndSendOtp = async (user, phoneNumber) => {
 
     // Loop until a unique OTP is generated
     do {
-      const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
+      const randomPart = uuidv4().slice(0, 4);
+      otp = randomPart.replace(/-/g, "").slice(0, 4).toUpperCase();
 
       const saltRounds = parseInt(process.env.SALT_ROUNDS, 10) || 10;
 
