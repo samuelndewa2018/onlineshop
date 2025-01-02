@@ -776,7 +776,6 @@ router.post(
         return res.status(401).send("Invalid OTP");
       }
 
-      console.log("OTP verified successfully, user:", user);
       sendToken(user, 201, res);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
