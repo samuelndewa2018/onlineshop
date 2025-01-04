@@ -57,8 +57,8 @@ const generateAndSendOtp = async (user) => {
     // Loop until a unique OTP is generated
     do {
       // Generate a 6-digit OTP
-      const randomPart = uuidv4().slice(0, 6);
-      otp = randomPart.replace(/-/g, "").slice(0, 6).toUpperCase();
+      const randomPart = uuidv4().slice(0, 4);
+      otp = randomPart.replace(/-/g, "").slice(0, 4).toUpperCase();
 
       const saltRounds = parseInt(process.env.SALT_ROUNDS, 10) || 10;
 

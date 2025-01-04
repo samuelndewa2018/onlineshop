@@ -174,8 +174,7 @@ router.get("/checkRefcode/:mpesa_ref/:requestID", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-// intasend stk push
+// payhero stk push
 router.post("/mpesa-stk-push", async (req, res) => {
   try {
     const { amount, phone } = req.body;

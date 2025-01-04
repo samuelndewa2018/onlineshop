@@ -171,6 +171,7 @@ router.delete(
         success: true,
         message: "Product Deleted successfully!",
       });
+      console.log("product deleted", product.name);
     } catch (error) {
       return next(new ErrorHandler(error, 400));
     }
