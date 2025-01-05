@@ -323,12 +323,14 @@ router.post(
         const product = await Product.findById(item._id);
 
         if (!product) {
-          return res.status(404).json({
-            success: false,
+          // Add the not found product to outOfStockItems
+          outOfStockItems.push({
+            index,
+            itemId: item._id,
             message: `Product with ID ${item._id} not found.`,
           });
+          continue; // Skip to the next iteration
         }
-
         // Find the matching size in the product's sizes array
         const sizeInfo = product.sizes.find((s) => s.name === selectedSize);
 

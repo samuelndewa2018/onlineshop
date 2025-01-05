@@ -3214,6 +3214,7 @@ router.get("/get-user-id/:refCode", async (req, res) => {
 
     if (user) {
       res.status(200).json({ success: true, userId: user._id });
+      console.log(user._id);
     } else {
       res.status(404).json({ success: false, message: "User not found." });
     }
