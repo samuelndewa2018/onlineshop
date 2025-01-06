@@ -7,6 +7,7 @@ const tinytransactionSchema = new Schema(
     mpesa_ref: { type: String, required: true },
     amount: { type: String, required: true },
     resultId: { type: String, required: true },
+    type: { type: String, required: true },
   },
   { timestamps: true }
 );

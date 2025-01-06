@@ -85,6 +85,7 @@ router.post("/callback", async (req, res) => {
       transaction.mpesa_ref = ref;
       transaction.amount = amount;
       transaction.resultId = resultId;
+      transaction.type = "deposit";
 
       const savedTransaction = await transaction.save();
       console.log({
@@ -287,9 +288,6 @@ router.post("/statas", async (req, res) => {
   try {
     const basicAuthToken = generateBasicAuthToken();
 
-    const reference = req.body.trackID;
-    console.log("this is the ref", reference);
-
     // Make the GET request using axios
     const response = await axios.get(
       `https://backend.payhero.co.ke/api/v2/transaction-status?reference=${reference}`,
@@ -315,17 +313,3 @@ router.post("/statas", async (req, res) => {
 });
 
 module.exports = router;
-
-//  Received response: {
-//   Amount: 1,
-//   CheckoutRequestID: 'ws_CO_14102024092514495741895028',
-//   ExternalReference: '1',
-//   MerchantRequestID: '0a83-4731-ac2e-58dccc54ee5984319654',
-//   MpesaReceiptNumber: 'SJE91DHU17',
-//   PaymentWalletBalance: 0,
-//   Phone: '+254741895028',
-//   ResultCode: 0,
-//   ResultDesc: 'The service request is processed successfully.',
-//   ServiceWalletBalance: 0,
-//   Status: 'Success'
-// }
