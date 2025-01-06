@@ -80,7 +80,7 @@ const generateAndSendOtp = async (user, phoneNumber) => {
     await newOtp.save();
 
     // Send OTP via WhatsApp
-    await sendWhatsAppText(message, process.env.WHATSAPP_SESSION, phoneNumber); // Use phoneNumber
+    // await sendWhatsAppText(message, process.env.WHATSAPP_SESSION, phoneNumber); // Use phoneNumber
 
     // Send OTP via Email
     await sendOtp({
@@ -153,11 +153,11 @@ router.post("/create-user", async (req, res, next) => {
     const message = `Hello ${name}, Welcome to Ninety One. Click the link below to activate your account. ${activationUrl}`;
 
     try {
-      await sendWhatsAppText(
-        message,
-        process.env.WHATSAPP_SESSION,
-        formattedPhoneNumber
-      );
+      // await sendWhatsAppText(
+      //   message,
+      //   process.env.WHATSAPP_SESSION,
+      //   formattedPhoneNumber
+      // );
       await sendMail({
         email: user.email,
         subject: "Activate your account",
