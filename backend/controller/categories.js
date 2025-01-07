@@ -40,6 +40,18 @@ router.get("/categories", (req, res) => {
     });
 });
 
+router.get("/category", async (req, res, next) => {
+  try {
+    const categories = await Category.find();
+    res.status(200).json({
+      success: true,
+      categories,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve statements." });
+  }
+});
+
 //delete category
 router.delete("/delete-category/:id", async (req, res) => {
   const { id } = req.params;
