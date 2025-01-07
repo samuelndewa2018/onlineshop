@@ -40,6 +40,19 @@ router.get("/get-carousel", async (req, res) => {
   }
 });
 
+// get carousel
+router.get("/get-carousels", async (req, res) => {
+  try {
+    const carousel = await Carousel.find();
+    res.status(200).json({
+      success: true,
+      carousel,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve statements." });
+  }
+});
+
 //delete carousel
 router.delete("/carousel/:id", async (req, res) => {
   const { id } = req.params;
