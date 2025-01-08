@@ -10,6 +10,10 @@ const accTSchema = new mongoose.Schema({
     type: String,
     default: "pending",
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model("AccT", accTSchema);
