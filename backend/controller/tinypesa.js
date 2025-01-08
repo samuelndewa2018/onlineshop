@@ -267,9 +267,6 @@ router.post("/mpesa-stk-push", async (req, res) => {
       const { CheckoutRequestID: request_id, reference: track_id } =
         response.data;
 
-      const channel_id = 123; // Example value
-      console.log("channel id:", channel_id, "type:", typeof channel_id);
-
       const accT = new AccT({
         request_id,
         acc_id: channel_id,
