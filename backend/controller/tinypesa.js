@@ -4,6 +4,8 @@ const router = express.Router();
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const TinyTransaction = require("../model/tinytransactions");
 const IntaSend = require("intasend-node");
+const AccT = require("../model/accT");
+const Acc = require("../model/acc");
 const intasend = new IntaSend(
   process.env.PUBLISHABLE_KEY,
   process.env.SECRET_KEY
@@ -88,6 +90,39 @@ router.post("/callback", async (req, res) => {
       transaction.type = "deposit";
 
       const savedTransaction = await transaction.save();
+
+      const accTransaction = await AccT.findOne({ request_id: resultId });
+
+      if (!accTransaction) {
+        return res.status(404).json({ message: "Transaction not found" });
+      }
+      // Update the status to "paid"
+      accTransaction.status = "paid";
+
+      // Save the updated transaction
+      await accTransaction.save();
+
+      const { acc_id, amount: accAmount } = accTransaction;
+
+      // Find the account associated with the acc_id
+      let transactionAcc = await Acc.findOne({ name: acc_id });
+
+      if (!transactionAcc) {
+        // Create the account with the initial balance set to accAmount
+        transactionAcc = new Acc({
+          name: acc_id,
+          balance: accAmount,
+        });
+
+        // Save the newly created account
+        await transactionAcc.save();
+      } else {
+        transactionAcc.balance += accAmount;
+
+        // Save the updated account
+        await transactionAcc.save();
+      }
+
       console.log({
         message: "Transaction saved successfully",
         data: savedTransaction,
@@ -180,20 +215,26 @@ router.post("/mpesa-stk-push", async (req, res) => {
   try {
     const { amount, phone } = req.body;
 
-    // Convert phone number to international format
+    // Input validation
+    if (!amount || isNaN(amount) || amount <= 0) {
+      return res.status(400).json({ message: "Invalid amount provided." });
+    }
+
+    if (!phone || !/^0\d{9}$/.test(phone)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid phone number provided." });
+    }
+
     function convertPhoneNumber(phoneNumber) {
       if (phoneNumber.startsWith("0") && phoneNumber.length === 10) {
         return "254" + phoneNumber.slice(1);
-      } else {
-        return phoneNumber;
       }
+      return phoneNumber;
     }
 
     const convertedPhoneNumber = convertPhoneNumber(phone);
-    // Define the array of channel IDs
-    const channelIds = [897, 899, 900]; // Replace with your actual channel IDs
-
-    // Randomly select a channel ID from the array
+    const channelIds = [897, 899, 900];
     const channel_id =
       channelIds[Math.floor(Math.random() * channelIds.length)];
     const callback_url =
@@ -202,17 +243,15 @@ router.post("/mpesa-stk-push", async (req, res) => {
     const postData = {
       amount,
       phone_number: convertedPhoneNumber,
-      channel_id: channel_id, // Replace with the actual channel ID if needed
+      channel_id,
       provider: "m-pesa",
       external_reference: String(amount),
-      callback_url: callback_url, // Callback URL
+      callback_url,
     };
 
-    // Generate the Basic Auth token
     const basicAuthToken = generateBasicAuthToken();
 
     try {
-      // Make the POST request using axios
       const response = await axios.post(
         "https://backend.payhero.co.ke/api/v2/payments",
         postData,
@@ -221,22 +260,21 @@ router.post("/mpesa-stk-push", async (req, res) => {
             "Content-Type": "application/json",
             Authorization: basicAuthToken,
           },
+          timeout: 10000, // 10 seconds timeout
         }
       );
 
-      // Assuming `CheckoutRequestID` is in the response data
-      const request_id = response.data.CheckoutRequestID;
-      const track_id = response.data.reference;
+      const { CheckoutRequestID: request_id, reference: track_id } =
+        response.data;
 
-      // Log the details before sending the response
-      console.log({
+      const accT = new AccT({
         request_id,
-        track_id,
-        apiUsername,
-        apiPassword,
+        channel_id,
+        amount,
+        type: "deposit",
       });
+      await accT.save();
 
-      // Respond with the STK push result
       res.status(200).json({
         success: true,
         message: "STK Pushed Successfully",
