@@ -269,7 +269,7 @@ router.post("/mpesa-stk-push", async (req, res) => {
 
       const accT = new AccT({
         request_id,
-        channel_id,
+        acc_id: channel_id,
         amount,
         type: "deposit",
       });
