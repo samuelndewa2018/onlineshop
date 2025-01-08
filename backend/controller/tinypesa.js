@@ -267,9 +267,11 @@ router.post("/mpesa-stk-push", async (req, res) => {
       const { CheckoutRequestID: request_id, reference: track_id } =
         response.data;
 
+      console.log("channel id", channel_id);
+
       const accT = new AccT({
         request_id,
-        acc_id: channel_id,
+        channel_id,
         amount,
         type: "deposit",
       });
