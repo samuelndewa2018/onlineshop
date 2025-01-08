@@ -352,7 +352,7 @@ router.put(
         console.log(updatedData);
 
         // Check if itemNo exists, if not generate a new one
-        if (!updatedData.itemNo) {
+        if (!product.itemNo) {
           updatedData.itemNo = generateItemNo();
         }
 
