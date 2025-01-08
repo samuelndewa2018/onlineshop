@@ -333,8 +333,23 @@ router.put(
       const product = await Product.findById(productId);
 
       // Function to generate a unique item number
-      const generateItemNo = () => {
-        return crypto.randomBytes(3).toString("hex").toUpperCase();
+      const generateItemNo = async () => {
+        let itemNo;
+        let isUnique = false;
+
+        while (!isUnique) {
+          // Generate a random item number
+          itemNo = crypto.randomBytes(3).toString("hex").toUpperCase();
+
+          // Check if the item number already exists in the database
+          const existingProduct = await Product.findOne({ itemNo });
+
+          if (!existingProduct) {
+            isUnique = true; // Exit loop if the item number is unique
+          }
+        }
+
+        return itemNo;
       };
 
       if (!product) {
