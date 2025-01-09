@@ -7,6 +7,8 @@ const cloudinary = require("cloudinary");
 router.post("/create-category", async (req, res, next) => {
   try {
     const { name, subcategories } = req.body;
+    console.log(req.body);
+
     let image = [];
 
     // Handle image upload if image is provided in the request
@@ -36,7 +38,6 @@ router.post("/create-category", async (req, res, next) => {
   }
 });
 
-// edit category
 // Edit category route
 router.put("/edit-category/:id", async (req, res, next) => {
   const { id } = req.params;
