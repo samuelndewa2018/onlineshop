@@ -2,6 +2,8 @@ const express = require("express");
 const Category = require("../model/categories");
 const router = express.Router();
 const cloudinary = require("cloudinary");
+const multer = require("multer");
+const upload = multer();
 // changed mongo db
 //create category
 router.post("/create-category", async (req, res, next) => {
@@ -39,10 +41,11 @@ router.post("/create-category", async (req, res, next) => {
 });
 
 // Edit category route
-router.put("/edit-category/:id", async (req, res, next) => {
+
+router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
   const { id } = req.params;
   const { name, subcategories } = req.body;
-  console.log("datails", name, subcategories);
+  console.log("details", name, subcategories);
 
   try {
     const updatedData = { name };
