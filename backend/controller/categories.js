@@ -6,9 +6,10 @@ const cloudinary = require("cloudinary");
 //create category
 router.post("/create-category", async (req, res, next) => {
   try {
-    const { name } = req.body;
+    const { name, subcategories } = req.body;
     let image = [];
 
+    // Handle image upload if image is provided in the request
     if (req.body.image) {
       const result = await cloudinary.v2.uploader.upload(req.body.image, {
         folder: "categories",
@@ -19,13 +20,47 @@ router.post("/create-category", async (req, res, next) => {
       });
     }
 
-    const category = new Category({ name, image });
+    // Create a new category with the provided name, image, and subcategories
+    const category = new Category({
+      name,
+      image,
+      subcategories,
+    });
 
+    // Save the category to the database
     const savedCategory = await category.save();
 
     res.json(savedCategory);
   } catch (error) {
     return next(new ErrorHandler(error, 500));
+  }
+});
+
+// edit category
+// Edit category route
+router.put("/edit-category/:id", async (req, res, next) => {
+  const { id } = req.params;
+  const { name, subcategories } = req.body;
+
+  try {
+    const updatedData = { name };
+
+    if (subcategories) {
+      updatedData.subcategories = JSON.parse(subcategories); // Parse subcategories if they are sent as a string
+    }
+
+    const updatedCategory = await Category.findByIdAndUpdate(id, updatedData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedCategory) {
+      return next(new ErrorHandler("Category not found", 404));
+    }
+
+    res.status(200).json(updatedCategory);
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
   }
 });
 
