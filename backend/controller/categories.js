@@ -45,19 +45,20 @@ router.post("/create-category", async (req, res, next) => {
 router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
   const { id } = req.params;
   const { name, subcategories } = req.body;
-  console.log("details", name, subcategories);
 
   try {
     const updatedData = { name };
+    console.log("data", updatedData);
 
     if (subcategories) {
-      updatedData.subcategories = JSON.parse(subcategories); // Parse subcategories if they are sent as a string
+      updatedData.subcategories = JSON.parse(subcategories);
     }
 
-    const updatedCategory = await Category.findByIdAndUpdate(id, updatedData, {
-      new: true,
-      runValidators: true,
-    });
+    const updatedCategory = await Category.findByIdAndUpdate(
+      id,
+      { $set: updatedData },
+      { new: true, runValidators: true }
+    );
 
     if (!updatedCategory) {
       return next(new ErrorHandler("Category not found", 404));
