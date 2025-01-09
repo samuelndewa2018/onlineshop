@@ -42,6 +42,7 @@ router.post("/create-category", async (req, res, next) => {
 router.put("/edit-category/:id", async (req, res, next) => {
   const { id } = req.params;
   const { name, subcategories } = req.body;
+  console.log("datails", name, subcategories);
 
   try {
     const updatedData = { name };
