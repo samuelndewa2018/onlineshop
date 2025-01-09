@@ -3,6 +3,7 @@ const Category = require("../model/categories");
 const router = express.Router();
 const cloudinary = require("cloudinary");
 const multer = require("multer");
+const ErrorHandler = require("../utils/ErrorHandler");
 const upload = multer();
 // changed mongo db
 //create category
