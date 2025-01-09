@@ -49,17 +49,19 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
 
   try {
     const updatedData = { name };
-    console.log("data", updatedData);
 
     if (subcategories) {
       updatedData.subcategories = JSON.parse(subcategories);
     }
 
+    // Use $set operator to update fields
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
       { $set: updatedData },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true, useFindAndModify: false }
     );
+
+    console.log("Updating category with data:", updatedData);
 
     if (!updatedCategory) {
       return next(new ErrorHandler("Category not found", 404));
