@@ -89,7 +89,6 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
     }
 
     const oldCategoryName = currentCategory.name;
-    const oldSubcategories = currentCategory.subcategories;
 
     // Update the category
     const updatedCategory = await Category.findByIdAndUpdate(
@@ -102,21 +101,14 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
       return next(new ErrorHandler("Category not found", 404));
     }
 
-    // Extract subcategory names and join them into a comma-separated string
-    const newSubcategoryNames = updatedCategory.subcategories
-      .map((sub) => sub.name)
-      .join(", ");
-
     // Update products with the old category and tags (subcategories)
     await Product.updateMany(
       {
         category: oldCategoryName,
-        tags: { $in: oldSubcategories.map((sub) => sub.name) }, // Assuming oldSubcategories is an array of objects with a 'name' field
       },
       {
         $set: {
           category: updatedCategory.name,
-          tags: newSubcategoryNames,
         },
       }
     );
