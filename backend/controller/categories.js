@@ -4,6 +4,7 @@ const router = express.Router();
 const cloudinary = require("cloudinary");
 const multer = require("multer");
 const ErrorHandler = require("../utils/ErrorHandler");
+const Product = require("../model/product");
 const upload = multer();
 // changed mongo db
 //create category
@@ -43,6 +44,33 @@ router.post("/create-category", async (req, res, next) => {
 
 // Edit category route
 
+// router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
+//   const { id } = req.params;
+//   const { name, subcategories } = req.body;
+
+//   try {
+//     const updatedData = { name };
+
+//     if (subcategories) {
+//       updatedData.subcategories = JSON.parse(subcategories);
+//     }
+
+//     const updatedCategory = await Category.findByIdAndUpdate(
+//       id,
+//       { $set: updatedData },
+//       { new: true, runValidators: true }
+//     );
+
+//     if (!updatedCategory) {
+//       return next(new ErrorHandler("Category not found", 404));
+//     }
+
+//     res.status(200).json(updatedCategory);
+//   } catch (error) {
+//     return next(new ErrorHandler(error.message, 500));
+//   }
+// });
+
 router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
   const { id } = req.params;
   const { name, subcategories } = req.body;
@@ -54,6 +82,16 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
       updatedData.subcategories = JSON.parse(subcategories);
     }
 
+    // Find the current category to get the old name
+    const currentCategory = await Category.findById(id);
+    if (!currentCategory) {
+      return next(new ErrorHandler("Category not found", 404));
+    }
+
+    const oldCategoryName = currentCategory.name;
+    const oldSubcategories = currentCategory.subcategories;
+
+    // Update the category
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
       { $set: updatedData },
@@ -63,6 +101,20 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
     if (!updatedCategory) {
       return next(new ErrorHandler("Category not found", 404));
     }
+
+    // Update products with the old category name and subcategories
+    await Product.updateMany(
+      {
+        category: oldCategoryName,
+        tags: { $in: oldSubcategories },
+      },
+      {
+        $set: {
+          category: updatedCategory.name,
+          tags: updatedCategory.subcategories,
+        },
+      }
+    );
 
     res.status(200).json(updatedCategory);
   } catch (error) {
