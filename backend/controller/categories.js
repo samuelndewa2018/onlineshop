@@ -103,9 +103,11 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
 
     if (subcategories) {
       parsedSubcategories = JSON.parse(subcategories);
-      updatedData.subcategories = parsedSubcategories.map(
-        (subcategory) => subcategory.name
-      ); // Extract only the names
+      // Ensure each subcategory is an object with the necessary structure
+      updatedData.subcategories = parsedSubcategories.map((subcategory) => ({
+        name: subcategory.name,
+        _id: subcategory._id, // Include _id if needed or remove if not used
+      }));
     }
 
     console.log(updatedData); // Log updatedData to check its structure
@@ -145,8 +147,8 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
     // Update products with old subcategories (tags)
     if (parsedSubcategories) {
       for (let i = 0; i < oldSubcategories.length; i++) {
-        const oldTag = oldSubcategories[i];
-        const newTag = parsedSubcategories[i].name; // Use the name property
+        const oldTag = oldSubcategories[i].name;
+        const newTag = parsedSubcategories[i].name;
 
         if (newTag) {
           await Product.updateMany(
