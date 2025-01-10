@@ -44,73 +44,17 @@ router.post("/create-category", async (req, res, next) => {
 
 // Edit category route
 
-// router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
-//   const { id } = req.params;
-//   const { name, subcategories } = req.body;
-
-//   try {
-//     const updatedData = { name };
-
-//     if (subcategories) {
-//       updatedData.subcategories = JSON.parse(subcategories);
-//     }
-// console.log();
-
-//     // Find the current category to get the old name and subcategories
-//     const currentCategory = await Category.findById(id);
-//     if (!currentCategory) {
-//       return next(new ErrorHandler("Category not found", 404));
-//     }
-
-//     const oldCategoryName = currentCategory.name;
-
-//     // Update the category
-//     const updatedCategory = await Category.findByIdAndUpdate(
-//       id,
-//       { $set: updatedData },
-//       { new: true, runValidators: true }
-//     );
-
-//     if (!updatedCategory) {
-//       return next(new ErrorHandler("Category not found", 404));
-//     }
-
-//     // Update products with the old category and tags (subcategories)
-//     await Product.updateMany(
-//       {
-//         category: oldCategoryName,
-//       },
-//       {
-//         $set: {
-//           category: updatedCategory.name,
-//         },
-//       }
-//     );
-
-//     res.status(200).json(updatedCategory);
-//   } catch (error) {
-//     return next(new ErrorHandler(error.message, 500));
-//   }
-// });
-
 router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
   const { id } = req.params;
   const { name, subcategories } = req.body;
 
   try {
     const updatedData = { name };
-    let parsedSubcategories;
 
     if (subcategories) {
-      parsedSubcategories = JSON.parse(subcategories);
-      // Ensure each subcategory is an object with the necessary structure
-      updatedData.subcategories = parsedSubcategories.map((subcategory) => ({
-        name: subcategory.name,
-        _id: subcategory._id, // Include _id if needed or remove if not used
-      }));
+      updatedData.subcategories = JSON.parse(subcategories);
     }
-
-    console.log(updatedData); // Log updatedData to check its structure
+    console.log();
 
     // Find the current category to get the old name and subcategories
     const currentCategory = await Category.findById(id);
@@ -119,7 +63,6 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
     }
 
     const oldCategoryName = currentCategory.name;
-    const oldSubcategories = currentCategory.subcategories;
 
     // Update the category
     const updatedCategory = await Category.findByIdAndUpdate(
@@ -132,7 +75,7 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
       return next(new ErrorHandler("Category not found", 404));
     }
 
-    // Update products with the old category
+    // Update products with the old category and tags (subcategories)
     await Product.updateMany(
       {
         category: oldCategoryName,
@@ -143,27 +86,6 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
         },
       }
     );
-
-    // Update products with old subcategories (tags)
-    if (parsedSubcategories) {
-      for (let i = 0; i < oldSubcategories.length; i++) {
-        const oldTag = oldSubcategories[i].name;
-        const newTag = parsedSubcategories[i].name;
-
-        if (newTag) {
-          await Product.updateMany(
-            {
-              tags: oldTag,
-            },
-            {
-              $set: {
-                "tags.$": newTag,
-              },
-            }
-          );
-        }
-      }
-    }
 
     res.status(200).json(updatedCategory);
   } catch (error) {
