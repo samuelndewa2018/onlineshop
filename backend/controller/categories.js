@@ -99,13 +99,16 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
 
   try {
     const updatedData = { name };
-
     let parsedSubcategories;
+
     if (subcategories) {
       parsedSubcategories = JSON.parse(subcategories);
-      updatedData.subcategories = parsedSubcategories;
+      updatedData.subcategories = parsedSubcategories.map(
+        (subcategory) => subcategory.name
+      ); // Extract only the names
     }
-    console.log(updatedData);
+
+    console.log(updatedData); // Log updatedData to check its structure
 
     // Find the current category to get the old name and subcategories
     const currentCategory = await Category.findById(id);
@@ -143,7 +146,7 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
     if (parsedSubcategories) {
       for (let i = 0; i < oldSubcategories.length; i++) {
         const oldTag = oldSubcategories[i];
-        const newTag = parsedSubcategories[i];
+        const newTag = parsedSubcategories[i].name; // Use the name property
 
         if (newTag) {
           await Product.updateMany(
