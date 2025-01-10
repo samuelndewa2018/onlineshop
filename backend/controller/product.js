@@ -368,7 +368,7 @@ router.put(
 
         // Check if itemNo exists, if not generate a new one
         if (!product.itemNo) {
-          updatedData.itemNo = generateItemNo();
+          updatedData.itemNo = await generateItemNo();
         }
 
         if (images && images.length > 0) {
