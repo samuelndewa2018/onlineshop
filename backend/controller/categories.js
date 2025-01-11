@@ -54,7 +54,7 @@ router.put("/edit-category/:id", upload.none(), async (req, res, next) => {
     if (subcategories) {
       updatedData.subcategories = JSON.parse(subcategories);
     }
-    console.log();
+    console.log("subcategories", updatedData.subcategories);
 
     // Find the current category to get the old name and subcategories
     const currentCategory = await Category.findById(id);
