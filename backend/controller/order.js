@@ -427,8 +427,9 @@ router.post(
         if (!shopWithDiscount) {
           console.error(`Shop with ID ${discShop} not found.`);
         } else {
-          shopWithDiscount.availableBalance -= discount;
-          await shopWithDiscount.save();
+          // shopWithDiscount.availableBalance -= discount;
+          // await shopWithDiscount.save();
+          console.log("hello");
         }
       }
       const allItems = cart.reduce((acc, item) => {
@@ -1477,6 +1478,7 @@ router.get(
     }
   })
 );
+
 // update order status for seller
 
 router.put(
@@ -1531,20 +1533,21 @@ router.put(
       const userName = order.user.name || order.user.guestName;
       const homeLocation = `${order.shippingAddress.city}, ${order.shippingAddress.address1}`;
 
-      const collectionPoint =
-        order.shippingAddress.city === "Self Pickup"
-          ? "NinetyOne, Kahawa Shukari, Baringo Road"
-          : homeLocation;
-      if (req.body.status === "On the way") {
-        await sendWhatsAppText(
-          `Hello ${userName},Your order\n${order.orderNo} is ready for collection.\nCollection point: ${collectionPoint}\n`,
-          process.env.WHATSAPP_SESSION,
-          order.user.phoneNumber
-        );
-      }
+      // const collectionPoint =
+      //   order.shippingAddress.city === "Self Pickup"
+      //     ? "NinetyOne, Kahawa Shukari, Baringo Road"
+      //     : homeLocation;
+      // if (req.body.status === "On the way") {
+      //   await sendWhatsAppText(
+      //     `Hello ${userName},Your order\n${order.orderNo} is ready for collection.\nCollection point: ${collectionPoint}\n`,
+      //     process.env.WHATSAPP_SESSION,
+      //     order.user.phoneNumber
+      //   );
+      // }
 
       if (req.body.status === "Delivered") {
         order.deliveredAt = Date.now();
+
         try {
           if (order.referee && order.referee.trim() !== "") {
             const user = await User.findById(order.referee);
@@ -1563,9 +1566,19 @@ router.put(
           } else {
             console.error("Order referee is an empty string.");
           }
+          if (order.discShop && order.discount) {
+            const shopWithDiscount = await Shop.findById(order.discShop);
+
+            if (!shopWithDiscount) {
+              console.error(`Shop with ID ${discShop} not found.`);
+            } else {
+              shopWithDiscount.availableBalance -= order.discount;
+              await shopWithDiscount.save();
+            }
+          }
         } catch (error) {
           console.error(
-            `Error updating availableBalance for user ${order.referee}: ${error}`
+            `Error updating balances for user ${order.referee} and shop ${order.discShop}: ${error}`
           );
         }
         if (order.paymentInfo.status !== "succeeded") {
@@ -1614,6 +1627,7 @@ router.put(
           }
         }
       }
+
       await order.save({ validateBeforeSave: false });
       res.status(200).json({
         success: true,
