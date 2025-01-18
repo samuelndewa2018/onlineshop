@@ -65,6 +65,7 @@ const message = require("./controller/message");
 const withdraw = require("./controller/withdraw");
 const mpesaRoutes = require("./controller/mpesa");
 const tinyRoutes = require("./controller/tinypesa");
+const ums = require("./controller/ums");
 const statementsRoutes = require("./controller/statements");
 const category = require("./controller/categories");
 const carousel = require("./controller/carousel");
@@ -97,6 +98,7 @@ app.use("/api/v2/flashsale", flashSale);
 app.use("/api/v2/countries", countries);
 app.use("/api/v2/cities", cities);
 app.use("/api/v2/states", states);
+app.use("/api/v2/ums", ums);
 
 // it's for ErrorHandling
 app.use(ErrorHandler);
