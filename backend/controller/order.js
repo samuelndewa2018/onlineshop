@@ -525,7 +525,7 @@ router.post(
         const invoice = await Invoice.create({
           receiptNo: order.orderNo,
           amount: item.discountPrice * item.qty,
-          purpose: `Purchase of ${item.name}`,
+          purpose: `Purchase of ${item.itemNo || item.name}`,
           paid: {
             status: paidStatus,
             paidAt: paidAtDate,
