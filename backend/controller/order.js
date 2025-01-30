@@ -434,6 +434,16 @@ router.post(
       }
       if (totalPrice === 0) {
         try {
+          req.body.paymentInfo = {
+            type: "Loyalty Balance",
+            status: "succeeded",
+          };
+
+          if (!Array.isArray(cart) || cart.length === 0) {
+            console.error("Cart is empty or not an array.");
+            return;
+          }
+
           for (const item of cart) {
             try {
               if (item.size && item.size !== "") {
@@ -446,6 +456,7 @@ router.post(
               console.error(`Failed to update item ${item._id}:`, itemError);
             }
           }
+
           console.log("Stock update process completed.");
         } catch (error) {
           console.error("Unexpected error during stock update:", error);
@@ -591,8 +602,6 @@ router.post(
       }
       // create an expense if loyalty balance is used
       if (order.balance && order.balance > 0) {
-        paymentInfo.type = "Loyalty Balance";
-        paymentInfo.status = "succeeded";
         const paidStatus = true;
         const paidAtDate = new Date();
 
