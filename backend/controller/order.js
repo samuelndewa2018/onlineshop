@@ -501,6 +501,21 @@ router.post(
         await Promise.all(stockUpdatePromises);
       }
 
+      if (totalPrice === 0) {
+        req.body.paymentInfo.type = "Loyalty";
+        req.body.paymentInfo.status = "succeeded";
+        const stockUpdatePromises = cart.map(async (item) => {
+          if (item.size && item.size !== "") {
+            await updateOrderWithSizes(item._id, item.qty, item.size);
+          } else {
+            await updateOrder(item._id, item.qty);
+          }
+        });
+
+        // Await all stock updates to complete
+        await Promise.all(stockUpdatePromises);
+      }
+
       const order = await Order.create({
         cart,
         shippingAddress,
