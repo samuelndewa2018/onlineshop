@@ -502,8 +502,6 @@ router.post(
       }
 
       if (totalPrice === 0) {
-        paymentInfo.type = "Loyalty";
-        paymentInfo.status = "succeeded";
         const stockUpdatePromises = cart.map(async (item) => {
           if (item.size && item.size !== "") {
             await updateOrderWithSizes(item._id, item.qty, item.size);
