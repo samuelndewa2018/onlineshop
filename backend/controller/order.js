@@ -570,6 +570,25 @@ router.post(
         invoicePromises.push(discountExpense);
       }
 
+      // create an expense if loyalty balance is used
+      if (order.balance > 0) {
+        const paidStatus = order.paymentInfo.status === "succeeded";
+        const paidAtDate = paidStatus ? new Date() : null;
+
+        const balanceExpense = await Expense.create({
+          receiptNo: order.orderNo,
+          amount: order.balance,
+          purpose: "Balance Payment",
+          paid: {
+            status: paidStatus,
+            paidAt: paidAtDate,
+          },
+          shopId: "Loyalty Programme",
+        });
+
+        invoicePromises.push(balanceExpense);
+      }
+
       await Promise.all(invoicePromises);
       // Increment the order count
       await OrderCount.updateOne(
