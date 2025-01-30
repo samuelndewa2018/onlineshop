@@ -432,6 +432,26 @@ router.post(
           console.log("hello");
         }
       }
+      if (totalPrice === 0) {
+        try {
+          for (const item of cart) {
+            try {
+              if (item.size && item.size !== "") {
+                await updateOrderWithSizes(item._id, item.qty, item.size);
+              } else {
+                await updateOrder(item._id, item.qty);
+              }
+              console.log(`Stock updated for item: ${item._id}`);
+            } catch (itemError) {
+              console.error(`Failed to update item ${item._id}:`, itemError);
+            }
+          }
+          console.log("Stock update process completed.");
+        } catch (error) {
+          console.error("Unexpected error during stock update:", error);
+        }
+      }
+
       const allItems = cart.reduce((acc, item) => {
         const shopId = item.shopId;
         if (!acc[shopId]) {
@@ -499,34 +519,6 @@ router.post(
 
         // Await all stock updates to complete
         await Promise.all(stockUpdatePromises);
-      }
-
-      if (totalPrice === 0) {
-        try {
-          const stockUpdatePromises = cart.map(async (item) => {
-            try {
-              if (item.size && item.size !== "") {
-                const result = await updateOrderWithSizes(
-                  item._id,
-                  item.qty,
-                  item.size
-                );
-              } else {
-                const result = await updateOrder(item._id, item.qty);
-                console.log("Regular update result:", result);
-              }
-            } catch (itemError) {
-              console.error(`Failed to update item ${item._id}:`, itemError);
-              throw itemError; // Rethrow to catch in outer try
-            }
-          });
-
-          const updateResults = await Promise.all(stockUpdatePromises);
-          console.log("All stock updates completed:", updateResults);
-        } catch (error) {
-          console.error("Failed to process stock updates:", error);
-          throw new Error("Stock update failed: " + error.message);
-        }
       }
 
       const order = await Order.create({
@@ -600,7 +592,7 @@ router.post(
 
       // create an expense if loyalty balance is used
       if (order.balance && order.balance > 0) {
-        const paidStatus = "succeeded";
+        const paidStatus = true;
         const paidAtDate = new Date();
 
         const balanceExpense = await Expense.create({
