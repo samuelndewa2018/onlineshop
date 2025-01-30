@@ -585,8 +585,8 @@ router.post(
 
       // create an expense if loyalty balance is used
       if (order.balance > 0) {
-        const paidStatus = order.paymentInfo.status === "succeeded";
-        const paidAtDate = paidStatus ? new Date() : null;
+        const paidStatus = "succeeded";
+        const paidAtDate = new Date();
 
         const balanceExpense = await Expense.create({
           receiptNo: order.orderNo,
