@@ -589,9 +589,10 @@ router.post(
 
         invoicePromises.push(discountExpense);
       }
-
       // create an expense if loyalty balance is used
       if (order.balance && order.balance > 0) {
+        paymentInfo.type = "Loyalty Balance";
+        paymentInfo.status = "succeeded";
         const paidStatus = true;
         const paidAtDate = new Date();
 
