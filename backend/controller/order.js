@@ -547,6 +547,24 @@ router.post(
       });
 
       console.log(order);
+      // Loyalty balance
+      if (order.paymentInfo.status === "succeeded" && order.user?._id) {
+        try {
+          // Fetch user to check enrollment status
+          const user = await User.findById(order.user._id);
+
+          if (user && user.enrolled && order.totalPrice >= 10) {
+            const points = Math.max(1, Math.floor(order.totalPrice * 0.1)); // Ensure minimum 1 point
+            await User.findByIdAndUpdate(
+              order.user._id,
+              { $inc: { points: points } },
+              { new: true, runValidators: true }
+            );
+          }
+        } catch (error) {
+          console.error("Error updating loyalty points:", error);
+        }
+      }
 
       // Create invoices for each item in the cart
       const invoicePromises = order.cart.map(async (item) => {
@@ -1655,24 +1673,29 @@ router.put(
 
           order.paymentInfo.status = "succeeded";
           const orderNo = order.orderNo;
-          const invoices = await Invoice.find({
-            receiptNo: orderNo,
-            "paid.status": false,
-          });
-          const expenses = await Expense.find({
-            receiptNo: orderNo,
-            "paid.status": false,
-          });
 
-          for (const invoice of invoices) {
-            invoice.paid.status = true;
-            invoice.paid.paidAt = new Date();
-            await invoice.save();
-          }
-          for (const expense of expenses) {
-            expense.paid.status = true;
-            expense.paid.paidAt = new Date();
-            await expense.save();
+          await Invoice.updateMany(
+            { receiptNo: orderNo, "paid.status": false },
+            { $set: { "paid.status": true, "paid.paidAt": new Date() } }
+          );
+
+          await Expense.updateMany(
+            { receiptNo: orderNo, "paid.status": false },
+            { $set: { "paid.status": true, "paid.paidAt": new Date() } }
+          );
+
+          if (order.user?._id) {
+            const user = await User.findById(order.user._id);
+
+            if (user && user.enrolled && order.totalPrice >= 10) {
+              const points = Math.max(1, Math.floor(order.totalPrice * 0.1)); // Ensure at least 1 point
+
+              await User.findByIdAndUpdate(
+                order.user._id,
+                { $inc: { points: points } },
+                { new: true, runValidators: true }
+              );
+            }
           }
         }
       }

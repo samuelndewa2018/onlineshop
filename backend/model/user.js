@@ -21,6 +21,14 @@ const userSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
   },
+  points: {
+    type: Number,
+    default: 0,
+  },
+  enrolled: {
+    type: Boolean,
+    default: false,
+  },
   availableBalance: {
     type: Number,
     default: 0,
