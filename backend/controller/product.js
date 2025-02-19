@@ -10,7 +10,7 @@ const ErrorHandler = require("../utils/ErrorHandler");
 const Statements = require("../model/Statements");
 const crypto = require("crypto");
 
-function getRandomIndexes(count, size = 7) {
+function getRandomIndexes(count, size = 4) {
   const actualSize = Math.min(size, count); // Ensure we don’t request more than available
   const indexes = new Set();
 
@@ -241,7 +241,7 @@ router.get(
       // Fetch latest 10 products
       const latestProducts = await Product.find()
         .sort({ createdAt: -1 })
-        .limit(10);
+        .limit(7);
 
       // Fetch trending 10 products (most sold)
       const trendingProducts = await Product.find()
