@@ -212,6 +212,7 @@ router.get(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const products = await Product.find().sort({ createdAt: -1 });
+      console.log("data", products);
 
       res.status(201).json({
         success: true,
