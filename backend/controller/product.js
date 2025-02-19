@@ -242,6 +242,7 @@ router.get(
         latest: latestProducts,
         trending: trendingProducts,
       });
+      console.log("latest", latestProducts);
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }
