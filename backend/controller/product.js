@@ -239,9 +239,10 @@ router.get(
         .limit(10);
 
       // Fetch 7 random products using aggregation
-      const randomProducts = await Product.aggregate([
-        { $sample: { size: 7 } },
-      ]);
+      const count = await Product.countDocuments(); // Get total product count
+      const randomSkip = Math.max(0, Math.floor(Math.random() * (count - 7))); // Random starting point
+
+      const randomProducts = await Product.find().skip(randomSkip).limit(7);
 
       res.status(200).json({
         success: true,
