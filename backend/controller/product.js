@@ -9,11 +9,17 @@ const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
 const Statements = require("../model/Statements");
 const crypto = require("crypto");
-const Redis = require("ioredis");
-const redis = new Redis();
 
-const CACHE_KEY = "displayProducts";
-const CACHE_EXPIRATION = 300;
+function getRandomIndexes(count, size = 7) {
+  const actualSize = Math.min(size, count); // Ensure we don’t request more than available
+  const indexes = new Set();
+
+  while (indexes.size < actualSize) {
+    indexes.add(Math.floor(Math.random() * count));
+  }
+
+  return Array.from(indexes);
+}
 
 // create product
 router.post(
@@ -217,7 +223,6 @@ router.get(
   catchAsyncErrors(async (req, res, next) => {
     try {
       const products = await Product.find().sort({ createdAt: -1 });
-      console.log("data", products);
 
       res.status(201).json({
         success: true,
@@ -233,13 +238,6 @@ router.get(
   "/get-display-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      // Check if data is cached
-      const cachedData = await redis.get(CACHE_KEY);
-      if (cachedData) {
-        console.log("Serving from cache");
-        return res.status(200).json(JSON.parse(cachedData));
-      }
-
       // Fetch latest 10 products
       const latestProducts = await Product.find()
         .sort({ createdAt: -1 })
@@ -250,29 +248,24 @@ router.get(
         .sort({ sold_out: -1 })
         .limit(10);
 
-      // Fetch 7 random products using random skip method
+      // Fetch 7 random products without exceeding the available count
       const count = await Product.countDocuments();
-      const randomSkip = Math.max(0, Math.floor(Math.random() * (count - 7)));
-      const randomProducts = await Product.find().skip(randomSkip).limit(7);
+      let randomProducts = [];
 
-      // Create response object
-      const responseData = {
+      if (count > 0) {
+        const indexes = getRandomIndexes(count);
+        for (let index of indexes) {
+          const product = await Product.findOne().skip(index);
+          if (product) randomProducts.push(product);
+        }
+      }
+
+      res.status(200).json({
         success: true,
         latest: latestProducts,
         trending: trendingProducts,
         random: randomProducts,
-      };
-
-      // Store result in Redis cache
-      await redis.set(
-        CACHE_KEY,
-        JSON.stringify(responseData),
-        "EX",
-        CACHE_EXPIRATION
-      );
-      console.log("Serving from database and caching");
-
-      res.status(200).json(responseData);
+      });
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }
