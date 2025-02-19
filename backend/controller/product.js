@@ -237,10 +237,16 @@ router.get(
         .sort({ sold_out: -1 })
         .limit(10);
 
+      // Fetch 7 random products using aggregation
+      const randomProducts = await Product.aggregate([
+        { $sample: { size: 7 } },
+      ]);
+
       res.status(200).json({
         success: true,
         latest: latestProducts,
         trending: trendingProducts,
+        random: randomProducts,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
