@@ -227,22 +227,24 @@ router.get(
   "/get-display-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      // Fetch latest 5 products
-      const latestProducts = await Product.find()
-        .sort({ createdAt: -1 })
-        .limit(5);
+      // // Fetch latest 5 products
+      // const latestProducts = await Product.find()
+      //   .sort({ createdAt: -1 })
+      //   .limit(5);
 
-      // Fetch trending 5 products (most sold)
-      const trendingProducts = await Product.find()
-        .sort({ sold_out: -1 })
-        .limit(5);
+      // // Fetch trending 5 products (most sold)
+      // const trendingProducts = await Product.find()
+      //   .sort({ sold_out: -1 })
+      //   .limit(5);
 
-      res.status(200).json({
-        success: true,
-        latest: latestProducts,
-        trending: trendingProducts,
-      });
-      console.log("latest", latestProducts);
+      // res.status(200).json({
+      //   success: true,
+      //   latest: latestProducts,
+      //   trending: trendingProducts,
+      // });
+
+      const products = await Product.find().sort({ createdAt: -1 });
+      console.log("latest", products);
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }
