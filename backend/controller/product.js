@@ -236,7 +236,6 @@ router.get(
   })
 );
 // get all display products
-// Cache data for 10 minutes
 
 router.get(
   "/get-display-products",
