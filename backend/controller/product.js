@@ -241,12 +241,12 @@ router.get(
       // Fetch latest 10 products
       const latestProducts = await Product.find()
         .sort({ createdAt: -1 })
-        .limit(7);
+        .limit(5);
 
       // Fetch trending 10 products (most sold)
       const trendingProducts = await Product.find()
         .sort({ sold_out: -1 })
-        .limit(10);
+        .limit(7);
 
       // Fetch 7 random products without exceeding the available count
       const count = await Product.countDocuments();
