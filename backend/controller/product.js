@@ -9,6 +9,11 @@ const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
 const Statements = require("../model/Statements");
 const crypto = require("crypto");
+const Redis = require("ioredis");
+const redis = new Redis();
+
+const CACHE_KEY = "displayProducts";
+const CACHE_EXPIRATION = 300;
 
 // create product
 router.post(
@@ -228,28 +233,46 @@ router.get(
   "/get-display-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      // Fetch latest 5 products
+      // Check if data is cached
+      const cachedData = await redis.get(CACHE_KEY);
+      if (cachedData) {
+        console.log("Serving from cache");
+        return res.status(200).json(JSON.parse(cachedData));
+      }
+
+      // Fetch latest 10 products
       const latestProducts = await Product.find()
         .sort({ createdAt: -1 })
         .limit(10);
 
-      // Fetch trending 5 products (most sold)
+      // Fetch trending 10 products (most sold)
       const trendingProducts = await Product.find()
         .sort({ sold_out: -1 })
         .limit(10);
 
-      // Fetch 7 random products using aggregation
-      const count = await Product.countDocuments(); // Get total product count
-      const randomSkip = Math.max(0, Math.floor(Math.random() * (count - 7))); // Random starting point
-
+      // Fetch 7 random products using random skip method
+      const count = await Product.countDocuments();
+      const randomSkip = Math.max(0, Math.floor(Math.random() * (count - 7)));
       const randomProducts = await Product.find().skip(randomSkip).limit(7);
 
-      res.status(200).json({
+      // Create response object
+      const responseData = {
         success: true,
         latest: latestProducts,
         trending: trendingProducts,
         random: randomProducts,
-      });
+      };
+
+      // Store result in Redis cache
+      await redis.set(
+        CACHE_KEY,
+        JSON.stringify(responseData),
+        "EX",
+        CACHE_EXPIRATION
+      );
+      console.log("Serving from database and caching");
+
+      res.status(200).json(responseData);
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }
