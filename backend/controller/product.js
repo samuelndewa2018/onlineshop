@@ -9,6 +9,8 @@ const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
 const Statements = require("../model/Statements");
 const crypto = require("crypto");
+const NodeCache = require("node-cache");
+const myCache = new NodeCache({ stdTTL: 600 });
 
 function getRandomIndexes(count, size = 4) {
   const actualSize = Math.min(size, count); // Ensure we don’t request more than available
@@ -234,10 +236,24 @@ router.get(
   })
 );
 // get all display products
+// Cache data for 10 minutes
+
 router.get(
   "/get-display-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      const cacheKey = "displayProducts"; // Unique key for this route's data
+
+      // Check if data is in cache
+      const cachedData = myCache.get(cacheKey);
+      if (cachedData) {
+        return res.status(200).json({
+          success: true,
+          message: "Data retrieved from cache",
+          data: cachedData,
+        });
+      }
+
       // Fetch latest 10 products
       const latestProducts = await Product.find()
         .sort({ createdAt: -1 })
@@ -260,11 +276,20 @@ router.get(
         }
       }
 
-      res.status(200).json({
-        success: true,
+      // Combine all data
+      const responseData = {
         latest: latestProducts,
         trending: trendingProducts,
         random: randomProducts,
+      };
+
+      // Store data in cache
+      myCache.set(cacheKey, responseData);
+
+      res.status(200).json({
+        success: true,
+        message: "Data retrieved from database",
+        data: responseData,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
