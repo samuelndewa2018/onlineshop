@@ -222,6 +222,31 @@ router.get(
     }
   })
 );
+// get all display products
+router.get(
+  "/get-display-products",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      // Fetch latest 5 products
+      const latestProducts = await Product.find()
+        .sort({ createdAt: -1 })
+        .limit(5);
+
+      // Fetch trending 5 products (most sold)
+      const trendingProducts = await Product.find()
+        .sort({ sold_out: -1 })
+        .limit(5);
+
+      res.status(200).json({
+        success: true,
+        latest: latestProducts,
+        trending: trendingProducts,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
 
 // review for a product
 router.put(
