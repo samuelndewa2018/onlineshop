@@ -290,7 +290,7 @@ router.get(
 // get all related products in the same category
 
 router.get(
-  "/get-related-products",
+  "/get-related-products/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const productId = req.params.id;
