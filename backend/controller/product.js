@@ -281,9 +281,9 @@ router.get(
       const cacheKey = "display-products";
       const cachedData = cache.get(cacheKey);
 
-      // if (cachedData) {
-      //   return res.status(200).json(cachedData);
-      // }
+      if (cachedData) {
+        return res.status(200).json(cachedData);
+      }
 
       // Fetch latest 5 products
       const latestProducts = await Product.find()
@@ -317,6 +317,7 @@ router.get(
       cache.set(cacheKey, responseData);
       res.status(200).json(responseData);
     } catch (error) {
+      console.error("Error fetching display products:", error);
       return next(new ErrorHandler(error.message, 400));
     }
   })
