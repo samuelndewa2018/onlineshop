@@ -314,7 +314,8 @@ router.get(
         random: randomProducts,
       };
 
-      cache.set(cacheKey, responseData);
+      cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
+
       res.status(200).json(responseData);
     } catch (error) {
       console.error("Error fetching display products:", error);
