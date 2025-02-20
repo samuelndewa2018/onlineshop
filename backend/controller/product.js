@@ -387,10 +387,11 @@ router.get(
         product: productData,
       };
 
-      cache.set(cacheKey, responseData);
-      // cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
+      // cache.set(cacheKey, responseData);
+      cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
       res.status(200).json(responseData);
     } catch (error) {
+      console.error("Error fetching display products:", error);
       return next(new ErrorHandler(error.message, 500));
     }
   })
