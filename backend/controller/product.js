@@ -256,7 +256,7 @@ router.get(
       // Fetch trending 7 products (most sold)
       const trendingProducts = await Product.find()
         .sort({ sold_out: -1 })
-        .limit(7);
+        .limit(10);
 
       // Fetch 7 random products without exceeding the available count
       const count = await Product.countDocuments();
