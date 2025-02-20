@@ -287,6 +287,43 @@ router.get(
   })
 );
 
+// get all related products in the same category
+
+router.get(
+  "/get-related-products",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const productId = req.params.id;
+      const cacheKey = `related-product-${productId}`;
+      const cachedData = cache.get(cacheKey);
+
+      if (cachedData) {
+        return res.status(200).json(cachedData);
+      }
+
+      const productData = await Product.findById(productId);
+      const category = productData.tags;
+
+      const products = await Product.find({ tags: { $in: category } });
+
+      if (!products) {
+        return next(new ErrorHandler("Product not found", 404));
+      }
+
+      const responseData = {
+        success: true,
+        products: products,
+      };
+
+      // cache.set(cacheKey, responseData);
+      cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
+      res.status(200).json(responseData);
+    } catch (error) {
+      console.error("Error fetching display products:", error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
 // review for a product
 router.put(
   "/create-new-review",
