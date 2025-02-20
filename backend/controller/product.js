@@ -236,43 +236,6 @@ router.get(
   })
 );
 // get all display products
-// router.get(
-//   "/get-display-products",
-//   catchAsyncErrors(async (req, res, next) => {
-//     try {
-//       // Fetch latest 10 products
-//       const latestProducts = await Product.find()
-//         .sort({ createdAt: -1 })
-//         .limit(5);
-
-//       // Fetch trending 10 products (most sold)
-//       const trendingProducts = await Product.find()
-//         .sort({ sold_out: -1 })
-//         .limit(7);
-
-//       // Fetch 7 random products without exceeding the available count
-//       const count = await Product.countDocuments();
-//       let randomProducts = [];
-
-//       if (count > 0) {
-//         const indexes = getRandomIndexes(count);
-//         for (let index of indexes) {
-//           const product = await Product.findOne().skip(index);
-//           if (product) randomProducts.push(product);
-//         }
-//       }
-
-//       res.status(200).json({
-//         success: true,
-//         latest: latestProducts,
-//         trending: trendingProducts,
-//         random: randomProducts,
-//       });
-//     } catch (error) {
-//       return next(new ErrorHandler(error.message, 400));
-//     }
-//   })
-// );
 
 router.get(
   "/get-display-products",
@@ -404,20 +367,29 @@ router.get(
 // get a single product
 router.get(
   "/get-product/:id",
-  // isAdmin("Admin"),
   catchAsyncErrors(async (req, res, next) => {
     try {
       const productId = req.params.id;
+      const cacheKey = `product-${productId}`;
+      const cachedData = cache.get(cacheKey);
+
+      if (cachedData) {
+        return res.status(200).json(cachedData);
+      }
 
       const productData = await Product.findById(productId);
       if (!productData) {
         return next(new ErrorHandler("Product not found", 404));
       }
 
-      res.status(200).json({
+      const responseData = {
         success: true,
         product: productData,
-      });
+      };
+
+      cache.set(cacheKey, responseData);
+      // cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
+      res.status(200).json(responseData);
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
