@@ -314,6 +314,7 @@ router.get(
         success: true,
         products: products,
       };
+      console.log("related products", responseData);
 
       // cache.set(cacheKey, responseData);
       cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
