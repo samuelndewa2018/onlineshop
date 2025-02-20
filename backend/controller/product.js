@@ -9,6 +9,8 @@ const cloudinary = require("cloudinary");
 const ErrorHandler = require("../utils/ErrorHandler");
 const Statements = require("../model/Statements");
 const crypto = require("crypto");
+const NodeCache = require("node-cache");
+const cache = new NodeCache({ stdTTL: 1800 }); // Cache for 10 minutes
 
 function getRandomIndexes(count, size = 4) {
   const actualSize = Math.min(size, count); // Ensure we don’t request more than available
@@ -234,16 +236,61 @@ router.get(
   })
 );
 // get all display products
+// router.get(
+//   "/get-display-products",
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       // Fetch latest 10 products
+//       const latestProducts = await Product.find()
+//         .sort({ createdAt: -1 })
+//         .limit(5);
+
+//       // Fetch trending 10 products (most sold)
+//       const trendingProducts = await Product.find()
+//         .sort({ sold_out: -1 })
+//         .limit(7);
+
+//       // Fetch 7 random products without exceeding the available count
+//       const count = await Product.countDocuments();
+//       let randomProducts = [];
+
+//       if (count > 0) {
+//         const indexes = getRandomIndexes(count);
+//         for (let index of indexes) {
+//           const product = await Product.findOne().skip(index);
+//           if (product) randomProducts.push(product);
+//         }
+//       }
+
+//       res.status(200).json({
+//         success: true,
+//         latest: latestProducts,
+//         trending: trendingProducts,
+//         random: randomProducts,
+//       });
+//     } catch (error) {
+//       return next(new ErrorHandler(error.message, 400));
+//     }
+//   })
+// );
+
 router.get(
   "/get-display-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      // Fetch latest 10 products
+      const cacheKey = "display-products";
+      const cachedData = cache.get(cacheKey);
+
+      if (cachedData) {
+        return res.status(200).json(cachedData);
+      }
+
+      // Fetch latest 5 products
       const latestProducts = await Product.find()
         .sort({ createdAt: -1 })
         .limit(5);
 
-      // Fetch trending 10 products (most sold)
+      // Fetch trending 7 products (most sold)
       const trendingProducts = await Product.find()
         .sort({ sold_out: -1 })
         .limit(7);
@@ -260,12 +307,15 @@ router.get(
         }
       }
 
-      res.status(200).json({
+      const responseData = {
         success: true,
         latest: latestProducts,
         trending: trendingProducts,
         random: randomProducts,
-      });
+      };
+
+      cache.set(cacheKey, responseData);
+      res.status(200).json(responseData);
     } catch (error) {
       return next(new ErrorHandler(error.message, 400));
     }
