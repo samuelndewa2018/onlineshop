@@ -224,14 +224,7 @@ router.get(
   "/get-all-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const cacheKey = "products";
-      const cachedData = cache.get(cacheKey);
-
-      if (cachedData) {
-        return res.status(200).json(cachedData);
-      }
       const products = await Product.find().sort({ createdAt: -1 });
-      cache.set(cacheKey, JSON.parse(JSON.stringify(products)));
 
       res.status(201).json({
         success: true,
