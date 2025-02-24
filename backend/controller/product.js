@@ -220,20 +220,40 @@ router.delete(
 );
 
 // get all products
+
 router.get(
   "/get-all-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
-      const limit = parseInt(req.query.limit) || 10; // Default to 10 products per page if not provided
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
       const skip = (page - 1) * limit;
 
-      const products = await Product.find()
+      const { category, brand, price } = req.query;
+
+      let query = {};
+
+      // Filter by category
+      if (category && category !== "all") {
+        query.category = mongoose.Types.ObjectId(category);
+      }
+
+      // Filter by subcategory (brand)
+      if (brand && brand !== "all") {
+        query.subcategory = mongoose.Types.ObjectId(brand);
+      }
+
+      // Filter by price
+      if (price && price !== "0") {
+        query.price = { $lte: parseInt(price) };
+      }
+
+      const products = await Product.find(query)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
 
-      const totalProducts = await Product.countDocuments();
+      const totalProducts = await Product.countDocuments(query);
 
       res.status(200).json({
         success: true,
