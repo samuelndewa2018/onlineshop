@@ -252,7 +252,7 @@ router.get(
         .skip(skip)
         .limit(limit);
 
-      const totalProducts = await Product.countDocuments(query);
+      const totalProducts = await Product.countDocuments(filter);
 
       res.status(200).json({
         success: true,
