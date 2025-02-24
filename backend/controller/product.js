@@ -287,6 +287,37 @@ router.get(
   })
 );
 
+router.get(
+  "/get-latest-products",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const cacheKey = "latest-products";
+      const cachedData = cache.get(cacheKey);
+
+      if (cachedData) {
+        return res.status(200).json(cachedData);
+      }
+
+      // Fetch latest 5 products
+      const latestProducts = await Product.find()
+        .sort({ createdAt: -1 })
+        .limit(5);
+
+      const responseData = {
+        success: true,
+        latest: latestProducts,
+      };
+
+      cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
+
+      res.status(200).json(responseData);
+    } catch (error) {
+      console.error("Error fetching latest products:", error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
 // get all related products in the same category
 
 router.get(
@@ -324,6 +355,7 @@ router.get(
     }
   })
 );
+
 // review for a product
 router.put(
   "/create-new-review",
