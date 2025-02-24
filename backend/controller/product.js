@@ -291,12 +291,12 @@ router.get(
   "/get-latest-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const cacheKey = "latest-products";
-      const cachedData = cache.get(cacheKey);
+      // const cacheKey = "latest-products";
+      // const cachedData = cache.get(cacheKey);
 
-      if (cachedData) {
-        return res.status(200).json(cachedData);
-      }
+      // if (cachedData) {
+      //   return res.status(200).json(cachedData);
+      // }
 
       // Fetch latest 5 products
       const latestProducts = await Product.find()
@@ -308,7 +308,7 @@ router.get(
         latest: latestProducts,
       };
 
-      cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
+      // cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
 
       res.status(200).json(responseData);
     } catch (error) {
@@ -323,12 +323,12 @@ router.get(
   "/get-trending-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const cacheKey = "trending-products";
-      const cachedData = cache.get(cacheKey);
+      // const cacheKey = "trending-products";
+      // const cachedData = cache.get(cacheKey);
 
-      if (cachedData) {
-        return res.status(200).json(cachedData);
-      }
+      // if (cachedData) {
+      //   return res.status(200).json(cachedData);
+      // }
 
       // Fetch latest 5 products
       const trendingProducts = await Product.find()
@@ -340,7 +340,7 @@ router.get(
         latest: trendingProducts,
       };
 
-      cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
+      // cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
 
       res.status(200).json(responseData);
     } catch (error) {
@@ -355,12 +355,12 @@ router.get(
   "/get-random-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const cacheKey = "random-products";
-      const cachedData = cache.get(cacheKey);
+      // const cacheKey = "random-products";
+      // const cachedData = cache.get(cacheKey);
 
-      if (cachedData) {
-        return res.status(200).json(cachedData);
-      }
+      // if (cachedData) {
+      //   return res.status(200).json(cachedData);
+      // }
 
       // Fetch latest 5 products
       const count = await Product.countDocuments();
@@ -379,7 +379,7 @@ router.get(
         latest: randomProducts,
       };
 
-      cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
+      // cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
 
       res.status(200).json(responseData);
     } catch (error) {
