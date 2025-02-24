@@ -236,7 +236,6 @@ router.get(
   })
 );
 // get all display products
-
 router.get(
   "/get-display-products",
   catchAsyncErrors(async (req, res, next) => {
@@ -287,6 +286,7 @@ router.get(
   })
 );
 
+// get all latest products
 router.get(
   "/get-latest-products",
   catchAsyncErrors(async (req, res, next) => {
@@ -306,6 +306,77 @@ router.get(
       const responseData = {
         success: true,
         latest: latestProducts,
+      };
+
+      cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
+
+      res.status(200).json(responseData);
+    } catch (error) {
+      console.error("Error fetching latest products:", error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+// get all trending products
+router.get(
+  "/get-trending-products",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const cacheKey = "trending-products";
+      const cachedData = cache.get(cacheKey);
+
+      if (cachedData) {
+        return res.status(200).json(cachedData);
+      }
+
+      // Fetch latest 5 products
+      const trendingProducts = await Product.find()
+        .sort({ sold_out: -1 })
+        .limit(10);
+
+      const responseData = {
+        success: true,
+        latest: trendingProducts,
+      };
+
+      cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
+
+      res.status(200).json(responseData);
+    } catch (error) {
+      console.error("Error fetching latest products:", error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  })
+);
+
+// get all random products
+router.get(
+  "/get-random-products",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const cacheKey = "random-products";
+      const cachedData = cache.get(cacheKey);
+
+      if (cachedData) {
+        return res.status(200).json(cachedData);
+      }
+
+      // Fetch latest 5 products
+      const count = await Product.countDocuments();
+      let randomProducts = [];
+
+      if (count > 0) {
+        const indexes = getRandomIndexes(count);
+        for (let index of indexes) {
+          const product = await Product.findOne().skip(index);
+          if (product) randomProducts.push(product);
+        }
+      }
+
+      const responseData = {
+        success: true,
+        latest: randomProducts,
       };
 
       cache.set(cacheKey, JSON.parse(JSON.stringify(responseData)));
