@@ -235,13 +235,17 @@ router.get(
       let query = {};
 
       // Filter by category
-      if (category && category !== "all") {
-        query.category = mongoose.Types.ObjectId(category);
+      if (
+        category &&
+        category !== "all" &&
+        mongoose.isValidObjectId(category)
+      ) {
+        query.category = new mongoose.Types.ObjectId(category);
       }
 
       // Filter by subcategory (brand)
-      if (brand && brand !== "all") {
-        query.brand = mongoose.Types.ObjectId(brand);
+      if (brand && brand !== "all" && mongoose.isValidObjectId(brand)) {
+        query.subcategory = new mongoose.Types.ObjectId(brand);
       }
 
       // Filter by price
@@ -263,6 +267,7 @@ router.get(
         currentPage: page,
       });
     } catch (error) {
+      console.error("Error fetching products:", error);
       return next(new ErrorHandler(error, 400));
     }
   })
