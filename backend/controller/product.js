@@ -224,17 +224,29 @@ router.get(
   "/get-all-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
-      const products = await Product.find().sort({ createdAt: -1 });
+      const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+      const limit = parseInt(req.query.limit) || 10; // Default to 10 products per page if not provided
+      const skip = (page - 1) * limit;
 
-      res.status(201).json({
+      const products = await Product.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+      const totalProducts = await Product.countDocuments();
+
+      res.status(200).json({
         success: true,
         products: products,
+        totalPages: Math.ceil(totalProducts / limit),
+        currentPage: page,
       });
     } catch (error) {
       return next(new ErrorHandler(error, 400));
     }
   })
 );
+
 // get all display products
 router.get(
   "/get-display-products",
