@@ -241,7 +241,7 @@ router.get(
 
       // Filter by subcategory (brand)
       if (brand && brand !== "all") {
-        query.subcategory = mongoose.Types.ObjectId(brand);
+        query.brand = mongoose.Types.ObjectId(brand);
       }
 
       // Filter by price
