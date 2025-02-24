@@ -232,28 +232,22 @@ router.get(
 
       const { category, brand, price } = req.query;
 
-      let query = {};
-
-      // Filter by category
-      if (
-        category &&
-        category !== "all" &&
-        mongoose.isValidObjectId(category)
-      ) {
-        query.category = new mongoose.Types.ObjectId(category);
+      const filter = {};
+      const sorting = {};
+      const minMaxPricesFilter = {};
+      if (req.query.price && req.query.price != 0) {
+        filter.price = { $lte: +req.query.price };
+      }
+      if (req.query.brand && req.query.brand !== "all") {
+        filter.brand = req.query.brand;
+        minMaxPricesFilter.brand = req.query.brand;
+      }
+      if (req.query.category && req.query.category !== "all") {
+        filter.category = req.query.category;
+        minMaxPricesFilter.category = req.query.category;
       }
 
-      // Filter by subcategory (brand)
-      if (brand && brand !== "all" && mongoose.isValidObjectId(brand)) {
-        query.brand = new mongoose.Types.ObjectId(brand);
-      }
-
-      // Filter by price
-      if (price && price !== "0") {
-        query.price = { $lte: parseInt(price) };
-      }
-
-      const products = await Product.find(query)
+      const products = await Product.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
