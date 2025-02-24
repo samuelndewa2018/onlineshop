@@ -11,8 +11,8 @@ const sendMail = require("../utils/sendMail");
 const sendToken = require("../utils/jwtToken");
 const { isAuthenticated, isAdmin } = require("../middleware/auth");
 const crypto = require("crypto");
-// import { v4 as uuidv4 } from "uuid";
-// import sendOtp from "../utils/sendVerify";
+import { v4 as uuidv4 } from "uuid";
+import sendOtp from "../utils/sendVerify";
 import { log } from "console";
 const bcrypt = require("bcrypt");
 const axios = require("axios");
@@ -48,53 +48,53 @@ const sendWhatsAppText = async (message, session, phoneNumber) => {
   }
 };
 // create and send otp
-// const generateAndSendOtp = async (user, phoneNumber) => {
-//   // Use phoneNumber instead of phone
-//   try {
-//     let otp, hashedOtp;
+const generateAndSendOtp = async (user, phoneNumber) => {
+  // Use phoneNumber instead of phone
+  try {
+    let otp, hashedOtp;
 
-//     // Loop until a unique OTP is generated
-//     do {
-//       const randomPart = uuidv4().slice(0, 4);
-//       otp = randomPart.replace(/-/g, "").slice(0, 4).toUpperCase();
+    // Loop until a unique OTP is generated
+    do {
+      const randomPart = uuidv4().slice(0, 4);
+      otp = randomPart.replace(/-/g, "").slice(0, 4).toUpperCase();
 
-//       const saltRounds = parseInt(process.env.SALT_ROUNDS, 10) || 10;
+      const saltRounds = parseInt(process.env.SALT_ROUNDS, 10) || 10;
 
-//       hashedOtp = await bcrypt.hash(otp, saltRounds);
+      hashedOtp = await bcrypt.hash(otp, saltRounds);
 
-//       // Check if OTP exists in the DB
-//       const existingOtp = await Otp.findOne({ otp: hashedOtp });
-//       if (!existingOtp) break;
-//     } while (true);
+      // Check if OTP exists in the DB
+      const existingOtp = await Otp.findOne({ otp: hashedOtp });
+      if (!existingOtp) break;
+    } while (true);
 
-//     const message = `Your OTP is ${otp}. It is valid for 60 secs.`;
-//     console.log("phoneNumber", phoneNumber); // Log the formatted phone number
+    const message = `Your OTP is ${otp}. It is valid for 60 secs.`;
+    console.log("phoneNumber", phoneNumber); // Log the formatted phone number
 
-//     // Save OTP to the database
-//     const newOtp = new Otp({
-//       userId: user._id,
-//       otp: hashedOtp,
-//       createdAt: new Date(),
-//       expireAt: new Date(new Date().getTime() + 60 * 1000),
-//     });
-//     await newOtp.save();
+    // Save OTP to the database
+    const newOtp = new Otp({
+      userId: user._id,
+      otp: hashedOtp,
+      createdAt: new Date(),
+      expireAt: new Date(new Date().getTime() + 60 * 1000),
+    });
+    await newOtp.save();
 
-//     // Send OTP via WhatsApp
-//     // await sendWhatsAppText(message, process.env.WHATSAPP_SESSION, phoneNumber); // Use phoneNumber
+    // Send OTP via WhatsApp
+    // await sendWhatsAppText(message, process.env.WHATSAPP_SESSION, phoneNumber); // Use phoneNumber
 
-//     // Send OTP via Email
-//     await sendOtp({
-//       email: user.email,
-//       otp: otp,
-//       subject: "Your Verification Code",
-//     });
+    // Send OTP via Email
+    await sendOtp({
+      email: user.email,
+      otp: otp,
+      subject: "Your Verification Code",
+    });
 
-//     return { success: true, message: "OTP sent successfully" };
-//   } catch (error) {
-//     console.error("Error generating and sending OTP:", error);
-//     throw new Error("Failed to generate and send OTP");
-//   }
-// };
+    return { success: true, message: "OTP sent successfully" };
+  } catch (error) {
+    console.error("Error generating and sending OTP:", error);
+    throw new Error("Failed to generate and send OTP");
+  }
+};
 
 //create user
 router.post("/create-user", async (req, res, next) => {
