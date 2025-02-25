@@ -267,6 +267,24 @@ router.get(
   })
 );
 
+// get productss
+router.get(
+  "/get-all-products",
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const products = await Product.find(); // Fetch all products without conditions
+
+      res.status(200).json({
+        success: true,
+        products: products,
+      });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      return next(new ErrorHandler(error, 500));
+    }
+  })
+);
+
 // get all display products
 router.get(
   "/get-display-products",
