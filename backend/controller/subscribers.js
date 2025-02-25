@@ -35,7 +35,7 @@ router.post("/subscribe", async (req, res) => {
 
     // If the input already exists, return a 400 error
     if (existingSubscriber) {
-      return res.status(400).json({ message: "Input already subscribed." });
+      return res.status(400).json({ message: "user already subscribed." });
     }
 
     // Create data for a new subscriber based on the input
