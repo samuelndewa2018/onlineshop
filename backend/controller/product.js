@@ -269,7 +269,7 @@ router.get(
 
 // get productss
 router.get(
-  "/get-all-products",
+  "/get-allot-products",
   catchAsyncErrors(async (req, res, next) => {
     try {
       const products = await Product.find(); // Fetch all products without conditions
