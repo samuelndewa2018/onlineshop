@@ -12,6 +12,7 @@ router.post("/subscribe", async (req, res) => {
   try {
     // Extract the 'input' field from the request body
     const { input } = req.body;
+    console.log(input);
 
     // Check if the input is a valid email address
     const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
