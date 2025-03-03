@@ -51,10 +51,6 @@ const sendWhatsAppText = async (message, session, phoneNumber) => {
 
 // users login
 // Validation middleware
-const loginValidation = [
-  body("email").isEmail().withMessage("email isn't valid"),
-  body("password").isStrongPassword().withMessage("password isn't correct"),
-];
 
 const validator = (request, response, next) => {
   let result = validationResult(request);
@@ -3278,6 +3274,6 @@ router.get("/get-user-id/:refCode", async (req, res) => {
 });
 
 // Route
-router.post("/login", loginValidation, validator, login);
+router.post("/login", validator, login);
 
 module.exports = router;
