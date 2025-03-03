@@ -16,6 +16,7 @@ import sendOtp from "../utils/sendVerify";
 import { log } from "console";
 const bcrypt = require("bcrypt");
 const axios = require("axios");
+const { body } = require("express-validator");
 
 // middlewares
 const sendWhatsAppText = async (message, session, phoneNumber) => {
