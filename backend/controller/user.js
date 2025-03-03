@@ -88,6 +88,7 @@ const login = (req, res, next) => {
           id: userObj._id,
           role: "user",
         },
+        console.log("user", userObj),
         process.env.JWT_SECRET_KEY,
         { expiresIn: "6h" }
       );
