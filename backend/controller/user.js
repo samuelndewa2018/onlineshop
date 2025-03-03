@@ -47,6 +47,57 @@ const sendWhatsAppText = async (message, session, phoneNumber) => {
     throw error;
   }
 };
+
+// users login
+// Validation middleware
+const loginValidation = [
+  body("email").isEmail().withMessage("email isn't valid"),
+  body("password").isStrongPassword().withMessage("password isn't correct"),
+];
+
+const validator = (request, response, next) => {
+  let result = validationResult(request);
+  if (result.errors.length != 0) {
+    let errorString = result.errors.reduce(
+      (current, object) => current + object.msg + " , ",
+      ""
+    );
+    let error = new Error(errorString);
+    error.status = 422;
+    next(error);
+  } else next();
+};
+
+// Login controller
+const login = (req, res, next) => {
+  let token;
+  User.findOne({ email: req.body.email })
+    .then((userObj) => {
+      if (userObj === null) {
+        throw new Error("not authenticated");
+      }
+      if (req.body.google !== "google") {
+        let result = bcrypt.compareSync(req.body.password, userObj.password);
+        if (!result) {
+          throw new Error("not authenticated");
+        }
+      }
+      token = jwt.sign(
+        {
+          email: req.body.email,
+          id: userObj._id,
+          role: "user",
+        },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "6h" }
+      );
+      res.status(200).json({ data: "ok", token });
+    })
+    .catch((error) => {
+      console.log(error);
+      next(error);
+    });
+};
 // create and send otp
 const generateAndSendOtp = async (user, phoneNumber) => {
   // Use phoneNumber instead of phone
@@ -3223,5 +3274,8 @@ router.get("/get-user-id/:refCode", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error." });
   }
 });
+
+// Route
+router.post("/login", loginValidation, validator, login);
 
 module.exports = router;
