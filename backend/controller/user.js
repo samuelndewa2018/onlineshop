@@ -13,10 +13,9 @@ const { isAuthenticated, isAdmin } = require("../middleware/auth");
 const crypto = require("crypto");
 import { v4 as uuidv4 } from "uuid";
 import sendOtp from "../utils/sendVerify";
-import { log } from "console";
+
 const bcrypt = require("bcrypt");
 const axios = require("axios");
-const { body } = require("express-validator");
 
 // middlewares
 const sendWhatsAppText = async (message, session, phoneNumber) => {
@@ -3272,8 +3271,5 @@ router.get("/get-user-id/:refCode", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error." });
   }
 });
-
-// Route
-router.post("/login", validator, login);
 
 module.exports = router;
