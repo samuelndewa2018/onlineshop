@@ -3277,8 +3277,13 @@ router.post("/login", async (req, res) => {
     let token;
     const { email, password } = req.body;
 
-    // Check if user
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+      return next(new ErrorHandler("User doesn't exists!", 400));
+    }
+
+    const isPasswordValid = await user.comparePassword(password);
 
     console.log("user", user);
 
@@ -3288,7 +3293,6 @@ router.post("/login", async (req, res) => {
         .json({ success: false, message: "Not authenticated" });
     }
 
-    const isPasswordValid = bcrypt.compareSync(password, user.password);
     if (!isPasswordValid) {
       return res
         .status(401)
