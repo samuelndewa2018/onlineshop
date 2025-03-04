@@ -3280,19 +3280,19 @@ router.post("/login", async (req, res) => {
     // Check if user
     const user = await User.findOne({ email });
 
+    console.log("user", user);
+
     if (!user) {
       return res
         .status(401)
         .json({ success: false, message: "Not authenticated" });
     }
 
-    if (google !== "google") {
-      const isPasswordValid = bcrypt.compareSync(password, user.password);
-      if (!isPasswordValid) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Not authenticated" });
-      }
+    const isPasswordValid = bcrypt.compareSync(password, user.password);
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authenticated" });
     }
 
     token = jwt.sign(
