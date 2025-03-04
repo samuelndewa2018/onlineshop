@@ -3271,5 +3271,41 @@ router.get("/get-user-id/:refCode", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error." });
   }
 });
+// login new
+router.post("/login", async (req, res) => {
+  try {
+    let token;
+    const { email, password } = req.body;
+
+    // Check if user
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Not authenticated" });
+    }
+
+    if (google !== "google") {
+      const isPasswordValid = bcrypt.compareSync(password, user.password);
+      if (!isPasswordValid) {
+        return res
+          .status(401)
+          .json({ success: false, message: "Not authenticated" });
+      }
+    }
+
+    token = jwt.sign(
+      { email, id: user._id, role: "user" },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "6h" }
+    );
+
+    res.status(200).json({ success: true, token });
+  } catch (error) {
+    console.error("Error during login:", error.message);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
 
 module.exports = router;
