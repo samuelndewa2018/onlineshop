@@ -236,11 +236,11 @@ router.get(
       const sorting = {};
       const minMaxPricesFilter = {};
       if (req.query.price && req.query.price != 0) {
-        filter.price = { $lte: +req.query.price };
+        filter.discountPrice = { $lte: +req.query.price };
       }
       if (req.query.brand && req.query.brand !== "all") {
-        filter.brand = req.query.brand;
-        minMaxPricesFilter.brand = req.query.brand;
+        filter.tags = req.query.brand;
+        minMaxPricesFilter.tags = req.query.brand;
       }
       if (req.query.category && req.query.category !== "all") {
         filter.category = req.query.category;
