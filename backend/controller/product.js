@@ -230,27 +230,39 @@ router.get(
       const limit = parseInt(req.query.limit) || 10;
       const skip = (page - 1) * limit;
 
-      const { category, brand, price } = req.query;
+      const { category, brand, price, sort } = req.query;
 
       const filter = {};
       const sorting = {};
       const minMaxPricesFilter = {};
+
       if (req.query.price && req.query.price != 0) {
         filter.discountPrice = { $lte: +req.query.price };
       }
-      if (req.query.brand && req.query.brand !== "all") {
-        filter.tags = req.query.brand;
-        minMaxPricesFilter.tags = req.query.brand;
+      if (req.query.tags && req.query.tags !== "all") {
+        filter.tags = req.query.tags;
+        minMaxPricesFilter.tags = req.query.tags;
       }
       if (req.query.category && req.query.category !== "all") {
         filter.category = req.query.category;
         minMaxPricesFilter.category = req.query.category;
       }
 
+      // Sorting logic
+      if (sort === "1") {
+        sorting.discountPrice = 1; // Sort by price in ascending order (cheapest to most expensive)
+      } else if (sort === "-1") {
+        sorting.discountPrice = -1; // Sort by price in descending order (most expensive to cheapest)
+      } else if (sort === "0") {
+        // No sorting, keep the default order (likely the order in which products were created)
+      } else {
+        sorting.createdAt = -1; // Default sorting by createdAt in descending order
+      }
+
       console.log("Filter:", req.query);
 
       const products = await Product.find(filter)
-        .sort({ createdAt: -1 })
+        .sort(sorting)
         .skip(skip)
         .limit(limit);
 
