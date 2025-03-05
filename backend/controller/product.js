@@ -247,6 +247,8 @@ router.get(
         minMaxPricesFilter.category = req.query.category;
       }
 
+      console.log("Filter:", filter);
+
       const products = await Product.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
